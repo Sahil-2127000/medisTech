@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+
+@custom-variant dark (&:where(.dark, .dark *));
+/* Trigger Vite Tailwind Rebuild 2 */
+
+@theme{
+  --color-clinic-900: #021024;
+  --color-clinic-800: #052659;
+  --color-clinic-600: #5483B3;
+  --color-clinic-400: #7DA0CA;
+  --color-clinic-200: #C1E8FF;
+}
+
+@keyframes gradient-xy {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-xy {
+  background-size: 200% 200%;
+  animation: gradient-xy 15s ease infinite;
+}
+
+@keyframes float-blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+.animate-float-blob {
+  animation: float-blob 12s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-blob 16s ease-in-out infinite reverse;
+}

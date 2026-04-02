@@ -1,0 +1,17 @@
+const express = require('express');
+const router = express.Router();
+const appointmentController = require('../controllers/appointmentController');
+const authMiddleware = require('../middleware/authMiddleware');
+
+// Patient Routes
+router.get('/my', authMiddleware, appointmentController.getPatientAppointments);
+router.get('/slots', authMiddleware, appointmentController.getAvailableSlots);
+router.post('/book', authMiddleware, appointmentController.bookAppointment);
+
+// Doctor Routes
+router.get('/doctor', authMiddleware, appointmentController.getDoctorAppointmentsDaily);
+router.get('/doctor/history', authMiddleware, appointmentController.getDoctorHistory);
+router.put('/:id/status', authMiddleware, appointmentController.updateStatus);
+router.post('/emergency-resolve', authMiddleware, appointmentController.resolveEmergencyShift);
+
+module.exports = router;
