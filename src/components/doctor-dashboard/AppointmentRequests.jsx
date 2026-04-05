@@ -31,7 +31,7 @@ const AppointmentRequests = ({ appointments, onStatusChange }) => {
               </tr>
             ) : (
               sortedList.map(app => {
-                const displayName = app.name || (app.patient && app.patient.name) || "Walk-In";
+                const displayName = app.name || (app.patient && app.patient.name) || "patient name is not found";
                 const displayChar = typeof displayName === 'string' && displayName.length > 0 ? displayName.charAt(0).toUpperCase() : "W";
                 return (
                  <tr key={app.id} className="border-b border-gray-50 dark:border-slate-700/50 hover:bg-[#fafcff] dark:hover:bg-slate-700/30 transition-colors group">

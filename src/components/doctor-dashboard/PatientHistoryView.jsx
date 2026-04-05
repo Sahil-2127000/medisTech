@@ -66,13 +66,13 @@ const PatientHistoryView = ({ historyData, onBack }) => {
 
                {/* Grid Expansion Core */}
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 auto-rows-max w-full">
-                  {groupedHistory[monthLayer].map(app => {
+                  {groupedHistory[monthLayer].map((app, appIdx) => {
                      // Robust native mapping bindings
-                     const displayName = app.patientId?.fullName || "Walk-In Entity";
+                     const displayName = app.name || "Walk-In Entity";
                      const displayChar = displayName.charAt(0).toUpperCase();
                      
                      return (
-                       <div key={app._id} className="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-gray-100 dark:border-slate-700 shadow-[0_8px_30px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_15px_40px_rgba(82,101,236,0.08)] flex justify-between items-center group">
+                       <div key={app.id || 'hist_' + appIdx} className="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-gray-100 dark:border-slate-700 shadow-[0_8px_30px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_15px_40px_rgba(82,101,236,0.08)] flex justify-between items-center group">
                           
                           <div className="flex items-center gap-4">
                              <div className="w-14 h-14 rounded-[1.25rem] bg-gradient-to-tr from-blue-100 to-indigo-50 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center font-black text-xl text-[#5265ec] dark:text-blue-400 shadow-inner overflow-hidden relative">
@@ -81,8 +81,8 @@ const PatientHistoryView = ({ historyData, onBack }) => {
                              <div>
                                 <h3 className="text-lg font-bold text-slate-800 dark:text-gray-100">{displayName}</h3>
                                 <div className="text-xs font-semibold text-gray-400 flex items-center gap-2 mt-0.5">
-                                   <span className="bg-gray-100 dark:bg-slate-700 px-2 rounded-md">{app.patientId?.age || '--'} yrs</span>
-                                   <span className="bg-gray-100 dark:bg-slate-700 px-2 rounded-md">{app.patientId?.gender || 'Unknown'}</span>
+                                   <span className="bg-gray-100 dark:bg-slate-700 px-2 rounded-md">{app.age || '--'} yrs</span>
+                                   <span className="bg-gray-100 dark:bg-slate-700 px-2 rounded-md">{app.gender || 'Unknown'}</span>
                                 </div>
                              </div>
                           </div>
