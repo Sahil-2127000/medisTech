@@ -16,7 +16,7 @@ const Landing = () => {
         <nav className="flex items-center justify-between px-8 md:px-16 py-8 relative z-20">
           <div className="text-2xl font-bold flex items-center gap-2">
             <span className="text-white">Medi</span>
-            <span className="text-clinic-400">@Tech</span>
+            <span className="text-clinic-400">Tech</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-clinic-200">
             <a href="#" className="hover:text-white transition-colors">Home</a>
