@@ -4,19 +4,19 @@ import { Link } from 'react-router-dom';
 const Landing = () => {
   return (
     <div className="min-h-screen bg-clinic-900 font-sans text-white pb-32 flex flex-col items-center overflow-x-hidden">
-      
+
       {/* --- HERO SECTION CONTAINER --- */}
       <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] max-w-7xl bg-clinic-800 rounded-[3rem] overflow-hidden relative shadow-2xl mt-4 md:mt-8">
         {/* Floating Stars / Decorations */}
         <div className="absolute top-32 left-1/3 text-yellow-400 rotate-45">✦</div>
         <div className="absolute top-24 right-1/4 text-yellow-200 text-sm">✦</div>
         <div className="absolute bottom-40 left-1/4 text-clinic-400 text-sm">✦</div>
-        
+
         {/* Navbar */}
         <nav className="flex items-center justify-between px-8 md:px-16 py-8 relative z-20">
           <div className="text-2xl font-bold flex items-center gap-2">
-            <span className="text-white">Clinic</span>
-            <span className="text-clinic-400">@Flow</span>
+            <span className="text-white">Medi</span>
+            <span className="text-clinic-400">@Tech</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-clinic-200">
             <a href="#" className="hover:text-white transition-colors">Home</a>
@@ -36,7 +36,7 @@ const Landing = () => {
 
         {/* Hero Section */}
         <div className="px-8 md:px-16 pb-20 pt-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-          
+
           {/* Left Content */}
           <div className="space-y-8">
             {/* Reviews Pill */}
@@ -51,14 +51,14 @@ const Landing = () => {
             </h1>
 
             {/* Objectives / Subtext */}
-            
+
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap items-center gap-4 pt-4">
               <Link to="/auth" className="bg-white text-clinic-900 hover:bg-clinic-200 px-8 py-3.5 rounded-full font-bold transition-colors shadow-xl">
                 Book Appointment
               </Link>
-              
+
               <button className="flex items-center gap-3 text-white font-medium hover:text-clinic-200 transition-colors group">
                 <div className="w-12 h-12 bg-yellow-400 text-clinic-900 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform pl-1">
                   <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -73,17 +73,17 @@ const Landing = () => {
             <div className="flex items-center gap-8 pt-12 border-t border-clinic-600/30 mt-8">
               <div>
                 <div className="text-3xl font-bold">10K+</div>
-                <div className="text-xs text-clinic-400 mt-1 uppercase tracking-wider">Satisfied<br/>Patients</div>
+                <div className="text-xs text-clinic-400 mt-1 uppercase tracking-wider">Satisfied<br />Patients</div>
               </div>
               <div className="w-px h-12 bg-clinic-600/30"></div>
               <div>
                 <div className="text-3xl font-bold">1M+</div>
-                <div className="text-xs text-clinic-400 mt-1 uppercase tracking-wider">Tokens<br/>Generated</div>
+                <div className="text-xs text-clinic-400 mt-1 uppercase tracking-wider">Tokens<br />Generated</div>
               </div>
               <div className="w-px h-12 bg-clinic-600/30"></div>
               <div>
                 <div className="text-3xl font-bold">99%</div>
-                <div className="text-xs text-clinic-400 mt-1 uppercase tracking-wider">Uptime &<br/>Reliability</div>
+                <div className="text-xs text-clinic-400 mt-1 uppercase tracking-wider">Uptime &<br />Reliability</div>
               </div>
             </div>
           </div>
@@ -92,20 +92,20 @@ const Landing = () => {
           <div className="relative flex justify-center lg:justify-end h-full min-h-[500px]">
             {/* Background design circle/element behind the doctor */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-clinic-600/30 rounded-full blur-3xl"></div>
-            
+
             {/* The user-modified doctor image logic */}
-            <img 
-              src="/doctor_logo.png" 
-              alt="Medical Practitioner" 
+            <img
+              src="/doctor_logo.png"
+              alt="Medical Practitioner"
               className="relative z-10 w-full max-w-[550px] object-contain drop-shadow-2xl translate-y-[-7rem]"
               onError={(e) => {
-                 e.target.onerror = null;
-                 e.target.src = "https://placehold.co/550x700/052659/C1E8FF.png?text=Doctor+Image+Here";
+                e.target.onerror = null;
+                e.target.src = "https://placehold.co/550x700/052659/C1E8FF.png?text=Doctor+Image+Here";
               }}
             />
           </div>
         </div>
-        
+
         {/* Bottom curvy cut-out matching the Learn@House design */}
         <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-64 h-16 bg-clinic-900 rounded-t-full z-20"></div>
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-clinic-600 z-30">
@@ -121,7 +121,7 @@ const Landing = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Our Clinic Facilities</h2>
           <p className="text-clinic-400 text-lg">We provide state-of-the-art medical equipment and comfortable seating areas to ensure you have the best possible visit.</p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Facility 1 */}
           <div className="bg-clinic-800 p-8 rounded-[2rem] border border-clinic-600/20 hover:border-clinic-400/50 transition-all hover:-translate-y-2 group">
@@ -162,14 +162,14 @@ const Landing = () => {
       <section className="w-full max-w-7xl px-4 md:px-8 mt-32">
         <div className="bg-clinic-800 rounded-[3rem] p-8 md:p-16 relative overflow-hidden border border-clinic-600/20">
           <div className="absolute top-0 right-0 w-96 h-96 bg-clinic-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
-          
+
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
             <div className="max-w-xl">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Patient Stories</h2>
               <p className="text-clinic-400 text-lg">Hear what our patients have to say about our seamless queue management.</p>
             </div>
             <button className="text-white font-medium hover:text-clinic-200 transition-colors flex items-center gap-2">
-              View all reviews 
+              View all reviews
               <span className="text-xl">→</span>
             </button>
           </div>
@@ -219,13 +219,13 @@ const Landing = () => {
       <section className="w-full max-w-5xl px-8 mt-32 mb-16 text-center">
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Take A Virtual Tour</h2>
         <p className="text-clinic-400 text-lg mb-12 max-w-2xl mx-auto">See the clinic facilities inside out through our exclusive video tour and understand how our patient flow system operates firsthand.</p>
-        
+
         <div className="relative w-full aspect-video bg-gradient-to-br from-clinic-800 to-clinic-900 rounded-[2rem] overflow-hidden flex items-center justify-center group cursor-pointer border border-clinic-600/30 shadow-2xl">
           {/* Overlay gradient / placeholder texture */}
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500 z-10 w-full h-full flex items-center justify-center">
-             <div className="w-full h-full opacity-10" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%235483b3\\' fill-opacity=\\'1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"}}></div>
+            <div className="w-full h-full opacity-10" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%235483b3\\' fill-opacity=\\'1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
           </div>
-          
+
           {/* Play Button */}
           <div className="w-24 h-24 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-full flex items-center justify-center z-20 group-hover:scale-110 group-hover:bg-white group-hover:text-clinic-900 transition-all duration-300">
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-10 h-10 ml-2">
