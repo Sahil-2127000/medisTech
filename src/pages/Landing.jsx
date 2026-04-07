@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 const Landing = () => {
   return (
@@ -25,6 +26,7 @@ const Landing = () => {
             <a href="#" className="hover:text-white transition-colors">Pricing</a>
           </div>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <Link to="/auth" className="hidden sm:block text-clinic-200 hover:text-white px-4 py-2 text-sm font-semibold transition-colors">
               Login
             </Link>

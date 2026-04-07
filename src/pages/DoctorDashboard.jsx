@@ -9,6 +9,7 @@ import AvailabilityConfig from '../components/doctor-dashboard/AvailabilityConfi
 import EmergencyCase from '../components/doctor-dashboard/EmergencyCase';
 import PatientHistoryView from '../components/doctor-dashboard/PatientHistoryView';
 import AlertBell from '../components/doctor-dashboard/AlertBell';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 // Helper mock seeder if localStorage is uniquely empty
 const ensureMockData = () => {
@@ -32,7 +33,6 @@ const DoctorDashboard = () => {
   const [appointments, setAppointments] = useState([]); // Today's dynamic appointments
   const [historyAppointments, setHistoryAppointments] = useState([]); // Master absolute total records
   const [profile, setProfile] = useState({});
-  const [theme, setTheme] = useState(localStorage.getItem('docTheme') || 'light');
   const [showHistoryView, setShowHistoryView] = useState(false); // New Interactive Gateway
   const activeUserEmail = "doctor@clinic.com"; // Conceptually grabbed from auth state
 
@@ -102,12 +102,7 @@ const DoctorDashboard = () => {
 
   useEffect(() => {
     ensureMockData();
-    const storedTheme = localStorage.getItem('docTheme');
-    if (storedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    }
     
-    // Switch to LIVE API polling securely
     loadDoctorAppointments();
     loadDoctorHistory();
     loadDoctorProfile();
@@ -116,7 +111,6 @@ const DoctorDashboard = () => {
     window.addEventListener("appointmentsUpdated", handleUpdate);
     window.addEventListener("doctorProfileUpdated", loadDoctorProfile);
     
-    // Wire up rigorous synchronized polling natively ensuring instant cross-browser tracking
     const interval = setInterval(handleUpdate, 15000); 
     
     return () => {
@@ -125,15 +119,6 @@ const DoctorDashboard = () => {
       clearInterval(interval);
     };
   }, []);
-
-  // Sync theme state to the global HTML element for native Tailwind 'dark:' support
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
 
   // Action Mutators strictly utilizing the explicit Dispatch payload flow
   const handleStatusChange = async (id, newStatus) => {
@@ -170,12 +155,6 @@ const DoctorDashboard = () => {
     } catch (err) {
       console.error("Failed to generate robust prescription", err);
     }
-  };
-
-  const toggleTheme = () => {
-    const nextTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(nextTheme);
-    localStorage.setItem('docTheme', nextTheme);
   };
 
   // ==========================================
@@ -244,8 +223,6 @@ const DoctorDashboard = () => {
            activeTab={activeTab} 
            setActiveTab={(t) => { setActiveTab(t); setShowHistoryView(false); }} 
            profile={profile} 
-           theme={theme} 
-           toggleTheme={toggleTheme} 
         />
 
           {/* Dynamic Center Orchestrator */}
@@ -275,7 +252,10 @@ const DoctorDashboard = () => {
                       <>
                         <div className="flex justify-between items-center mb-8 w-full">
                           <h1 className="text-4xl font-extrabold text-[#021024] dark:text-white transition-colors">Doctor Dashboard</h1>
-                          <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                          <div className="flex items-center gap-4">
+                            <ThemeToggle />
+                            <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                          </div>
                         </div>
                         <StatCards 
                           appointments={appointments} 
@@ -288,7 +268,10 @@ const DoctorDashboard = () => {
                     {activeTab === 'appointments' && (
                       <div className="flex justify-between items-center mb-8 w-full">
                         <h1 className="text-4xl font-extrabold text-[#021024] dark:text-white transition-colors">All Queue Records</h1>
-                        <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                        <div className="flex items-center gap-4">
+                          <ThemeToggle />
+                          <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                        </div>
                       </div>
                     )}
                     {/* <AppointmentRequests appointments={appointments} onStatusChange={handleStatusChange} /> */}
