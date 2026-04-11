@@ -13,10 +13,10 @@ const Footer = () => {
                  <path d="M12 2L12 22M2 12L22 12" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
                </svg>
             </div>
-            <span>Nursing</span>
+            <span>Medistech</span>
           </div>
           <p className="text-slate-500 text-sm mb-6">
-            Copyright © 2023 Nursing All rights reserved.
+            Copyright © 2026 Medistech All rights reserved.
           </p>
           <div className="flex gap-4">
             {/* Social Icons Placeholders */}
