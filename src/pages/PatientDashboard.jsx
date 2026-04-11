@@ -3,7 +3,6 @@ import Sidebar from '../components/patient-dashboard/Sidebar';
 import MainPanel from '../components/patient-dashboard/MainPanel';
 import RightPanel from '../components/patient-dashboard/RightPanel';
 import BookAppointment from '../components/patient-dashboard/BookAppointment';
-import ThemeToggle from '../components/common/ThemeToggle';
 
 const PatientDashboard = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -63,11 +62,6 @@ const PatientDashboard = () => {
   return (
     <div className="min-h-screen bg-[#EEF2FA] dark:bg-slate-900 p-4 md:p-8 flex items-center justify-center font-sans tracking-tight text-slate-800 dark:text-gray-100 transition-colors duration-300 relative">
       
-      {/* Absolute Toggle Positioning */}
-      <div className="absolute top-4 right-4 md:top-8 md:right-8 z-[100]">
-        <ThemeToggle />
-      </div>
-
       {/* 🚨 THE EMERGENCY NOTIFICATION BROADCAST BANNER 🚨 */}
       {emergencyAlert && (
          <div className="absolute top-0 left-0 w-full z-50 animate-fade-in">

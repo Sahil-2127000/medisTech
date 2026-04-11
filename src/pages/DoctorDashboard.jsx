@@ -9,7 +9,6 @@ import AvailabilityConfig from '../components/doctor-dashboard/AvailabilityConfi
 import EmergencyCase from '../components/doctor-dashboard/EmergencyCase';
 import PatientHistoryView from '../components/doctor-dashboard/PatientHistoryView';
 import AlertBell from '../components/doctor-dashboard/AlertBell';
-import ThemeToggle from '../components/common/ThemeToggle';
 
 // Helper mock seeder if localStorage is uniquely empty
 const ensureMockData = () => {
@@ -252,10 +251,7 @@ const DoctorDashboard = () => {
                       <>
                         <div className="flex justify-between items-center mb-8 w-full">
                           <h1 className="text-4xl font-extrabold text-[#021024] dark:text-white transition-colors">Doctor Dashboard</h1>
-                          <div className="flex items-center gap-4">
-                            <ThemeToggle />
-                            <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
-                          </div>
+                          <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
                         </div>
                         <StatCards 
                           appointments={appointments} 
@@ -268,10 +264,7 @@ const DoctorDashboard = () => {
                     {activeTab === 'appointments' && (
                       <div className="flex justify-between items-center mb-8 w-full">
                         <h1 className="text-4xl font-extrabold text-[#021024] dark:text-white transition-colors">All Queue Records</h1>
-                        <div className="flex items-center gap-4">
-                          <ThemeToggle />
-                          <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
-                        </div>
+                        <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
                       </div>
                     )}
                     {/* <AppointmentRequests appointments={appointments} onStatusChange={handleStatusChange} /> */}
