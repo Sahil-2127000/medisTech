@@ -3,73 +3,59 @@ import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   return (
-    <div className="px-8 md:px-16 pb-20 pt-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+    <div className="w-full max-w-7xl mx-auto px-8 md:px-16 pt-16 pb-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+      
       {/* Left Content */}
-      <div className="space-y-8">
-        {/* Reviews Pill */}
-        <div className="flex items-center gap-2 text-sm text-clinic-200 font-medium bg-clinic-900/40 w-max px-4 py-2 rounded-full backdrop-blur-sm border border-clinic-600/30">
-          <div className="flex text-yellow-400 text-lg">★ ★ ★ ★ ★</div>
-          <span>Trusted by 5k+ Patients</span>
-        </div>
-
-        {/* Headline */}
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
-          Because Clinic <br /> Management <br /> Is Complicated <br /> Enough.<span className="text-orange-500">🔥</span>
+      <div className="space-y-8 max-w-xl">
+        <h1 className="text-5xl md:text-6xl font-bold leading-tight text-slate-900 tracking-tight">
+          Quality Healthcare <br /> from your <br />Trusted Doctor
         </h1>
+        
+        <p className="text-slate-500 text-lg leading-relaxed">
+          Our Clinic provides personalized medical care with easy appointment booking, quick consultations, and a patient-friendly experience—all in one place.
+        </p>
 
-        {/* Objectives / Subtext */}
-
-
-        {/* CTA Buttons */}
-        <div className="flex flex-wrap items-center gap-4 pt-4">
-          <Link to="/auth" className="bg-white text-clinic-900 hover:bg-clinic-200 px-8 py-3.5 rounded-full font-bold transition-colors shadow-xl">
-            Book Appointment
+        <div className="pt-2">
+          <Link to="/appointment" className="inline-block bg-[#3bbab1] hover:bg-[#34a59d] text-white px-8 py-3.5 rounded-full font-medium transition-colors shadow-lg shadow-teal-500/30">
+            Request an Appointment
           </Link>
-
-          <button className="flex items-center gap-3 text-white font-medium hover:text-clinic-200 transition-colors group">
-            <div className="w-12 h-12 bg-yellow-400 text-clinic-900 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform pl-1">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
-            Watch Demo
-          </button>
         </div>
 
         {/* Stats */}
-        <div className="flex items-center gap-8 pt-12 border-t border-clinic-600/30 mt-8">
+        <div className="flex items-center gap-12 pt-12">
           <div>
-            <div className="text-3xl font-bold">10K+</div>
-            <div className="text-xs text-clinic-400 mt-1 uppercase tracking-wider">Satisfied<br />Patients</div>
+            <div className="text-4xl font-bold text-slate-900">30+</div>
+            <div className="text-sm text-slate-500 mt-1">Years of Experience</div>
           </div>
-          <div className="w-px h-12 bg-clinic-600/30"></div>
           <div>
-            <div className="text-3xl font-bold">1M+</div>
-            <div className="text-xs text-clinic-400 mt-1 uppercase tracking-wider">Tokens<br />Generated</div>
+            <div className="text-4xl font-bold text-blue-600">15+</div>
+            <div className="text-sm text-slate-500 mt-1">Clinic Location</div>
           </div>
-          <div className="w-px h-12 bg-clinic-600/30"></div>
           <div>
-            <div className="text-3xl font-bold">99%</div>
-            <div className="text-xs text-clinic-400 mt-1 uppercase tracking-wider">Uptime &<br />Reliability</div>
+            <div className="text-4xl font-bold text-[#3bbab1]">100%</div>
+            <div className="text-sm text-slate-500 mt-1">Patient Satisfaction</div>
           </div>
         </div>
       </div>
 
-      {/* Right Content (Image) */}
-      <div className="relative flex justify-center lg:justify-end h-full min-h-[500px]">
-        {/* Background design circle/element behind the doctor */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-clinic-600/30 rounded-full blur-3xl"></div>
+      {/* Right Content (Images Grid) */}
+      <div className="relative h-[600px] w-full hidden md:block">
+        {/* Large Main Image (Yellow BG) */}
+        <div className="absolute top-0 left-0 w-64 h-[400px] bg-[#f8c12a] rounded-2xl overflow-hidden shadow-xl transform -rotate-1">
+          {/* Faded flower/sun design behind doctor */}
+          <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PHBhdGggZmlsbD0iI0ZGRkZGRiIgZD0iTTEwMCAyMGMxMC0yMCAzMC0yMCA0MCAwIDEwIDIwLTEwIDQwLTIwIDQwaC00MGMtMTAgMC0zMC0yMC0yMC00MCAxMC0yMCAzMC0yMCA0MCAweiIvPjwvc3ZnPg==')] bg-center bg-no-repeat bg-contain"></div>
+          <img src="https://placehold.co/400x600/transparent/ffffff?text=Doctor+Main" alt="Doctor" className="w-full h-full object-cover object-top relative z-10" />
+        </div>
 
-        {/* The user-modified doctor image logic */}
-        <img
-          src="/doctor_logo.png"
-          alt="Medical Practitioner"
-          className="relative z-10 w-full max-w-[550px] object-contain drop-shadow-2xl translate-y-[-7rem]"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = "https://placehold.co/550x700/052659/C1E8FF.png?text=Doctor+Image+Here";
-          }}
-        />
+        {/* Top Right Image (Purple BG) */}
+        <div className="absolute top-4 right-8 w-44 h-44 bg-[#a682ff] rounded-2xl overflow-hidden shadow-xl transform rotate-2">
+          <img src="https://placehold.co/300x300/transparent/ffffff?text=Nurse" alt="Nurse" className="w-full h-full object-cover object-top" />
+        </div>
+
+        {/* Bottom Right Image (Cyan BG) */}
+        <div className="absolute top-52 right-12 w-48 h-56 bg-[#c5f5f1] rounded-2xl overflow-hidden shadow-xl transform -rotate-1">
+          <img src="https://placehold.co/300x400/transparent/0f172a?text=Doctor+Sub" alt="Doctor" className="w-full h-full object-cover object-top" />
+        </div>
       </div>
     </div>
   );

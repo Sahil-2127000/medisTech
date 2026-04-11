@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import LoginForm from '../components/auth/LoginForm';
 import SignUpForm from '../components/auth/SignUpForm';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 const Auth = () => {
   const [authMode, setAuthMode] = useState('signup'); // 'signup' or 'login'
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-clinic-900 via-clinic-800 to-[#0a183d] animate-gradient-xy flex items-center justify-center p-4 font-sans relative overflow-hidden">
+      
+      <div className="absolute top-6 right-6 z-50">
+         <ThemeToggle />
+      </div>
+
       {/* Outer Card Container */}
       <div className="w-full max-w-5xl h-[650px] relative rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl z-10 bg-gradient-to-br from-[#419EF6] to-[#1444D8]">
         

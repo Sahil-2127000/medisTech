@@ -1,37 +1,30 @@
 import React from 'react';
 import Navbar from '../components/landing/Navbar';
 import HeroSection from '../components/landing/HeroSection';
-import FacilitiesSection from '../components/landing/FacilitiesSection';
-import ReviewsSection from '../components/landing/ReviewsSection';
-import VideoTourSection from '../components/landing/VideoTourSection';
+import BestServices from '../components/landing/BestServices';
+import FeatureSection from '../components/landing/FeatureSection';
+import MedicalServices from '../components/landing/MedicalServices';
+import FaqSection from '../components/landing/FaqSection';
 import Footer from '../components/landing/Footer';
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-gray-200 font-sans text-white pb-32 flex flex-col items-center overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50/50 font-sans text-slate-900 flex flex-col items-center overflow-x-hidden relative selection:bg-blue-200">
 
-      {/* --- HERO SECTION CONTAINER --- */}
-      <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] max-w-7xl bg-clinic-800 rounded-[3rem] overflow-hidden relative shadow-2xl mt-4 md:mt-8">
-        {/* Floating Stars / Decorations */}
-        <div className="absolute top-32 left-1/3 text-yellow-400 rotate-45">✦</div>
-        <div className="absolute top-24 right-1/4 text-yellow-200 text-sm">✦</div>
-        <div className="absolute bottom-40 left-1/4 text-clinic-400 text-sm">✦</div>
+      {/* Top Gradient Overlay */}
+      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-50 via-cyan-50/30 to-transparent pointer-events-none z-0"></div>
+      
+      {/* Background radial gradients for reference-like soft colorful glow */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-yellow-50 via-purple-50/30 to-transparent rounded-full blur-[100px] pointer-events-none -z-10"></div>
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-gradient-to-tl from-cyan-100/40 via-blue-100/20 to-transparent rounded-full blur-[100px] pointer-events-none -z-10"></div>
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-purple-100/20 via-pink-50/20 to-transparent rounded-full blur-[120px] pointer-events-none -z-10"></div>
 
-        <Navbar />
-        <HeroSection />
-
-        {/* Bottom curvy cut-out matching the Learn@House design */}
-        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-64 h-16 bg-clinic-900 rounded-t-full z-20"></div>
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-clinic-600 z-30">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 animate-bounce">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </div>
-      </div>
-
-      <FacilitiesSection />
-      <ReviewsSection />
-      <VideoTourSection />
+      <Navbar />
+      <HeroSection />
+      <BestServices />
+      <FeatureSection />
+      <MedicalServices />
+      <FaqSection />
       <Footer />
 
     </div>

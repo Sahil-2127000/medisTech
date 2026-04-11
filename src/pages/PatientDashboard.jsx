@@ -3,6 +3,7 @@ import Sidebar from '../components/patient-dashboard/Sidebar';
 import MainPanel from '../components/patient-dashboard/MainPanel';
 import RightPanel from '../components/patient-dashboard/RightPanel';
 import BookAppointment from '../components/patient-dashboard/BookAppointment';
+import ThemeToggle from '../components/common/ThemeToggle';
 
 const PatientDashboard = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -60,8 +61,13 @@ const PatientDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#EEF2FA] p-4 md:p-8 flex items-center justify-center font-sans tracking-tight text-slate-800 relative">
+    <div className="min-h-screen bg-[#EEF2FA] dark:bg-slate-900 p-4 md:p-8 flex items-center justify-center font-sans tracking-tight text-slate-800 dark:text-gray-100 transition-colors duration-300 relative">
       
+      {/* Absolute Toggle Positioning */}
+      <div className="absolute top-4 right-4 md:top-8 md:right-8 z-[100]">
+        <ThemeToggle />
+      </div>
+
       {/* 🚨 THE EMERGENCY NOTIFICATION BROADCAST BANNER 🚨 */}
       {emergencyAlert && (
          <div className="absolute top-0 left-0 w-full z-50 animate-fade-in">
@@ -76,7 +82,7 @@ const PatientDashboard = () => {
       {showBooking && <BookAppointment onClose={() => { setShowBooking(false); pollAppointments(); }} />}
 
       {/* Main Orchestration Card */}
-      <div className="w-full max-w-[1400px] h-[90vh] min-h-[800px] bg-white rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50">
+      <div className="w-full max-w-[1400px] h-[90vh] min-h-[800px] bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50 dark:border-slate-800 transition-colors duration-300">
         
         {/* Left Navigation Bar */}
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
