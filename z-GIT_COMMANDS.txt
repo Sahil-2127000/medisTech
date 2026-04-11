@@ -1,0 +1,21 @@
+first make new branch -> git switch -C branch-name (only for first time)
+check in which branch you are -> git branch
+
+fetch main code in your branch -> git pull origin main
+
+changes are made in the code in your branch
+
+then, update your branch by :->
+      git add .
+      git commit -m "commit message"
+      git push -u origin branch-name
+
+then merge your work in main branch by :->
+      git switch main
+      git pull origin main
+      git merge branch-name
+      git push origin main
+
+NOW YOUR CODE GET UPDATED IN MAIN AND YOU HAVE TO SWITCH TO YOUR BRANCH AGAIN TO CONTINUE YOUR WORK :-> git switch branch-name
+
+and again follow the steps from line 4
