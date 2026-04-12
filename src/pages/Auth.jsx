@@ -6,14 +6,14 @@ const Auth = () => {
   const [authMode, setAuthMode] = useState('signup'); // 'signup' or 'login'
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-clinic-900 via-clinic-800 to-[#0a183d] animate-gradient-xy flex items-center justify-center p-4 font-sans relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-tr from-clinic-900 via-clinic-800 to-[#0a183d] animate-gradient-xy flex items-center justify-center p-4 font-sans relative overflow-hidden">
       
       {/* Outer Card Container */}
-      <div className="w-full max-w-5xl h-[650px] relative rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl z-10 bg-gradient-to-br from-[#419EF6] to-[#1444D8]">
+      <div className="w-full max-w-5xl h-[650px] relative rounded-4xl md:rounded-4xl overflow-hidden shadow-2xl z-10 bg-linear-to-br from-[#419EF6] to-[#1444D8]">
         
         {/* Animated Graphic Panel */}
         <div 
-          className={`absolute top-0 h-full w-full md:w-[45%] p-8 hidden md:flex flex-col justify-between transition-all duration-[900ms] ease-in-out z-10
+          className={`absolute top-0 h-full w-full md:w-[45%] p-8 hidden md:flex flex-col justify-between transition-all duration-900 ease-in-out z-10
             ${authMode === 'signup' ? 'left-0' : 'left-0 md:left-[55%]'}
           `}
         >
@@ -32,7 +32,7 @@ const Auth = () => {
              <img 
                src="/doctor_auth.png" 
                alt="Doctor" 
-               className="w-full max-w-[320px] object-contain drop-shadow-2xl scale-155 translate-y-[5rem]"
+               className="w-full max-w-[320px] object-contain drop-shadow-2xl scale-155 translate-y-20"
                onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = "https://placehold.co/300x400/1444d8/ffffff.png?text=Medical+Staff";
@@ -45,7 +45,7 @@ const Auth = () => {
 
         {/* Animated Form Panel */}
         <div 
-          className={`absolute top-0 h-full w-full md:w-[55%] bg-[#F8F9FD] flex items-center justify-center p-8 shadow-[0_0_40px_rgba(0,0,0,0.2)] transition-all duration-[800ms] ease-in-out z-20
+          className={`absolute top-0 h-full w-full md:w-[55%] bg-[#F8F9FD] flex items-center justify-center p-8 shadow-[0_0_40px_rgba(0,0,0,0.2)] transition-all duration-800 ease-in-out z-20
             ${authMode === 'signup' 
               ? 'left-0 md:left-[45%] md:rounded-l-[3rem] md:rounded-r-none' 
               : 'left-0 md:left-0 md:rounded-r-[3rem] md:rounded-l-none'

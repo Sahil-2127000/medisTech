@@ -1,4 +1,6 @@
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 
 const ServicesSection = () => {
   const services = [
@@ -36,18 +38,52 @@ const ServicesSection = () => {
     }
   ];
 
+  const headerVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1, 
+      transition: { staggerChildren: 0.15, delayChildren: 0.8 } 
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
   return (
     <section id="services" className="w-full max-w-7xl mx-auto px-8 md:px-16 py-24 bg-slate-50/50 rounded-[3rem]">
-      <div className="text-center max-w-2xl mx-auto mb-16">
+      <motion.div 
+        className="text-center max-w-2xl mx-auto mb-16"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.5 }}
+        variants={headerVariants}
+      >
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Our Complete Medical Services</h2>
         <p className="text-slate-500 text-sm md:text-base leading-relaxed">
           Expert medical care covering all your essential health and wellness needs.
         </p>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+      >
         {services.map((svc, idx) => (
-          <div key={idx} className="flex flex-col items-center text-center p-8 bg-white border border-slate-100 rounded-3xl hover:shadow-xl transition-shadow group">
+          <motion.div 
+            key={idx} 
+            variants={cardVariants}
+            className="flex flex-col items-center text-center p-8 bg-white border border-slate-100 rounded-3xl hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group"
+          >
             <div className={`w-20 h-20 mb-6 rounded-full flex items-center justify-center text-3xl transition-transform duration-500 ease-out group-hover:scale-110 ${svc.bgColor}`}>
               {svc.icon}
             </div>
@@ -58,9 +94,9 @@ const ServicesSection = () => {
             <div className={`w-8 h-8 rounded-full ${svc.bgColor} ${svc.textColor} flex items-center justify-center ${svc.hoverBg} group-hover:text-white transition-colors cursor-pointer mt-auto`}>
               →
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 };

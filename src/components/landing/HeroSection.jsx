@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   return (
-    <section id="home" className="relative w-1/2 pt-16 pb-24 lg:pt-24 lg:pb-32 flex items-center overflow-hidden mb-12">
-      
+    <section id="home" className="relative w-full pt-16 pb-24 lg:pt-24 lg:pb-32 flex items-center overflow-hidden mb-12">
+
       {/* Background Image & Overlays */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="https://www.healthathomes.com/wp-content/uploads/2024/02/DOCTOR-AT-HOME-1.png" 
-          alt="Medical Hospital Background" 
+        <img
+          src="https://www.healthathomes.com/wp-content/uploads/2024/02/DOCTOR-AT-HOME-1.png"
+          alt="Medical Hospital Background"
           className="w-full h-full object-cover object-top"
         />
         {/* Blue color overlays to match reference image */}
@@ -19,13 +19,13 @@ const HeroSection = () => {
 
       {/* Content Container */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-8 md:px-16">
-        
+
         {/* Left Content (Same exact content, styled for dark background) */}
         <div className="space-y-8 max-w-xl">
           <h1 className="text-5xl md:text-6xl font-bold leading-tight text-white tracking-tight">
             Quality Healthcare <br /> from your <br />Trusted Doctor
           </h1>
-          
+
           <p className="text-blue-50 text-lg leading-relaxed font-medium opacity-90">
             Our Clinic provides personalized medical care with easy appointment booking, quick consultations, and a patient-friendly experience—all in one place.
           </p>
@@ -39,11 +39,11 @@ const HeroSection = () => {
           {/* Stats */}
           <div className="flex items-center gap-8 md:gap-12 pt-8 mt-8 border-t border-white/20">
             <div>
-              <div className="text-4xl font-bold text-white">20+</div>
+              <div className="text-4xl font-bold text-white">15+</div>
               <div className="text-sm text-blue-200 mt-1 font-medium">Years of Experience</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-white">3000+</div>
+              <div className="text-4xl font-bold text-white">2000+</div>
               <div className="text-sm text-blue-200 mt-1 font-medium">Patient Treated</div>
             </div>
             <div>
