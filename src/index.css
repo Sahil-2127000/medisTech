@@ -36,3 +36,7 @@
 .animate-float-delayed {
   animation: float-blob 16s ease-in-out infinite reverse;
 }
+
+html {
+  scroll-behavior: smooth;
+}

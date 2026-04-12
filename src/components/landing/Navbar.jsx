@@ -11,15 +11,17 @@ const Navbar = () => {
              <path d="M12 2L12 22M2 12L22 12" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
           </svg>
         </div>
-        <span>smart clinic</span>
+        <span>medisTech</span>
       </div>
       
       {/* Links */}
-      <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-        <a href="#" className="hover:text-blue-600 transition-colors">Home</a>
-        <a href="#" className="hover:text-blue-600 transition-colors">Our Health</a>
-        <a href="#" className="hover:text-blue-600 transition-colors">End of Center</a>
-        <a href="#" className="hover:text-blue-600 transition-colors">Blog & News</a>
+      <div className="hidden md:flex items-center gap-8 text-md font-medium text-slate-600">
+        <a href="#home" className="hover:text-blue-600 transition-colors">Home</a>
+        <a href="#about" className="hover:text-blue-600 transition-colors">About</a>
+        <a href="#services" className="hover:text-blue-600 transition-colors">Services</a>
+        <a href="#blog" className="hover:text-blue-600 transition-colors">Blog</a>
+        <a href="#faq" className="hover:text-blue-600 transition-colors">FAQs</a>
+        <a href="#contact" className="hover:text-blue-600 transition-colors">Contact</a>
       </div>
       
       {/* Actions */}

@@ -11,16 +11,16 @@ const FaqSection = () => {
   ];
 
   return (
-    <section className="w-full max-w-6xl mx-auto px-8 py-24 flex flex-col md:flex-row items-start gap-16">
+    <section id="faq" className="w-full max-w-6xl mx-auto px-8 py-24 flex flex-col md:flex-row items-start gap-16">
       
       {/* Left Doctor Image */}
-      <div className="w-full md:w-5/12 relative rounded-[2rem] overflow-hidden bg-[#c5f5f1] pb-0 hidden md:block">
+      <div className="w-full mt-11 md:w-5/12 relative rounded-4xl overflow-hidden bg-[#c5f5f1] pb-0 hidden md:block">
         {/* Soft background shape */}
-        <div className="absolute inset-0 opacity-50 bg-gradient-to-t from-white/20 to-transparent"></div>
+        <div className="absolute inset-0 opacity-50 bg-linear-to-t from-white/20 to-transparent"></div>
         <img 
-          src="https://placehold.co/400x500/transparent/0f172a?text=Doctor+Smiling" 
+          src="https://www.shutterstock.com/image-vector/male-doctor-smiling-happy-face-600nw-2481032615.jpg" 
           alt="Smiling Doctor" 
-          className="relative z-10 w-full h-auto object-cover object-bottom translate-y-8"
+          className="relative z-10 w-full h-auto object-cover object-bottom"
         />
       </div>
 
