@@ -7,7 +7,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   const handleLogout = () => {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
-    navigate('/auth');
+    navigate('/');
   };
 
   return (

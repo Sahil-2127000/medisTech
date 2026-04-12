@@ -24,7 +24,7 @@ function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/auth" element={<Auth />} />
       <Route 
-        path="/patientdashboard" 
+        path="/patientdashboard/*" 
         element={
           <ProtectedRoute allowedRole="patient">
              <PatientDashboard />
@@ -32,7 +32,7 @@ function App() {
         } 
       />
       <Route 
-        path="/doctordashboard" 
+        path="/doctordashboard/*" 
         element={
           <ProtectedRoute allowedRole="doctor">
              <DoctorDashboard />
