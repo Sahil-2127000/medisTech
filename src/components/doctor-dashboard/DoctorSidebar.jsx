@@ -7,7 +7,7 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile }) => {
   const handleLogout = () => {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
-    navigate('/auth');
+    navigate('/');
   };
 
   const navItems = [

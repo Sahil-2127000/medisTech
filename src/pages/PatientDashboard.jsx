@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/patient-dashboard/Sidebar';
 import MainPanel from '../components/patient-dashboard/MainPanel';
 import RightPanel from '../components/patient-dashboard/RightPanel';
 import BookAppointment from '../components/patient-dashboard/BookAppointment';
 
 const PatientDashboard = () => {
-  const [activeTab, setActiveTab] = useState('home');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Natively rip routing variables dynamically catching root paths explicitly
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  const activeTab = pathParts[1] || 'home'; 
+  const setActiveTab = (tab) => navigate(`/patientdashboard/${tab}`);
 
   // Attempt to load real logged-in user profile, fallback to Guest
   const savedUser = JSON.parse(sessionStorage.getItem('user')) || {};
@@ -14,6 +21,29 @@ const PatientDashboard = () => {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [emergencyAlert, setEmergencyAlert] = useState(null);
   const [showBooking, setShowBooking] = useState(false);
+
+  // Hook intercepting Native Browser Back Button forcing explicit logout validations
+  useEffect(() => {
+    if (activeTab !== 'home') return; // Trap locks solely effectively at absolute root
+
+    const handlePopState = (e) => {
+      e.preventDefault();
+      const confirmLogout = window.confirm("You are leaving the secure Patient Dashboard. You will instantly be logged out. Proceed?");
+      if (confirmLogout) {
+         sessionStorage.removeItem('user');
+         sessionStorage.removeItem('token');
+         window.location.href = '/'; // Map entirely to Landing natively
+      } else {
+         window.history.pushState(null, "", window.location.pathname);
+      }
+    };
+    
+    // Anchor physical state securely preventing instant fallback drops
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", handlePopState);
+    
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [activeTab]);
 
   // Poll exactly specifically against live backend mappings targeting array mutations!
   const pollAppointments = async () => {

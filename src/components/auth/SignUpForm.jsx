@@ -112,6 +112,23 @@ const SignUpForm = ({ onSwitch }) => {
                 placeholder="Secure Password"
               />
             </div>
+            
+            <div className="space-y-1 pb-2">
+              <label className="text-xs font-semibold text-blue-500">Phone Number</label>
+              <div className="relative flex items-center">
+                <span className="absolute left-0 text-sm font-bold text-gray-400 pl-2">+91</span>
+                <input 
+                  type="text" 
+                  required
+                  value={phone}
+                  maxLength={10}
+                  minLength={10}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                  placeholder="9876543210" 
+                  className="w-full pl-10 border-b border-gray-300 py-2 focus:outline-none focus:border-[#5265ec] text-sm font-semibold text-gray-800 tracking-wider placeholder-gray-300 transition-colors"
+                />
+              </div>
+            </div>
 
             {role === 'patient' && (
               <>
@@ -143,19 +160,6 @@ const SignUpForm = ({ onSwitch }) => {
                   </div>
                 </div>
 
-                <div className="space-y-1 pb-2">
-                  <label className="text-xs font-semibold text-blue-500">Phone Number</label>
-                  <input 
-                    type="tel" 
-                    required
-                    value={phone}
-                    maxLength={10}
-                    minLength={10}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="9112345678" 
-                    className="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-blue-500 text-sm text-gray-800 placeholder-gray-300 transition-colors"
-                  />
-                </div>
               </>
             )}
             

@@ -112,6 +112,7 @@ exports.bookAppointment = async (req, res) => {
       status: status || 'pending'
     });
     await newAppt.save();
+
     res.status(201).json({ message: 'Slot cleanly locked securely.', appointment: newAppt });
   } catch (error) {
     console.error(error);
@@ -151,7 +152,12 @@ exports.getDoctorHistory = async (req, res) => {
 // Global status overrides (approve, reject)
 exports.updateStatus = async (req, res) => {
   try {
-    const appt = await Appointment.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
+    const appt = await Appointment.findByIdAndUpdate(
+      req.params.id, 
+      { status: req.body.status }, 
+      { new: true }
+    );
+
     res.status(200).json(appt);
   } catch (error) {
     res.status(500).json({ message: 'Status failed to map globally' });

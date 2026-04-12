@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import DoctorSidebar from '../components/doctor-dashboard/DoctorSidebar';
 import StatCards from '../components/doctor-dashboard/StatCards';
 import TodayAppointments from '../components/doctor-dashboard/TodayAppointments';
@@ -28,12 +29,47 @@ const ensureMockData = () => {
 };
 
 const DoctorDashboard = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Natively rip routing variables dynamically converting explicit hierarchy structures
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  let activeTab = pathParts[1] || 'dashboard'; // /doctordashboard/appointments -> activeTab = 'appointments'
+  
+  // Safely mapping plural constraint fallbacks
+  if (activeTab === 'appointment') activeTab = 'appointments';
+  
+  const setActiveTab = (tab) => navigate(`/doctordashboard/${tab}`);
+
   const [appointments, setAppointments] = useState([]); // Today's dynamic appointments
   const [historyAppointments, setHistoryAppointments] = useState([]); // Master absolute total records
   const [profile, setProfile] = useState({});
   const [showHistoryView, setShowHistoryView] = useState(false); // New Interactive Gateway
   const activeUserEmail = "doctor@clinic.com"; // Conceptually grabbed from auth state
+
+  // Intercept pure Native Window Back Buttons actively stopping dashboard leaks completely
+  useEffect(() => {
+    // Only map the popstate strictly natively if the User is fundamentally at the Root Base layer physically!
+    if (activeTab !== 'dashboard') return;
+
+    const handlePopState = (e) => {
+      e.preventDefault();
+      const confirmLogout = window.confirm("You are explicitly leaving the secure Doctor Dashboard. You will be get logged out. Do you wish to proceed ?");
+      if (confirmLogout) {
+         sessionStorage.removeItem('user');
+         sessionStorage.removeItem('token');
+         window.location.href = '/'; // Shift architecture securely to landing page directly
+      } else {
+         window.history.pushState(null, "", window.location.pathname);
+      }
+    };
+    
+    // Lock the first frame implicitly preventing default pops
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", handlePopState);
+    
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [activeTab]);
 
   // Generic backend routing natively syncing sidebar identity
   const loadDoctorProfile = async () => {
