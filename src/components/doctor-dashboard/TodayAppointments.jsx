@@ -1,60 +1,60 @@
 import React from 'react';
 
 const TodayAppointments = ({ appointments }) => {
-  // Ensure we format current date correctly matching DD-MM-YYYY
-  const todayRaw = new Date();
-  const todayFormatted = `${String(todayRaw.getDate()).padStart(2, '0')}-${String(todayRaw.getMonth() + 1).padStart(2, '0')}-${todayRaw.getFullYear()}`;
+ // Ensure we format current date correctly matching DD-MM-YYYY
+ const todayRaw = new Date();
+ const todayFormatted = `${String(todayRaw.getDate()).padStart(2, '0')}-${String(todayRaw.getMonth() + 1).padStart(2, '0')}-${todayRaw.getFullYear()}`;
 
-  const todayList = appointments
-    .filter(app => app.date === todayFormatted)
-    .sort((a, b) => a.time.localeCompare(b.time));
+ const todayList = appointments
+ .filter(app => app.date === todayFormatted)
+ .sort((a, b) => a.time.localeCompare(b.time));
 
-  return (
-    <div className="bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-6 mb-10 w-full transition-colors duration-300">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-bold text-slate-800 dark:text-white transition-colors">Today's Schedule</h3>
-        <span className="text-xs font-semibold px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-[#5265ec] dark:text-blue-400 rounded-full transition-colors">{todayList.length} matches</span>
-      </div>
+ return (
+ <div className="bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-6 mb-10 w-full transition-colors duration-300">
+ <div className="flex justify-between items-center mb-6">
+ <h3 className="text-xl font-bold text-slate-800 transition-colors">Today's Schedule</h3>
+ <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-clinic-600 rounded-full transition-colors">{todayList.length} matches</span>
+ </div>
 
-      <div className="flex flex-col gap-3">
-        {todayList.length === 0 ? (
-          <div className="text-center text-sm py-4 text-gray-400 dark:text-gray-500 font-medium transition-colors">No scheduled appointments for today.</div>
-        ) : (
-          todayList.map(app => {
-            const displayName = app.name || (app.patient && app.patient.name) || "Walk-In";
-            const displayChar = typeof displayName === 'string' && displayName.length > 0 ? displayName.charAt(0).toUpperCase() : "W";
-            return (
-             <div key={app.id} className="flex items-center justify-between p-4 bg-[#fafcff] dark:bg-slate-700/30 border border-gray-50 dark:border-slate-700/50 rounded-2xl hover:shadow-md transition-all group">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-[#5265ec] dark:text-blue-400 flex items-center justify-center font-bold text-lg shadow-sm transition-colors">
-                    {displayChar}
-                  </div>
-                  <div>
-                    <div className="font-bold text-slate-800 dark:text-gray-100 transition-colors">{displayName}</div>
-                    <div className="text-xs text-[#5265ec]/80 dark:text-blue-400/80 font-bold uppercase tracking-wider transition-colors">{app.time}</div>
-                  </div>
-                </div>
+ <div className="flex flex-col gap-3">
+ {todayList.length === 0 ? (
+ <div className="text-center text-sm py-4 text-gray-400 font-medium transition-colors">No scheduled appointments for today.</div>
+ ) : (
+ todayList.map(app => {
+ const displayName = app.name || (app.patient && app.patient.name) || "Walk-In";
+ const displayChar = typeof displayName === 'string' && displayName.length > 0 ? displayName.charAt(0).toUpperCase() : "W";
+ return (
+ <div key={app.id} className="flex items-center justify-between p-4 bg-transparent border border-gray-50 rounded-2xl hover:shadow-md transition-all group">
+ <div className="flex items-center gap-4">
+ <div className="w-12 h-12 rounded-full bg-blue-100 text-clinic-600 flex items-center justify-center font-bold text-lg shadow-sm transition-colors">
+ {displayChar}
+ </div>
+ <div>
+ <div className="font-bold text-slate-800 transition-colors">{displayName}</div>
+ <div className="text-xs text-clinic-600/80 font-bold uppercase tracking-wider transition-colors">{app.time}</div>
+ </div>
+ </div>
 
-              <div className="flex flex-col items-end">
-                <div className="font-bold text-[#5265ec] dark:text-blue-400 flex items-center gap-1 transition-colors">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  {app.time}
-                </div>
-                <div className="mt-1">
-                   {app.status === 'in_progress' && <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors shadow-sm animate-pulse">In Progress</span>}
-                   {app.status === 'completed' && <span className="bg-gray-200 dark:bg-slate-600 text-gray-600 dark:text-gray-300 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Completed</span>}
-                   {app.status === 'approved' && <span className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Approved</span>}
-                   {app.status === 'pending' && <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Pending</span>}
-                   {app.status === 'rejected' && <span className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Rejected</span>}
-                </div>
-              </div>
-            </div>
-            );
-          })
-        )}
-      </div>
-    </div>
-  );
+ <div className="flex flex-col items-end">
+ <div className="font-bold text-clinic-600 flex items-center gap-1 transition-colors">
+ <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+ {app.time}
+ </div>
+ <div className="mt-1">
+ {app.status === 'in_progress' && <span className="bg-blue-100 text-blue-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors shadow-sm animate-pulse">In Progress</span>}
+ {app.status === 'completed' && <span className="bg-gray-200 text-gray-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Completed</span>}
+ {app.status === 'approved' && <span className="bg-green-100 text-green-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Approved</span>}
+ {app.status === 'pending' && <span className="bg-amber-100 text-amber-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Pending</span>}
+ {app.status === 'rejected' && <span className="bg-red-100 text-red-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Rejected</span>}
+ </div>
+ </div>
+ </div>
+ );
+ })
+ )}
+ </div>
+ </div>
+ );
 };
 
 export default TodayAppointments;
