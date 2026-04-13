@@ -68,7 +68,7 @@ const BlogSection = () => {
         className="text-center max-w-2xl mx-auto mb-16"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: false, amount: 0.2 }}
+        viewport={{ once: true, amount: 0.5 }}
         variants={headerVariants}
       >
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Health Insights & Wellness Tips</h2>
