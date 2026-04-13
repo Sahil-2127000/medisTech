@@ -23,7 +23,7 @@ const AboutSection = () => {
   };
 
   return (
-    <section id="about" className="w-full max-w-7xl mx-auto px-8 md:px-16 py-24 flex flex-col lg:flex-row items-center gap-16 lg:gap-24 overflow-hidden">
+    <section id="about" className="w-full max-w-7xl mx-auto px-8 md:px-16 py-12 lg:py-16 flex flex-col lg:flex-row items-center gap-10 lg:gap-16 overflow-hidden">
       
       {/* Left Image Group */}
       <motion.div 
@@ -64,7 +64,7 @@ const AboutSection = () => {
 
       {/* Right Content Section */}
       <motion.div 
-        className="w-full lg:w-1/2 space-y-6"
+        className="w-full lg:w-1/2 space-y-4"
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
@@ -78,11 +78,11 @@ const AboutSection = () => {
           Compassionate Care, <br/> Exceptional Medicine.
         </motion.h2>
         
-        <motion.p variants={itemVariants} className="text-slate-600 leading-relaxed text-lg font-medium border-l-4 border-blue-500 pl-4 py-1">
+        <motion.p variants={itemVariants} className="text-slate-600 leading-relaxed text-md font-medium border-l-4 border-blue-500 pl-4 py-1">
           Welcome to our clinic. Core to our practice is the belief that healthcare should be highly personal and deeply trustworthy.
         </motion.p>
 
-        <div className="space-y-5 text-slate-600 pt-4">
+        <div className="space-y-4 text-slate-600 pt-4">
           <motion.div variants={itemVariants} className="flex gap-4 items-start hover:translate-x-2 transition-transform">
             <div className="mt-1 bg-blue-600 text-white rounded-full p-1.5 shadow-md shadow-blue-600/20 shrink-0">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
@@ -114,8 +114,8 @@ const AboutSection = () => {
           </motion.div>
         </div>
 
-        <motion.div variants={itemVariants} className="pt-6">
-          <a href="#contact" className="inline-block bg-slate-900 hover:scale-105 hover:bg-slate-800 text-white px-8 py-3.5 rounded-full font-medium transition-all shadow-lg shadow-slate-900/20">
+        <motion.div variants={itemVariants} className="pt-2">
+          <a href="#contact" className="inline-block bg-slate-900 hover:scale-105 mt-4 hover:bg-slate-800 text-white px-8 py-3.5 rounded-full font-medium transition-all shadow-lg shadow-slate-900/20">
             Learn More
           </a>
         </motion.div>
