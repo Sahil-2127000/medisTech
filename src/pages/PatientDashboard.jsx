@@ -16,7 +16,8 @@ const PatientDashboard = () => {
 
   // Attempt to load real logged-in user profile, fallback to Guest
   const savedUser = JSON.parse(sessionStorage.getItem('user')) || {};
-  const activeName = savedUser.fullName || "John Doe";
+  const rawName = savedUser.fullName || "John Doe";
+  const activeName = rawName.split(' ').map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : '').join(' ');
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [emergencyAlert, setEmergencyAlert] = useState(null);
@@ -108,14 +109,14 @@ const PatientDashboard = () => {
       {/* Main Orchestration Card */}
       <div className="w-full max-w-[1400px] h-[90vh] min-h-[800px] bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50 dark:border-slate-800 transition-colors duration-300">
         
-        {/* Left Navigation Bar */}
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        {/* Left Combined Panel (Profile + Nav) */}
+        <div className="hidden lg:flex flex-col w-[300px] xl:w-[320px] h-full bg-[#fafcff] border-r border-gray-100 overflow-y-auto no-scrollbar shrinks-0">
+          <RightPanel patientData={patientData} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
         
-        {/* Center UI Data View */}
-        <MainPanel patientData={patientData} onBookClick={() => setShowBooking(true)} />
-        
-        {/* Right Info View */}
-        <RightPanel patientData={patientData} />
+        {/* Render Center UI Data View, filling rest of space */}
+        <MainPanel patientData={patientData} activeTab={activeTab} onBookClick={() => setShowBooking(true)} />
         
       </div>
 

@@ -1,6 +1,15 @@
 import React from 'react';
+import AppointmentsView from './AppointmentsView';
+import DocumentsView from './DocumentsView';
+import ProfileView from './ProfileView';
+import SettingsView from './SettingsView';
 
-const MainPanel = ({ patientData, onBookClick }) => {
+const MainPanel = ({ patientData, activeTab, onBookClick }) => {
+  if (activeTab === 'calendar') return <AppointmentsView appointments={patientData.upcoming || []} onBookClick={onBookClick} />;
+  if (activeTab === 'docs') return <DocumentsView />;
+  if (activeTab === 'profile') return <ProfileView patientData={patientData} />;
+  if (activeTab === 'settings') return <SettingsView />;
+
   return (
     <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto overflow-x-hidden no-scrollbar">
       
@@ -25,19 +34,19 @@ const MainPanel = ({ patientData, onBookClick }) => {
       </div>
 
       {/* Banner */}
-      <div className="w-full bg-[#5265ec] rounded-[2rem] h-44 flex items-center relative overflow-hidden mb-12 shadow-md">
+      <div className="w-full shrink-0 bg-[#5265ec] rounded-[2rem] h-[160px] flex items-center relative overflow-hidden mb-12 shadow-md">
         {/* Massive faded circle overlapping graphic */}
         <div className="absolute -right-20 -bottom-20 w-64 h-64 border-[30px] border-white/10 rounded-full pointer-events-none"></div>
         
         {/* The Clinic/Doctor Graphic offset to the left */}
-        <div className="hidden sm:block absolute left-8 bottom-0 w-32 h-40 z-10">
+        <div className="hidden sm:block absolute left-4 md:left-8 bottom-0 w-28 md:w-32 h-36 md:h-40 z-10">
            <img src="/doctor_auth.png" style={{ height: '100%', objectFit: 'contain' }} alt="Doctor" className="w-full h-full object-contain -scale-x-100 drop-shadow-lg" />
         </div>
 
         {/* Banner Text Area */}
-        <div className="ml-8 sm:ml-64 relative z-20">
-          <h2 className="text-3xl font-bold text-white mb-2">Welcome, {patientData.name}</h2>
-          <p className="text-white/80 font-medium text-lg">Have a nice and healthy day!</p>
+        <div className="ml-8 sm:ml-[160px] md:ml-[190px] relative z-20 flex-1 pr-6">
+          <h2 className="text-2xl lg:text-3xl font-bold text-white mb-1 lg:mb-2 truncate">Welcome, {patientData.name}</h2>
+          <p className="text-white/80 font-medium text-sm lg:text-lg">Have a nice and healthy day!</p>
         </div>
       </div>
 
@@ -74,48 +83,77 @@ const MainPanel = ({ patientData, onBookClick }) => {
         </div>
       </div>
 
-      {/* Visual Timeline Schedule block */}
-      <div className="w-full bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-6 relative">
-        <div className="flex justify-between items-center mb-8 px-4">
-          <button className="text-gray-400 hover:text-slate-800"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg></button>
-          <h3 className="text-lg font-bold">January 2026</h3>
-          <button className="text-gray-400 hover:text-slate-800"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg></button>
+      {/* Bottom Section: Health Metric & Upcoming Schedule */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Health Metric Block */}
+        <div className="lg:col-span-1 bg-[#5265ec] rounded-[2rem] p-6 relative overflow-hidden shadow-[0_20px_40px_rgba(82,101,236,0.3)] text-white flex flex-col justify-between min-h-[220px]">
+          <div>
+            <h4 className="font-extrabold text-xl mb-1">Health Metric</h4>
+            <div className="text-sm text-white/70 mb-4">Blood pressure average</div>
+          </div>
+          
+          <div className="relative w-full h-32 mt-4 flex items-end justify-center">
+             <svg viewBox="0 0 200 100" className="absolute top-0 w-[120%] h-[120%] stroke-pink-400 stroke-[3px] fill-transparent overflow-visible">
+               <path d="M-10,80 Q30,50 60,90 T140,40 T210,80" />
+               <circle cx="140" cy="40" r="5" fill="white" className="stroke-pink-400 stroke-[3px]" />
+             </svg>
+             <div className="absolute top-1 right-[30%] text-center text-sm font-bold bg-white text-[#5265ec] px-3 py-1 rounded-full shadow-md z-10">120/80</div>
+             
+             <div className="flex justify-between w-full text-xs text-white/70 mt-auto opacity-70 relative z-10">
+               <span>Tue</span>
+               <span>Wed</span>
+               <span className="text-white font-bold opacity-100">Thu</span>
+               <span>Fri</span>
+               <span>Sat</span>
+             </div>
+          </div>
         </div>
 
-        {/* Static horizontal mapped timeline */}
-        <div className="flex justify-between items-center relative pb-20 pt-4 px-4 overflow-x-auto">
-          {/* Main Axis Line */}
-          <div className="absolute top-12 left-0 w-full h-px bg-gray-200 z-0"></div>
-
-          {["25", "26", "27", "28", "29", "30", "31"].map((day, i) => (
-            <div key={i} className="flex flex-col items-center z-10 min-w-[60px]">
-              <span className={`text-xs font-semibold ${day === "28" ? "text-[#5265ec]" : "text-gray-400"}`}>Mon</span>
-              <span className={`text-xl font-bold mt-1 ${day === "28" ? "text-[#5265ec]" : "text-slate-800"}`}>{day}</span>
-              
-              {/* Event Marker Bubbles using raw logic to mimic exact image layout */}
-              {day === "25" && (
-                <div className="mt-8 ml-32 w-48 bg-[#5265ec] text-white p-3 rounded-xl absolute whitespace-nowrap shadow-lg">
-                  <div className="text-sm font-bold">General Checkup</div>
-                  <div className="text-xs text-white/70">Routine health checkup</div>
-                </div>
-              )}
-              {day === "28" && (
-                <>
-                  <div className="absolute top-10 w-0.5 h-32 bg-[#5265ec] -z-10"></div>
-                  <div className="mt-8 ml-0 w-48 bg-pink-500 text-white p-3 rounded-xl absolute whitespace-nowrap shadow-lg">
-                    <div className="text-sm font-bold">Lab Results Followup</div>
-                    <div className="text-xs text-white/70">Check blood panels</div>
-                  </div>
-                </>
-              )}
-              {day === "30" && (
-                <div className="mt-[5rem] ml-16 w-48 bg-teal-400 text-white p-3 rounded-xl absolute whitespace-nowrap shadow-lg">
-                  <div className="text-sm font-bold">Vaccine Injection</div>
-                  <div className="text-xs text-white/70">Flu shot booster</div>
-                </div>
-              )}
+        {/* Schedule Blocks */}
+        <div className="lg:col-span-2 flex flex-col justify-end">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+            
+            <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between group cursor-pointer">
+              <div className="absolute top-0 left-0 w-full h-1 bg-[#5265ec]"></div>
+              <div className="mb-4">
+                <div className="text-xs font-bold text-[#5265ec] bg-[#5265ec]/10 w-max px-3 py-1 rounded-full mb-3">25 Jan</div>
+                <div className="font-bold text-slate-800 group-hover:text-[#5265ec] transition-colors leading-tight">General Checkup</div>
+                <div className="text-xs text-gray-400 font-medium mt-1">Routine health checkup</div>
+              </div>
+              <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span>09:00 AM</span>
+              </div>
             </div>
-          ))}
+
+            <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between group cursor-pointer">
+              <div className="absolute top-0 left-0 w-full h-1 bg-pink-500"></div>
+              <div className="mb-4">
+                <div className="text-xs font-bold text-pink-500 bg-pink-500/10 w-max px-3 py-1 rounded-full mb-3">28 Jan</div>
+                <div className="font-bold text-slate-800 group-hover:text-pink-500 transition-colors leading-tight">Lab Results Followup</div>
+                <div className="text-xs text-gray-400 font-medium mt-1">Check blood panels</div>
+              </div>
+              <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span>11:30 AM</span>
+              </div>
+            </div>
+
+            <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between group cursor-pointer">
+              <div className="absolute top-0 left-0 w-full h-1 bg-teal-400"></div>
+              <div className="mb-4">
+                <div className="text-xs font-bold text-teal-500 bg-teal-400/10 w-max px-3 py-1 rounded-full mb-3">30 Jan</div>
+                <div className="font-bold text-slate-800 group-hover:text-teal-400 transition-colors leading-tight">Vaccine Injection</div>
+                <div className="text-xs text-gray-400 font-medium mt-1">Flu shot booster</div>
+              </div>
+              <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span>02:00 PM</span>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
       

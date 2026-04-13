@@ -2,7 +2,7 @@ import React from 'react';
 
 const RightPanel = ({ patientData }) => {
   return (
-    <div className="w-[340px] hidden xl:flex flex-col h-full border-l border-gray-100 bg-[#fafcff] p-8 overflow-y-auto">
+    <div className="w-full flex flex-col p-8 pb-4">
       
       <div className="flex justify-between items-center mb-10">
         <h3 className="text-xl font-bold">My Profile</h3>
@@ -40,30 +40,6 @@ const RightPanel = ({ patientData }) => {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Graphical Vitals Box (Matching blue/purple card with overlapping graph lines) */}
-      <div className="w-[110%] -ml-4 mt-8 bg-[#5265ec] rounded-[2rem] p-6 relative overflow-visible shadow-[0_20px_40px_rgba(82,101,236,0.3)] text-white">
-        <h4 className="font-extrabold text-center mb-1">Health Metric</h4>
-        <div className="text-xs text-white/70 text-center mb-4">Blood pressure average</div>
-        
-        {/* SVG defining the fluid chart stroke overflowing its bounds */}
-        <div className="relative w-full h-24 mt-8 flex items-end justify-center">
-           <svg viewBox="0 0 200 100" className="absolute top-0 w-[120%] h-[120%] stroke-pink-400 stroke-[3px] fill-transparent overflow-visible">
-             <path d="M-10,80 Q30,50 60,90 T140,40 T210,80" />
-             <circle cx="140" cy="40" r="5" fill="white" className="stroke-pink-400 stroke-[3px]" />
-           </svg>
-           {/* Exact data point label marker */}
-           <div className="absolute top-[-5px] right-[40%] text-center text-sm font-bold bg-white text-[#5265ec] px-2 py-0.5 rounded-full shadow-md">120/80</div>
-           
-           <div className="flex justify-between w-full text-xs text-white/70 mt-auto opacity-70">
-             <span>Tue</span>
-             <span>Wed</span>
-             <span className="text-white font-bold opacity-100">Thu</span>
-             <span>Fri</span>
-             <span>Sat</span>
-           </div>
-        </div>
       </div>
 
     </div>
