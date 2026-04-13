@@ -268,10 +268,32 @@ const DoctorDashboard = () => {
  <h1 className="text-4xl font-extrabold text-[#021024] transition-colors">Doctor Dashboard</h1>
  <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
  </div>
+
+ {/* Smooth Infinite Animated Welcome Banner */}
+ <div className="relative w-full shrink-0 min-h-[150px] rounded-3xl overflow-hidden mb-8 bg-gradient-to-r from-blue-600 via-[#3963F9] to-blue-400 animate-gradient-xy flex items-center shadow-xl shadow-clinic-600/20">
+   
+   <div className="relative z-10 px-8 py-8 md:px-12 flex flex-col justify-center w-full ">
+     <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight drop-shadow-sm">Welcome , Dr. {profile?.firstName + ' ' + profile?.lastName || 'Doctor'}</h2>
+     <p className="text-blue-100 font-medium text-base md:text-lg drop-shadow-sm opacity-90">Have a nice and healthy day!</p>
+   </div>
+
+   {/* Soft Beautiful Geometric Overlay Accents Mapping the Background */}
+   <div className="absolute right-0 top-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[20px] -mr-20 -mt-20 pointer-events-none"></div>
+   <div className="absolute right-[15%] bottom-[-50%] w-[300px] h-[300px] bg-white/10 rounded-full blur-[40px] pointer-events-none"></div>
+ </div>
+
  <StatCards appointments={appointments} historicalTotal={historyAppointments.length}
  onCardClick={(id) => { if (id === 'total-patients') setShowHistoryView(true); }}
  />
- <TodayAppointments appointments={appointments} />
+ 
+ <div className="flex flex-col lg:flex-row gap-8 w-full mt-2 pb-10 ">
+    <div className="flex-1 w-full ">
+       <CurrentPatient appointments={appointments} onStatusChange={handleStatusChange} onFinishConsultation={handleFinishConsultation} />
+    </div>
+    <div className="w-full lg:w-[400px] flex-shrink-0">
+       <TodayAppointments appointments={appointments} />
+    </div>
+ </div>
  </>
  )}
  {activeTab === 'appointments' && (
@@ -285,10 +307,7 @@ const DoctorDashboard = () => {
  )}
  </div>
 
- {/* Seamless Right Edge Action Context Sidebar */}
- {activeTab === 'dashboard' && (
- <CurrentPatient appointments={appointments} onFinishConsultation={handleFinishConsultation} onStatusChange={handleStatusChange} />
- )}
+
  </>
  )}
 
