@@ -24,7 +24,7 @@ const ContactSection = () => {
         <motion.div 
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: false, amount: 0.2 }}
           variants={panelVariants}
           className="w-full md:w-1/2 p-8 md:p-12 lg:p-16 relative z-10 bg-white md:rounded-r-[3rem]"
         >
@@ -65,7 +65,7 @@ const ContactSection = () => {
         <motion.div 
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: false, amount: 0.2 }}
           transition={{ delay: 0.2 }}
           variants={panelVariants}
           className="w-full md:w-1/2 p-8 md:p-12 lg:p-16 relative z-10 flex flex-col justify-center text-white"

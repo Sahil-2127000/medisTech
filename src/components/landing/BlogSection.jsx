@@ -33,7 +33,7 @@ const BlogSection = () => {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1, 
-      transition: { staggerChildren: 0.2, delayChildren: 0.8 } 
+      transition: { staggerChildren: 0.2, delayChildren: 0.6 } 
     }
   };
 
@@ -48,7 +48,7 @@ const BlogSection = () => {
         className="text-center max-w-2xl mx-auto mb-16"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.5 }}
+        viewport={{ once: false, amount: 0.5 }}
         variants={headerVariants}
       >
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Health Insights & Wellness Tips</h2>
@@ -62,7 +62,7 @@ const BlogSection = () => {
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: false, amount: 0.2 }}
       >
         {posts.map((post, idx) => (
           <motion.div 

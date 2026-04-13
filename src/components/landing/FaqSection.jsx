@@ -38,7 +38,7 @@ const FaqSection = () => {
         variants={imageVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
+        viewport={{ once: false, amount: 0.3 }}
         className="w-full mt-11 md:w-5/12 relative rounded-4xl overflow-hidden bg-[#c5f5f1] pb-0 hidden md:block group"
       >
         {/* Soft background shape */}
@@ -55,7 +55,7 @@ const FaqSection = () => {
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: false, amount: 0.2 }}
         className="w-full md:w-7/12"
       >
         <motion.h2 variants={itemVariants} className="text-4xl font-bold text-slate-900 mb-10 leading-tight">

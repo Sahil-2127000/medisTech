@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   return (
-    <section id="home" className="relative w-full pt-16 pb-24 lg:pt-24 lg:pb-32 flex items-center overflow-hidden mb-12">
+    <section className="relative w-full pt-16 pb-24 lg:pt-24 lg:pb-32 flex items-center overflow-hidden mb-12">
 
       {/* Background Image & Overlays */}
       <div className="absolute inset-0 z-0">

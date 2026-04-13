@@ -47,7 +47,7 @@ const ServicesSection = () => {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1, 
-      transition: { staggerChildren: 0.15, delayChildren: 0.8 } 
+      transition: { staggerChildren: 0.15, delayChildren: 0.6 } 
     }
   };
 
@@ -62,7 +62,7 @@ const ServicesSection = () => {
         className="text-center max-w-2xl mx-auto mb-16"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.5 }}
+        viewport={{ once: false, amount: 0.5 }}
         variants={headerVariants}
       >
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Our Complete Medical Services</h2>
@@ -76,7 +76,7 @@ const ServicesSection = () => {
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: false, amount: 0.2 }}
       >
         {services.map((svc, idx) => (
           <motion.div 
@@ -88,12 +88,9 @@ const ServicesSection = () => {
               {svc.icon}
             </div>
             <h3 className="text-xl font-bold text-slate-900 mb-3">{svc.title}</h3>
-            <p className="text-slate-500 text-sm mb-6 leading-relaxed grow">
+            <p className="text-slate-500 text-sm leading-relaxed">
               {svc.desc}
             </p>
-            <div className={`w-8 h-8 rounded-full ${svc.bgColor} ${svc.textColor} flex items-center justify-center ${svc.hoverBg} group-hover:text-white transition-colors cursor-pointer mt-auto`}>
-              →
-            </div>
           </motion.div>
         ))}
       </motion.div>
