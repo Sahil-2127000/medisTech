@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const availabilityRoutes = require('./routes/availabilityRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const prescriptionRoutes = require('./routes/prescriptionRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 
 // Initialize app & connect to Database
 const app = express();
@@ -18,13 +19,15 @@ app.use(cors({
   credentials: true // Explicitly instruct Google Chrome/Safari to shuttle explicit cookies 
 }));
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Route Mounting
 app.use('/api/auth', authRoutes);
 app.use('/api/availability', availabilityRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
+app.use('/api/blogs', blogRoutes);
 
 // General health check route
 app.get('/', (req, res) => {

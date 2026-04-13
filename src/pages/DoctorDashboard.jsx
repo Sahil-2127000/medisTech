@@ -10,6 +10,7 @@ import AvailabilityConfig from '../components/doctor-dashboard/AvailabilityConfi
 import EmergencyCase from '../components/doctor-dashboard/EmergencyCase';
 import PatientHistoryView from '../components/doctor-dashboard/PatientHistoryView';
 import AlertBell from '../components/doctor-dashboard/AlertBell';
+import ManageBlogs from '../components/doctor-dashboard/ManageBlogs';
 
 // Helper mock seeder if localStorage is uniquely empty
 const ensureMockData = () => {
@@ -249,6 +250,7 @@ const DoctorDashboard = () => {
  {/* Dynamic Center Orchestrator */}
  {activeTab === 'profile' && <DoctorProfile email={activeUserEmail} />}
  {activeTab === 'availability' && <AvailabilityConfig />}
+ {activeTab === 'blogs' && <ManageBlogs />}
  {activeTab === 'emergency' && (
  <EmergencyCase onDeclareEmergency={handleDeclareEmergency} onResolveEmergency={handleResolveEmergency} />
  )}
