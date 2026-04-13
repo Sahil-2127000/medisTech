@@ -10,7 +10,7 @@ import Footer from '../components/landing/Footer';
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-slate-50/50 font-sans text-slate-900 flex flex-col items-center overflow-x-hidden relative selection:bg-blue-200">
+    <div id="home" className="min-h-screen bg-slate-50/50 font-sans text-slate-900 flex flex-col items-center overflow-x-hidden relative selection:bg-blue-200">
 
       {/* Top Gradient Overlay */}
       <div className="absolute top-0 left-0 w-full h-[500px] bg-linear-to-b from-blue-50 via-cyan-50/30 to-transparent pointer-events-none z-0"></div>

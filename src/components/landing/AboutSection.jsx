@@ -29,7 +29,7 @@ const AboutSection = () => {
       <motion.div 
         initial={{ opacity: 0, x: -50 }}
         whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
+        viewport={{ once: false, amount: 0.3 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-full lg:w-1/2 relative flex justify-center lg:justify-start"
       >
@@ -68,7 +68,7 @@ const AboutSection = () => {
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
+        viewport={{ once: false, amount: 0.3 }}
       >
         <motion.div variants={itemVariants} className="inline-block bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-sm font-bold tracking-wide uppercase mb-2">
           About The Doctor
