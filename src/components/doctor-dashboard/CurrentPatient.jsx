@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import PrescriptionBuilder from './PrescriptionBuilder';
+
 
 const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) => {
  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
@@ -16,21 +18,18 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) 
  .filter(app => app.date === todayFormatted && app.status === 'approved')
  .sort((a, b) => a.time.localeCompare(b.time))[0];
 
- const handleSubmit = (e) => {
- e.preventDefault();
- if (!medicine || !timing || !activePatient) return;
+ const handlePrescriptionSave = (medicinesArray, pdfBase64) => {
+ if (!activePatient) return;
  // Explicitly update status to completed to clear it from in_progress
  onStatusChange(activePatient.id, 'completed');
 
  onFinishConsultation(activePatient.id, activePatient.accountEmail, {
- medicine,
- timing,
+ medicines: medicinesArray,
+ pdfBase64: pdfBase64,
  date: todayFormatted
  });
 
  setShowPrescriptionModal(false);
- setMedicine('');
- setTiming('');
  };
 
  const renderPatientCard = (patient) => {
@@ -103,33 +102,13 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) 
  )}
  </div>
 
- {/* Embedded Floating Action Modal for Prescriptions */}
+ {/* Embedded Full Screen Prescription Builder */}
  {showPrescriptionModal && activePatient && (
- <div className="absolute inset-0 bg-transparent/90 backdrop-blur-sm z-50 flex flex-col p-6 animate-fade-in transition-colors">
- <button onClick={() => setShowPrescriptionModal(false)} className="absolute top-6 right-6 text-gray-400 hover:text-red-500 transition-colors">
- <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
- </button>
- <h3 className="text-2xl font-bold mt-10 mb-2 transition-colors">Write Prescription</h3>
- <p className="text-sm text-gray-500 font-medium mb-8 transition-colors">Discharging <strong className="text-slate-800 ">{activePatient.name || "Walk-In"}</strong> securely.</p>
- <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-4">
- <div className="space-y-1">
- <label className="text-xs font-bold text-clinic-600 uppercase tracking-wider transition-colors">Clinical Medicine</label>
- <input value={medicine} onChange={(e) => setMedicine(e.target.value)} required
- placeholder="e.g. Paracetamol 500mg" className="w-full bg-white border border-gray-200 text-slate-800 rounded-xl p-3 focus:outline-none focus:border-clinic-600 transition-colors shadow-sm font-medium"
+ <PrescriptionBuilder 
+ activePatient={activePatient}
+ onCancel={() => setShowPrescriptionModal(false)}
+ onSave={handlePrescriptionSave}
  />
- </div>
- <div className="space-y-1">
- <label className="text-xs font-bold text-clinic-600 uppercase tracking-wider transition-colors">Usage Timing</label>
- <input value={timing} onChange={(e) => setTiming(e.target.value)} required
- placeholder="e.g. 1-0-1 after meals for 5 days" className="w-full bg-white border border-gray-200 text-slate-800 rounded-xl p-3 focus:outline-none focus:border-clinic-600 transition-colors shadow-sm font-medium"
- />
- </div>
- <button type="submit" className="mt-auto w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-green-500/30 flex items-center justify-center gap-2 text-lg active:scale-95">
- <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
- Save & Complete
- </button>
- </form>
- </div>
  )}
 
  </div>

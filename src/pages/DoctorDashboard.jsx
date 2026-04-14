@@ -163,6 +163,13 @@ const DoctorDashboard = () => {
 
     const handleFinishConsultation = async (id, patientId, prescriptionData) => {
         try {
+            const formattedMedicines = (prescriptionData.medicines || []).map(med => ({
+                name: med.name,
+                dosage: med.dosage,
+                frequency: `${(med.timing || []).join(' - ')} (${med.food || 'After Food'})`,
+                duration: med.duration || "As Directed"
+            }));
+
             await fetch('http://localhost:5001/api/prescriptions/issue', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -171,10 +178,9 @@ const DoctorDashboard = () => {
                     appointmentId: id,
                     patientId: patientId || "60b8c8d8f1e6b3b3a4a9c123", // fallback
                     diagnosis: "General evaluation completed.",
-                    medicines: [
-                        { name: prescriptionData.medicine, dosage: "Standard", frequency: prescriptionData.timing, duration: "As Directed" }
-                    ],
-                    clinicalNotes: "Resolved efficiently via emergency protocol natively."
+                    medicines: formattedMedicines,
+                    pdfBase64: prescriptionData.pdfBase64,
+                    clinicalNotes: "Issued securely via Advanced Prescription Builder natively."
                 })
             });
             loadDoctorAppointments();

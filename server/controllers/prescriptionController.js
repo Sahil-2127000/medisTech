@@ -4,7 +4,7 @@ const Appointment = require('../models/Appointment');
 // Write massive prescription array into the database linking entities cleanly
 exports.issuePrescription = async (req, res) => {
   try {
-    const { appointmentId, patientId, diagnosis, medicines, clinicalNotes } = req.body;
+    const { appointmentId, patientId, diagnosis, medicines, clinicalNotes, pdfBase64 } = req.body;
     const doctorId = req.user.id; // Authorized endpoint inherently
 
     const rx = new Prescription({
@@ -13,7 +13,8 @@ exports.issuePrescription = async (req, res) => {
       doctorId,
       diagnosis,
       medicines,
-      clinicalNotes
+      clinicalNotes,
+      pdfBase64
     });
 
     await rx.save();
