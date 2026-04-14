@@ -29,7 +29,14 @@ const UserSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-  }
+  },
+  lastPasswordChange: {
+    type: Date
+  },
+  is2FAEnabled: { type: Boolean, default: false },
+  twoFactorPhone: { type: String, default: '' },
+  twoFactorOTP: { type: String, default: '' },
+  twoFactorOTPExpires: { type: Date }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

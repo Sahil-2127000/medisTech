@@ -20,8 +20,12 @@ const PatientDashboard = () => {
   const activeName = rawName.split(' ').map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : '').join(' ');
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [prescriptions, setPrescriptions] = useState([]);
+  const [labResults, setLabResults] = useState([]);
+  const [reports, setReports] = useState([]);
   const [emergencyAlert, setEmergencyAlert] = useState(null);
   const [showBooking, setShowBooking] = useState(false);
+  const [userProfile, setUserProfile] = useState(savedUser);
 
   // Hook intercepting Native Browser Back Button forcing explicit logout validations
   useEffect(() => {
@@ -67,6 +71,31 @@ const PatientDashboard = () => {
          }
        }
      } catch(e) { }
+
+     try {
+       const resRx = await fetch('http://localhost:5001/api/prescriptions/my', { credentials: 'include' });
+       if (resRx.ok) {
+         const rxData = await resRx.json();
+         setPrescriptions(rxData);
+       }
+     } catch(e) { }
+
+     try {
+       const resDocs = await fetch('http://localhost:5001/api/documents/my', { credentials: 'include' });
+       if (resDocs.ok) {
+         const d = await resDocs.json();
+         setLabResults(d.labResults || []);
+         setReports(d.reports || []);
+       }
+     } catch(e) { }
+
+      try {
+        const resProf = await fetch('http://localhost:5001/api/auth/profile', { credentials: 'include' });
+        if (resProf.ok) {
+          const pData = await resProf.json();
+          setUserProfile(prev => ({ ...prev, ...pData }));
+        }
+      } catch(e) { }
   };
 
   useEffect(() => {
@@ -76,16 +105,34 @@ const PatientDashboard = () => {
   }, []);
 
   // Structural mock data blending with actual fetched lengths natively dynamically
+  const upcomingFiltered = upcomingAppointments.filter(app => ['pending', 'approved', 'emergency_active'].includes(app.status));
+  const historyFiltered = upcomingAppointments.filter(app => ['completed', 'rejected'].includes(app.status));
+
+  const resolvedName = userProfile.fullName || activeName;
+
   const patientData = {
-    name: activeName,
-    avatar: `https://placehold.co/150x150/5265ec/ffffff.png?text=${activeName.charAt(0).toUpperCase()}`,
-    appointmentsCount: upcomingAppointments.length, // Native Array math
-    prescriptionsCount: 0,
-    labTestsCount: 0,
-    upcoming: upcomingAppointments.map(app => ({
+    ...userProfile,
+    name: resolvedName,
+    avatar: `https://placehold.co/150x150/5265ec/ffffff.png?text=${resolvedName.charAt(0).toUpperCase()}`,
+    appointmentsCount: upcomingFiltered.length, 
+    prescriptionsCount: prescriptions.length,
+    prescriptions: prescriptions,
+    labTestsCount: labResults.length,
+    labResults: labResults,
+    reports: reports,
+    reportsCount: reports.length,
+    upcoming: upcomingFiltered.map(app => ({
       doctor: `Dr. ${app.doctorId?.fullName || 'Unknown'}`,
       date: app.date,
       time: app.time,
+      status: app.status,
+      img: `https://placehold.co/100x100/fca5a5/ffffff.png?text=D`
+    })),
+    history: historyFiltered.map(app => ({
+      doctor: `Dr. ${app.doctorId?.fullName || 'Unknown'}`,
+      date: app.date,
+      time: app.time,
+      status: app.status,
       img: `https://placehold.co/100x100/fca5a5/ffffff.png?text=D`
     }))
   };
@@ -107,16 +154,23 @@ const PatientDashboard = () => {
       {showBooking && <BookAppointment onClose={() => { setShowBooking(false); pollAppointments(); }} />}
 
       {/* Main Orchestration Card */}
-      <div className="w-full max-w-[1400px] h-[90vh] min-h-[800px] bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50 dark:border-slate-800 transition-colors duration-300">
+      <div className="w-full max-w-[1400px] h-[100vh] md:h-[90vh] bg-white dark:bg-slate-900 md:rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50 dark:border-slate-800 transition-colors duration-300">
         
         {/* Left Combined Panel (Profile + Nav) */}
-        <div className="hidden lg:flex flex-col w-[300px] xl:w-[320px] h-full bg-[#fafcff] border-r border-gray-100 overflow-y-auto no-scrollbar shrinks-0">
+        <div className="hidden lg:flex flex-col w-[320px] xl:w-[350px] h-full bg-[#fafcff] border-r border-gray-100 shrink-0">
           <RightPanel patientData={patientData} />
           <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
         
         {/* Render Center UI Data View, filling rest of space */}
-        <MainPanel patientData={patientData} activeTab={activeTab} onBookClick={() => setShowBooking(true)} />
+        <MainPanel 
+          patientData={patientData} 
+          activeTab={activeTab} 
+          onBookClick={() => {
+            setActiveTab('calendar');
+            setShowBooking(true);
+          }} 
+        />
         
       </div>
 

@@ -38,7 +38,13 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                     <img src={app.img} alt="doctor" className="w-10 h-10 rounded-full border border-gray-200" />
                     <div>
                       <div className="font-bold text-slate-800 group-hover:text-[#5265ec] transition-colors leading-tight">{app.doctor}</div>
-                      <div className="text-xs text-gray-400 font-medium">Upcoming</div>
+                      <div className="mt-1">
+                        {app.status === 'pending' && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100">Pending</span>}
+                        {app.status === 'approved' && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100">Accepted</span>}
+                        {app.status === 'completed' && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Completed</span>}
+                        {app.status === 'rejected' && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100">Cancelled</span>}
+                        {app.status === 'emergency_active' && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 border border-purple-100 italic animate-pulse">Emergency Shift</span>}
+                      </div>
                     </div>
                   </div>
                 </div>

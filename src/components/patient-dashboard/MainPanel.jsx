@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppointmentsView from './AppointmentsView';
 import DocumentsView from './DocumentsView';
 import ProfileView from './ProfileView';
 import SettingsView from './SettingsView';
 
 const MainPanel = ({ patientData, activeTab, onBookClick }) => {
-  if (activeTab === 'calendar') return <AppointmentsView appointments={patientData.upcoming || []} onBookClick={onBookClick} />;
-  if (activeTab === 'docs') return <DocumentsView />;
+  if (activeTab === 'calendar') return <AppointmentsView appointments={[...(patientData.upcoming || []), ...(patientData.history || [])]} onBookClick={onBookClick} />;
+  if (activeTab === 'docs') return <DocumentsView prescriptions={patientData.prescriptions || []} labResults={patientData.labResults || []} reports={patientData.reports || []} />;
   if (activeTab === 'profile') return <ProfileView patientData={patientData} />;
-  if (activeTab === 'settings') return <SettingsView />;
+  if (activeTab === 'settings') return <SettingsView patientData={patientData} />
 
   return (
     <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto overflow-x-hidden no-scrollbar">
@@ -21,10 +21,6 @@ const MainPanel = ({ patientData, activeTab, onBookClick }) => {
         </div>
         
         <div className="flex items-center gap-6">
-          <button className="text-[#5265ec] font-semibold text-sm flex items-center gap-1 hover:underline">
-            Appointment History
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
-          </button>
           
           <button onClick={onBookClick} className="bg-[#5265ec] hover:bg-[#4254d3] text-white px-6 py-3 rounded-2xl font-semibold shadow-lg shadow-[#5265ec]/30 transition-all flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
@@ -76,7 +72,10 @@ const MainPanel = ({ patientData, activeTab, onBookClick }) => {
         ))}
 
         {/* Empty Add slot mimicking the design dashed block */}
-        <div className="bg-white rounded-3xl border-2 border-dashed border-[#5265ec]/40 bg-[#5265ec]/5 flex items-center justify-center hover:bg-[#5265ec]/10 transition-colors cursor-pointer min-h-[140px]">
+        <div 
+          onClick={onBookClick}
+          className="bg-white rounded-3xl border-2 border-dashed border-[#5265ec]/40 bg-[#5265ec]/5 flex items-center justify-center hover:bg-[#5265ec]/10 transition-colors cursor-pointer min-h-[140px]"
+        >
           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#5265ec] shadow-sm">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
           </div>

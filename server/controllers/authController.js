@@ -152,6 +152,25 @@ exports.login = async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    // If 2FA is formally enabled, halt login and require OTP phase
+    if (targetUser.is2FAEnabled && targetUser.twoFactorPhone) {
+        // Generate a 6-digit SMS OTP
+        const smsOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        // Since we don't have a live Twilio key, simulate SMS transmission
+        console.log(`[SMS MOCK] Sending OTP ${smsOtp} to phone ${targetUser.twoFactorPhone} for login...`);
+        
+        targetUser.twoFactorOTP = smsOtp;
+        targetUser.twoFactorOTPExpires = Date.now() + 1 * 60 * 1000; // 60 seconds duration
+        await targetUser.save();
+        
+        return res.status(200).json({
+           requires2FA: true,
+           userId: targetUser._id,
+           role: targetUser.role,
+           message: `OTP sent to ${targetUser.twoFactorPhone.replace(/.(?=.{4})/g, '*')}`
+        });
+    }
+
     // Set Secure HttpOnly Cookie
     res.cookie('token', token, {
       httpOnly: true,
@@ -170,6 +189,47 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.verifyLogin2FA = async (req, res) => {
+   const { userId, role, otp } = req.body;
+   try {
+     let targetUser = role === 'doctor' ? await Doctor.findById(userId) : await User.findById(userId);
+     if (!targetUser) return res.status(404).json({ message: 'User not found natively' });
+
+     if (targetUser.twoFactorOTP !== otp) {
+        return res.status(400).json({ message: 'Invalid OTP' });
+     }
+     if (targetUser.twoFactorOTPExpires < Date.now()) {
+        return res.status(400).json({ message: 'OTP has expired' });
+     }
+
+     // Auth success
+     targetUser.twoFactorOTP = '';
+     targetUser.twoFactorOTPExpires = null;
+     await targetUser.save();
+
+     // Log them in properly
+     const token = jwt.sign(
+       { id: targetUser._id, email: targetUser.email, role: targetUser.role }, 
+       JWT_SECRET, 
+       { expiresIn: '7d' }
+     );
+
+     res.cookie('token', token, {
+       httpOnly: true,
+       secure: process.env.NODE_ENV === 'production',
+       sameSite: 'lax',
+       maxAge: 7 * 24 * 60 * 60 * 1000
+     });
+
+     res.status(200).json({
+       message: '2FA Login dynamically authenticated',
+       user: { id: targetUser._id, fullName: targetUser.fullName, email: targetUser.email, role: targetUser.role }
+     });
+   } catch (err) {
+     res.status(500).json({ message: 'Failed to verify 2FA login sequence' });
+   }
+};
+
 exports.getDoctors = async (req, res) => {
   try {
     const doctors = await Doctor.find().select('-password');
@@ -177,4 +237,9 @@ exports.getDoctors = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Failed to extract Doctor schemas directly' });
   }
+};
+
+exports.logout = (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json({ message: 'Logged out successfully' });
 };

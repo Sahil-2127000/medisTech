@@ -6,7 +6,11 @@ module.exports = (req, res, next) => {
   // Grab token strictly locally shuttled via HttpOnly secure mechanism from the parser
   const token = req.cookies.token;
   
+  console.log('[AUTH MIDDLEWARE] Debug - Cookies:', req.cookies);
+  console.log('[AUTH MIDDLEWARE] Debug - Token found:', !!token);
+
   if (!token) {
+    console.log('[AUTH MIDDLEWARE] No token found - denying access');
     return res.status(401).json({ message: 'No authentication token provided, authorization denied' });
   }
 
@@ -19,3 +23,4 @@ module.exports = (req, res, next) => {
     res.status(401).json({ message: 'Token is mathematically invalid or expired' });
   }
 };
+

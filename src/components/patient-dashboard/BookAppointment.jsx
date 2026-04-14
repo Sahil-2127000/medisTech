@@ -5,6 +5,7 @@ const BookAppointment = ({ onClose }) => {
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [date, setDate] = useState('');
   const [slots, setSlots] = useState([]);
+  const [isDayOff, setIsDayOff] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
   const [symptoms, setSymptoms] = useState('');
@@ -38,15 +39,18 @@ const BookAppointment = ({ onClose }) => {
         .then(({ status, data }) => {
            if (status !== 200) {
               setSlots([]);
+              setIsDayOff(false);
               setErrorMessage(data.message || 'Blockout Array Check');
            } else {
               setSlots(data.slots || []);
+              setIsDayOff(!!data.isOff);
            }
         })
         .catch(console.error)
         .finally(() => setLoading(false));
     } else {
       setSlots([]);
+      setIsDayOff(false);
       setErrorMessage('');
     }
   }, [selectedDoctor, date]);
@@ -77,7 +81,7 @@ const BookAppointment = ({ onClose }) => {
         // Brutally force reload to clear taken slots
         fetch(`http://localhost:5001/api/appointments/slots?doctorId=${selectedDoctor}&date=${date}`, { credentials: 'include' })
           .then(r => r.json())
-          .then(d => { setSlots(d.slots || []); setSelectedSlot(''); })
+          .then(d => { setSlots(d.slots || []); setIsDayOff(!!d.isOff); setSelectedSlot(''); })
           .finally(() => setLoading(false));
       }
     } catch (err) {
@@ -130,17 +134,20 @@ const BookAppointment = ({ onClose }) => {
                   <div className="w-full flex items-center justify-center text-sm font-bold text-gray-400">Select Date to generate array globally</div>
                ) : loading ? (
                   <div className="w-full flex items-center justify-center text-sm font-bold text-[#5265ec] animate-pulse">Calculating Native Splits...</div>
+               ) : isDayOff ? (
+                  <div className="w-full flex items-center justify-center text-sm font-bold text-red-500 bg-red-50 py-3 rounded-lg border border-red-100">The clinic is closed on the selected date.</div>
                ) : slots.length === 0 ? (
-                  <div className="w-full flex items-center justify-center text-sm font-bold text-red-500 bg-red-50 py-3 rounded-lg border border-red-100">{errorMessage || 'Date Blocked or Booked Out (Blackout Array Check)'}</div>
+                  <div className="w-full flex items-center justify-center text-sm font-bold text-gray-500 bg-gray-50 py-3 rounded-lg border border-gray-100">No time slots found for this date.</div>
                ) : (
                   slots.map((slot, i) => (
                     <button 
                       type="button" 
                       key={i} 
-                      onClick={() => setSelectedSlot(slot)}
-                      className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${selectedSlot === slot ? 'bg-[#5265ec] text-white shadow-md shadow-blue-500/30' : 'bg-white text-slate-600 border border-gray-200 hover:border-[#5265ec] hover:text-[#5265ec]'}`}
+                      disabled={!slot.isAvailable}
+                      onClick={() => setSelectedSlot(slot.time)}
+                      className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-transparent ${selectedSlot === slot.time ? 'bg-[#5265ec] text-white shadow-md shadow-blue-500/30' : 'bg-white text-slate-600 border border-gray-200 hover:border-[#5265ec] hover:text-[#5265ec]'}`}
                     >
-                      {slot}
+                      {slot.time}
                     </button>
                   ))
                )}

@@ -24,16 +24,27 @@ exports.getAvailableSlots = async (req, res) => {
     if (!config) return res.status(404).json({ message: 'Doctor has not mapped an availability grid.' });
 
     // Validate if explicit blackout
-    if (config.blackoutDates.includes(date)) return res.status(200).json({ slots: [] });
+    if (config.blackoutDates.includes(date)) return res.status(200).json({ isOff: true, slots: [] });
 
-    // Safely parse robust DD-MM-YYYY into a structural Date block
-    const [dS, mS, yS] = date.split('-');
-    const dateObj = new Date(`${yS}-${mS}-${dS}`);
+    // Safely parse robust DD-MM-YYYY into a structural Date block natively
+    const [dS, mS, yS] = date.split('-').map(Number);
+    const dateObj = new Date(yS, mS - 1, dS);
     const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     const dayOfWeek = dayNames[dateObj.getDay()];
 
+    console.log(`[DEBUG] getAvailableSlots: DoctorId=${doctorId}, Date=${date}, DayOfWeek=${dayOfWeek}`);
+    
     const shiftData = config.weeklyConfig.find(w => w.day === dayOfWeek);
-    if (!shiftData || shiftData.isOff) return res.status(200).json({ slots: [] });
+    console.log(`[DEBUG] ShiftData found:`, !!shiftData);
+    
+    if (!shiftData || shiftData.isOff) {
+      console.log(`[DEBUG] Clinic is OFF on ${dayOfWeek}`);
+      return res.status(200).json({ isOff: true, slots: [] });
+    }
+
+    const [startH, startM] = shiftData.slots[0].start.split(':').map(Number);
+    console.log(`[DEBUG] Parsing block: Start=${shiftData.slots[0].start}, StartMins=${startH * 60 + startM}`);
+
 
     // Grab all pre-booked appointments evaluating collisions uniquely
     const existingAppts = await Appointment.find({ doctorId, date, status: { $in: ['pending', 'approved'] } });
@@ -68,9 +79,10 @@ exports.getAvailableSlots = async (req, res) => {
            }
         }
         
-        if (!bookedTimes.includes(timeStr) && !isPast) {
-          generatedSlots.push(timeStr);
-        }
+        generatedSlots.push({ 
+          time: timeStr, 
+          isAvailable: !bookedTimes.includes(timeStr) && !isPast
+        });
         currentTotalMins += config.slotDuration;
       }
     });
