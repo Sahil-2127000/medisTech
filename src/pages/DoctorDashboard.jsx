@@ -93,6 +93,7 @@ const DoctorDashboard = () => {
                 // Data formatting mapping DB standard precisely
                 const mapped = data.map(app => ({
                     id: app._id,
+                    patientId: app.patientId?._id || app.patientId,
                     name: app.patientId?.fullName || "Walk-In",
                     age: app.patientId?.age || "--",
                     gender: app.patientId?.gender || "Unknown",
@@ -115,6 +116,7 @@ const DoctorDashboard = () => {
                 const data = await res.json();
                 const mapped = data.map(app => ({
                     id: app._id,
+                    patientId: app.patientId?._id || app.patientId,
                     name: app.patientId?.fullName || "Walk-In",
                     age: app.patientId?.age || "--",
                     gender: app.patientId?.gender || "Unknown",

@@ -18,16 +18,19 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) 
  .filter(app => app.date === todayFormatted && app.status === 'approved')
  .sort((a, b) => a.time.localeCompare(b.time))[0];
 
- const handlePrescriptionSave = (medicinesArray, pdfBase64) => {
- if (!activePatient) return;
- // Explicitly update status to completed to clear it from in_progress
- onStatusChange(activePatient.id, 'completed');
+  const handlePrescriptionSave = (medicinesArray, pdfBase64) => {
+    if (!activePatient) return;
+    // Explicitly update status to completed to clear it from in_progress
+    onStatusChange(activePatient.id, 'completed');
 
- onFinishConsultation(activePatient.id, activePatient.accountEmail, {
- medicines: medicinesArray,
- pdfBase64: pdfBase64,
- date: todayFormatted
- });
+    // Extract the raw MongoDB ObjectId from the populated patient payload securely natively
+    const correctPatientId = activePatient.patientId?._id || activePatient.patientId;
+
+    onFinishConsultation(activePatient.id, correctPatientId, {
+      medicines: medicinesArray,
+      pdfBase64: pdfBase64,
+      date: todayFormatted
+    });
 
  setShowPrescriptionModal(false);
  };
