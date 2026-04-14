@@ -82,8 +82,8 @@ const DoctorProfile = ({ email }) => {
  <div className="w-full max-w-4xl bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] p-10 relative transition-colors duration-300">
  <div className="flex justify-between items-center mb-10 pb-6 border-b border-gray-50 transition-colors">
  <div>
- <h2 className="text-3xl font-extrabold text-[#021024] mb-1 transition-colors">Doctor Profile Variables</h2>
- <p className="text-sm font-semibold text-gray-400 transition-colors">Manage your clinical metadata strictly bound locally</p>
+ <h2 className="text-3xl font-extrabold text-[#021024] mb-1 transition-colors">Profile</h2>
+ <p className="text-sm font-semibold text-gray-400 transition-colors">Manage your whole clinical data</p>
  </div>
  <button onClick={() => isEditing ? setIsEditing(false) : setIsEditing(true)}
  className={`px-6 py-2.5 rounded-xl font-bold transition-all shadow-sm ${isEditing ? 'bg-red-50 text-red-500 hover:bg-red-100 ' : 'bg-blue-50 text-clinic-600 hover:bg-blue-100 '} `}
@@ -141,7 +141,7 @@ const DoctorProfile = ({ email }) => {
  <div className="md:col-span-2 mt-6 flex justify-end">
  <button type="submit" className="bg-clinic-600 hover:bg-clinic-800 text-white px-8 py-3.5 rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2">
  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
- Save Profile Mapping
+ Update Profile
  </button>
  </div>
  )}

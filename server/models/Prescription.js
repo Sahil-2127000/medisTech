@@ -19,7 +19,11 @@ const PrescriptionSchema = new mongoose.Schema({
   diagnosis: { type: String, required: true },
   medicines: { type: [MedicineSchema], required: true },
   clinicalNotes: { type: String, default: '' },
+<<<<<<< HEAD
   pdfBase64: { type: String }
+=======
+  pdfBase64: { type: String, default: '' }
+>>>>>>> 9f3276a0072d5a83fc6b3916cb6f90706e0f3e11
 }, { timestamps: true });
 
 module.exports = mongoose.model('Prescription', PrescriptionSchema);
