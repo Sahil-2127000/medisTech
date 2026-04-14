@@ -36,7 +36,9 @@ const UserSchema = new mongoose.Schema({
   is2FAEnabled: { type: Boolean, default: false },
   twoFactorPhone: { type: String, default: '' },
   twoFactorOTP: { type: String, default: '' },
-  twoFactorOTPExpires: { type: Date }
+  twoFactorOTPExpires: { type: Date },
+  emailNotifications: { type: Boolean, default: true },
+  smsNotifications: { type: Boolean, default: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

@@ -73,9 +73,11 @@ const PatientDashboard = () => {
      } catch(e) { }
 
      try {
+       console.log("[PatientDashboard] Fetching prescriptions...");
        const resRx = await fetch('http://localhost:5001/api/prescriptions/my', { credentials: 'include' });
        if (resRx.ok) {
          const rxData = await resRx.json();
+         console.log("[PatientDashboard] Prescriptions received:", rxData);
          setPrescriptions(rxData);
        }
      } catch(e) { }

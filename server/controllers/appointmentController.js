@@ -1,5 +1,11 @@
 const Appointment = require('../models/Appointment');
 const Availability = require('../models/Availability');
+const { sendEmail } = require('../utils/emailService');
+
+const capitalizeNames = (name) => {
+  if (!name) return name;
+  return name.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+};
 
 // Get all appointments uniquely referencing the calling Patient explicitly polling delayed flags
 exports.getPatientAppointments = async (req, res) => {
@@ -125,6 +131,25 @@ exports.bookAppointment = async (req, res) => {
     });
     await newAppt.save();
 
+    // Populate for email notification
+    const populatedAppt = await Appointment.findById(newAppt._id)
+                                           .populate('patientId', 'fullName email emailNotifications')
+                                           .populate('doctorId', 'fullName email');
+
+    if (populatedAppt && populatedAppt.patientId && populatedAppt.patientId.email && populatedAppt.patientId.emailNotifications !== false) {
+       const pName = capitalizeNames(populatedAppt.patientId.fullName);
+       const dName = capitalizeNames(populatedAppt.doctorId.fullName);
+       
+       const subject = "Appointment Request Received - Clinic@Flow";
+       const html = `<h2>Hello ${pName},</h2>
+                    <p>Your appointment request with <strong>Dr. ${dName}</strong> has been received.</p>
+                    <p><strong>Date:</strong> ${populatedAppt.date}<br>
+                    <strong>Time:</strong> ${populatedAppt.time}</p>
+                    <p>Status: <strong>Pending Approval</strong></p>
+                    <p>You will receive another email once the doctor accepts your request.</p>`;
+       await sendEmail(populatedAppt.patientId.email, subject, html);
+    }
+
     res.status(201).json({ message: 'Slot cleanly locked securely.', appointment: newAppt });
   } catch (error) {
     console.error(error);
@@ -164,14 +189,50 @@ exports.getDoctorHistory = async (req, res) => {
 // Global status overrides (approve, reject)
 exports.updateStatus = async (req, res) => {
   try {
-    const appt = await Appointment.findByIdAndUpdate(
-      req.params.id, 
-      { status: req.body.status }, 
-      { new: true }
-    );
+    const { status } = req.body;
+    const appt = await Appointment.findById(req.params.id)
+                                  .populate('patientId', 'fullName email emailNotifications')
+                                  .populate('doctorId', 'fullName');
+
+    if (!appt) return res.status(404).json({ message: 'Appointment not found natively' });
+
+    appt.status = status;
+    await appt.save();
+
+    // Send Status Update Email natively
+    if (appt.patientId && appt.patientId.email && appt.patientId.emailNotifications !== false) {
+       const pName = capitalizeNames(appt.patientId.fullName);
+       const dName = capitalizeNames(appt.doctorId.fullName);
+       
+       let subject = "";
+       let html = "";
+       
+       if (status === 'approved') {
+          subject = "Appointment Accepted - Clinic@Flow";
+          html = `<h2>Hello ${pName},</h2>
+                  <p>Your appointment with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Accepted</strong>.</p>
+                  <p>We look forward to seeing you!</p>`;
+       } else if (status === 'rejected') {
+          subject = "Appointment Update - Clinic@Flow";
+          html = `<h2>Hello ${pName},</h2>
+                  <p>We regret to inform you that your appointment with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Cancelled/Rejected</strong>.</p>
+                  <p>Please log in to the dashboard to schedule a different time.</p>`;
+       } else if (status === 'completed') {
+          subject = "Consultation Completed - Clinic@Flow";
+          html = `<h2>Hello ${pName},</h2>
+                  <p>Your consultation with <strong>Dr. ${dName}</strong> has been marked as <strong>Completed</strong>.</p>
+                  <p>You can view your medical records in the patient dashboard.</p>
+                  <p>Stay healthy!</p>`;
+       }
+
+       if (subject && html) {
+          await sendEmail(appt.patientId.email, subject, html);
+       }
+    }
 
     res.status(200).json(appt);
   } catch (error) {
+    console.error('Status Update Error:', error);
     res.status(500).json({ message: 'Status failed to map globally' });
   }
 };
