@@ -124,8 +124,8 @@ const MainPanel = ({ patientData, activeTab, onBookClick }) => {
               <div className="absolute top-0 left-0 w-full h-1 bg-pink-500"></div>
               <div className="mb-4">
                 <div className="text-xs font-bold text-pink-500 bg-pink-500/10 w-max px-3 py-1 rounded-full mb-3">28 Jan</div>
-                <div className="font-bold text-slate-800 group-hover:text-pink-500 transition-colors leading-tight">Lab Results Followup</div>
-                <div className="text-xs text-gray-400 font-medium mt-1">Check blood panels</div>
+                <div className="font-bold text-slate-800 group-hover:text-pink-500 transition-colors leading-tight">General Medical Review</div>
+                <div className="text-xs text-gray-400 font-medium mt-1">Reviewing monthly health vitals</div>
               </div>
               <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -137,8 +137,8 @@ const MainPanel = ({ patientData, activeTab, onBookClick }) => {
               <div className="absolute top-0 left-0 w-full h-1 bg-teal-400"></div>
               <div className="mb-4">
                 <div className="text-xs font-bold text-teal-500 bg-teal-400/10 w-max px-3 py-1 rounded-full mb-3">30 Jan</div>
-                <div className="font-bold text-slate-800 group-hover:text-teal-400 transition-colors leading-tight">Vaccine Injection</div>
-                <div className="text-xs text-gray-400 font-medium mt-1">Flu shot booster</div>
+                <div className="font-bold text-slate-800 group-hover:text-teal-400 transition-colors leading-tight">Follow-up Consultation</div>
+                <div className="text-xs text-gray-400 font-medium mt-1">Status check on medication</div>
               </div>
               <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>

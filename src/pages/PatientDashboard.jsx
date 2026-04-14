@@ -21,8 +21,6 @@ const PatientDashboard = () => {
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
-  const [labResults, setLabResults] = useState([]);
-  const [reports, setReports] = useState([]);
   const [emergencyAlert, setEmergencyAlert] = useState(null);
   const [showBooking, setShowBooking] = useState(false);
   const [userProfile, setUserProfile] = useState(savedUser);
@@ -82,15 +80,6 @@ const PatientDashboard = () => {
        }
      } catch(e) { }
 
-     try {
-       const resDocs = await fetch('http://localhost:5001/api/documents/my', { credentials: 'include' });
-       if (resDocs.ok) {
-         const d = await resDocs.json();
-         setLabResults(d.labResults || []);
-         setReports(d.reports || []);
-       }
-     } catch(e) { }
-
       try {
         const resProf = await fetch('http://localhost:5001/api/auth/profile', { credentials: 'include' });
         if (resProf.ok) {
@@ -119,10 +108,6 @@ const PatientDashboard = () => {
     appointmentsCount: upcomingFiltered.length, 
     prescriptionsCount: prescriptions.length,
     prescriptions: prescriptions,
-    labTestsCount: labResults.length,
-    labResults: labResults,
-    reports: reports,
-    reportsCount: reports.length,
     upcoming: upcomingFiltered.map(app => ({
       doctor: `Dr. ${app.doctorId?.fullName || 'Unknown'}`,
       date: app.date,
