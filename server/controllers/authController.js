@@ -35,7 +35,68 @@ exports.sendOtp = async (req, res) => {
   };
 
   try {
-    const html = `<h2>Welcome to Clinic@Flow!</h2><p>Your verification code is: <strong>${otpCode}</strong></p><p>This code will expire in 10 minutes.</p>`;
+    //otp send template
+const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f8fafc;">
+        <tr>
+            <td align="center" style="padding: 40px 0;">
+                <table width="500" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                    
+                    <tr><td height="6" style="background-color: #3b82f6;"></td></tr>
+
+                    <tr>
+                        <td align="center" style="padding: 40px 40px 20px 40px;">
+                            <div style="color: #3b82f6; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px;">
+                                Secure Verification
+                            </div>
+                            <h1 style="margin: 0; color: #1e293b; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">
+                                Medistech
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding: 0 40px 40px 40px;">
+                            <p style="color: #64748b; font-size: 15px; line-height: 24px; margin: 0 0 32px 0;">
+                                Welcome to Medistech. To ensure your healthcare records remain secure, please enter the following code to verify your identity.
+                            </p>
+                            
+                            <div style="background-color: #f1f5f9; border-radius: 12px; padding: 24px; border: 1px dashed #cbd5e1;">
+                                <span style="font-family: 'Courier New', Courier, monospace; font-size: 42px; font-weight: 700; color: #0f172a; letter-spacing: 12px;">
+                                    ${otpCode}
+                                </span>
+                            </div>
+
+                            <p style="color: #94a3b8; font-size: 13px; margin: 32px 0 0 0;">
+                                Code expires in: <span style="color: #3b82f6; font-weight: 600;">10 minutes</span>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="background-color: #0f172a; padding: 32px 40px;">
+                            <p style="color: #94a3b8; font-size: 12px; margin: 0; line-height: 20px;">
+                                <strong>Medistech Healthcare</strong><br>
+                                Compassionate Care, Exceptional Medicine.
+                            </p>
+                            <p style="color: #475569; font-size: 11px; margin-top: 12px;">
+                                If you did not request this, please ignore this email.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+`;
     
     // Attempt to send email using standard utility service
     await sendEmail(email, 'Your Verification Code', html);

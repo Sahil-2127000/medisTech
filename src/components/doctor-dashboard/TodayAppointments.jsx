@@ -10,13 +10,13 @@ const TodayAppointments = ({ appointments }) => {
  .sort((a, b) => a.time.localeCompare(b.time));
 
  return (
- <div className="bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-6 mb-10 w-full transition-colors duration-300">
- <div className="flex justify-between items-center mb-6">
- <h3 className="text-xl font-bold text-slate-800 transition-colors">Today's Schedule</h3>
+ <div className="bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-6 mb-10 w-full transition-colors duration-300 h-[340px] flex flex-col shadow-xl shadow-clinic-600/20">
+ <div className="flex justify-between items-center mb-4 shrink-0">
+ <h3 className="text-xl font-bold text-slate-800 transition-colors">Today's Appointments</h3>
  <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-clinic-600 rounded-full transition-colors">{todayList.length} matches</span>
  </div>
 
- <div className="flex flex-col gap-3">
+ <div className="flex flex-col gap-3 overflow-y-auto no-scrollbar flex-1 pb-4">
  {todayList.length === 0 ? (
  <div className="text-center text-sm py-4 text-gray-400 font-medium transition-colors">No scheduled appointments for today.</div>
  ) : (

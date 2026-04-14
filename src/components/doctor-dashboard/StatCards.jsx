@@ -21,15 +21,21 @@ const StatCards = ({ appointments, historicalTotal, onCardClick }) => {
  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10 w-full">
  {stats.map((stat, i) => (
  <div key={i} onClick={() => stat.id && onCardClick && onCardClick(stat.id)}
- className={`bg-white/60 backdrop-blur-md rounded-[1.5rem] border border-white/60 shadow-[0_8px_20px_rgba(0,0,0,0.02)] p-5 flex flex-col transition-all relative overflow-hidden ${stat.id ? 'cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:shadow-clinic-600/20' : 'opacity-90'}`}
+ className={`bg-white/60 backdrop-blur-md rounded-2xl border border-white/60 shadow-[0_8px_20px_rgba(0,0,0,0.2)] p-4 flex items-center gap-4 transition-all relative overflow-hidden shadow-xl shadow-clinic-600/20 ${stat.id ? 'cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:shadow-clinic-600/20' : 'opacity-90'}`}
  >
  {/* Subtle background glow mimicking patient cards */}
  <div className={`absolute -right-4 -top-4 w-16 h-16 ${stat.color} rounded-full opacity-10 blur-xl pointer-events-none`}></div>
- <div className={`w-12 h-12 ${stat.color} rounded-2xl flex items-center justify-center text-white mb-3 shadow-md`}>
- <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{stat.icon}</svg>
+ 
+ {/* Compact Icon */}
+ <div className={`w-10 h-10 ${stat.color} rounded-xl flex items-center justify-center shrink-0 text-white shadow-sm`}>
+ <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{stat.icon}</svg>
  </div>
- <div className="text-2xl font-extrabold text-[#021024] transition-colors">{stat.count}</div>
- <div className="text-gray-400 font-semibold text-xs mt-1 transition-colors">{stat.title}</div>
+ 
+ {/* Compact Labeling */}
+ <div className="flex flex-col">
+ <div className="text-xl font-extrabold text-[#021024] transition-colors">{stat.count}</div>
+ <div className="text-gray-400 font-bold text-[10px] uppercase tracking-wider mt-0.5 transition-colors">{stat.title}</div>
+ </div>
  </div>
  ))}
  </div>
