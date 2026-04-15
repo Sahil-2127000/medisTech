@@ -3,12 +3,19 @@ import AppointmentsView from './AppointmentsView';
 import DocumentsView from './DocumentsView';
 import ProfileView from './ProfileView';
 import SettingsView from './SettingsView';
+import LiveQueueUI from './LiveQueueUI';
 
 const MainPanel = ({ patientData, activeTab, onBookClick }) => {
   if (activeTab === 'calendar') return <AppointmentsView appointments={[...(patientData.upcoming || []), ...(patientData.history || [])]} onBookClick={onBookClick} />;
   if (activeTab === 'docs') return <DocumentsView prescriptions={patientData.prescriptions || []} />;
   if (activeTab === 'profile') return <ProfileView patientData={patientData} />;
   if (activeTab === 'settings') return <SettingsView patientData={patientData} />
+  if (activeTab === 'queue') {
+    // We assume the first upcoming appointment's doctor is the one to track, or we'd need a doctor selector
+    const doctorId = patientData.upcoming?.[0]?.doctorId?._id || "60b8c8d8f1e6b3b3a4a9c888"; 
+    const doctorName = patientData.upcoming?.[0]?.doctor || "Dr. Specialist";
+    return <LiveQueueUI doctorId={doctorId} doctorName={doctorName} />;
+  }
 
   return (
     <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto overflow-x-hidden no-scrollbar">

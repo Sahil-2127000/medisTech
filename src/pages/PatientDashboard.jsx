@@ -109,6 +109,7 @@ const PatientDashboard = () => {
     prescriptionsCount: prescriptions.length,
     prescriptions: prescriptions,
     upcoming: upcomingFiltered.map(app => ({
+      doctorId: app.doctorId,
       doctor: `Dr. ${app.doctorId?.fullName || 'Unknown'}`,
       date: app.date,
       time: app.time,
