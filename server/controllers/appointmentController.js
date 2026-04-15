@@ -120,6 +120,10 @@ exports.bookAppointment = async (req, res) => {
        return res.status(400).json({ message: 'This slot was strictly just absorbed dynamically. Please reload slots.' });
     }
 
+    // Calculate the next token number for this doctor on this day
+    const count = await Appointment.countDocuments({ doctorId: ultimateDoctorId, date });
+    const tokenNumber = count + 1;
+
     const newAppt = new Appointment({
       patientId: patientIdOverride || req.user.id,
       doctorId: ultimateDoctorId,
@@ -127,7 +131,8 @@ exports.bookAppointment = async (req, res) => {
       time,
       originalTime: time,
       symptoms,
-      status: status || 'pending'
+      status: status || 'pending',
+      tokenNumber
     });
     await newAppt.save();
 
@@ -281,5 +286,43 @@ exports.resolveEmergencyShift = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Emergency math generation failed natively.' });
+  }
+};
+
+// Live Queue Tracking Logic
+exports.getQueueStatus = async (req, res) => {
+  try {
+    const { doctorId, date } = req.query;
+    if (!doctorId || !date) return res.status(400).json({ message: 'Params required.' });
+
+    // Find the token currently 'in_progress'
+    const active = await Appointment.findOne({ doctorId, date, status: 'in_progress' }).sort({ tokenNumber: 1 });
+    
+    // Find the last completed token to estimate if no one is in_progress
+    const lastCompleted = await Appointment.findOne({ doctorId, date, status: 'completed' }).sort({ tokenNumber: -1 });
+
+    const currentlyServing = active ? active.tokenNumber : (lastCompleted ? lastCompleted.tokenNumber : 0);
+
+    // If the caller is a patient, find their token and calculate wait
+    let patientToken = null;
+    let waitTime = 0;
+    if (req.user && req.user.role === 'patient') {
+      const myAppt = await Appointment.findOne({ doctorId, date, patientId: req.user.id, status: { $in: ['pending', 'approved'] } });
+      if (myAppt) {
+        patientToken = myAppt.tokenNumber;
+        // Calculation: (MyToken - CurrentlyServing) * average slot duration (30 mins baseline)
+        const gap = patientToken - currentlyServing;
+        waitTime = gap > 0 ? gap * 30 : 0; // Baseline 30 mins
+      }
+    }
+
+    res.status(200).json({
+      currentlyServing,
+      patientToken,
+      estimatedWaitMinutes: waitTime,
+      activeAppointmentId: active ? active._id : null
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Queue data failed' });
   }
 };
