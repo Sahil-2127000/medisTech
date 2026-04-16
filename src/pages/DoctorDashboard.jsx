@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import DoctorSidebar from '../components/doctor-dashboard/DoctorSidebar';
 import StatCards from '../components/doctor-dashboard/StatCards';
 import TodayAppointments from '../components/doctor-dashboard/TodayAppointments';
+import UpcomingPatient from '../components/doctor-dashboard/UpcomingPatient';
 import CurrentPatient from '../components/doctor-dashboard/CurrentPatient';
-// import AppointmentRequests from '../components/doctor-dashboard/AppointmentRequests';
 import DoctorProfile from '../components/doctor-dashboard/DoctorProfile';
 import AvailabilityConfig from '../components/doctor-dashboard/AvailabilityConfig';
 import EmergencyCase from '../components/doctor-dashboard/EmergencyCase';
@@ -12,142 +12,168 @@ import PatientHistoryView from '../components/doctor-dashboard/PatientHistoryVie
 import AlertBell from '../components/doctor-dashboard/AlertBell';
 import ManageBlogs from '../components/doctor-dashboard/ManageBlogs';
 
-// Helper mock seeder if localStorage is uniquely empty
 const ensureMockData = () => {
-    if (!localStorage.getItem('doc_appointments')) {
-        const todayRaw = new Date();
-        const today = `${String(todayRaw.getDate()).padStart(2, '0')}-${String(todayRaw.getMonth() + 1).padStart(2, '0')}-${todayRaw.getFullYear()}`;
-        const mocks = [
-            { id: '1', accountEmail: 'patient1@email.com', name: 'Alice Smith', age: 34, gender: 'Female', date: today, time: '09:00', status: 'approved' },
-            { id: '2', accountEmail: 'patient2@email.com', name: 'Bob Jones', age: 45, gender: 'Male', date: today, time: '10:30', status: 'pending' },
-            { id: '3', accountEmail: 'patient3@email.com', name: 'Charlie Day', age: 29, gender: 'Male', date: today, time: '11:00', status: 'approved' },
-            { id: '4', accountEmail: 'patient4@email.com', name: 'Diana Prince', age: 38, gender: 'Female', date: '01-12-2027', time: '14:00', status: 'completed' },
-            { id: '5', accountEmail: 'patient5@email.com', name: 'Evan Vance', age: 50, gender: 'Male', date: '05-01-2028', time: '08:30', status: 'rejected' }
-        ];
-        localStorage.setItem('doc_appointments', JSON.stringify(mocks));
-    }
+  if (!localStorage.getItem('doc_appointments')) {
+    const todayRaw = new Date();
+    const today = `${String(todayRaw.getDate()).padStart(2, '0')}-${String(todayRaw.getMonth() + 1).padStart(2, '0')}-${todayRaw.getFullYear()}`;
+    const mocks = [
+      { id: '1', accountEmail: 'patient1@email.com', name: 'Alice Smith', age: 34, gender: 'Female', date: today, time: '09:00', status: 'approved' },
+      { id: '2', accountEmail: 'patient2@email.com', name: 'Bob Jones', age: 45, gender: 'Male', date: today, time: '10:30', status: 'pending' },
+      { id: '3', accountEmail: 'patient3@email.com', name: 'Charlie Day', age: 29, gender: 'Male', date: today, time: '11:00', status: 'approved' }
+    ];
+    localStorage.setItem('doc_appointments', JSON.stringify(mocks));
+  }
 };
 
 const DoctorDashboard = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    // Natively rip routing variables dynamically converting explicit hierarchy structures
-    const pathParts = location.pathname.split('/').filter(Boolean);
-    let activeTab = pathParts[1] || 'dashboard'; // /doctordashboard/appointments -> activeTab = 'appointments'
-    // Safely mapping plural constraint fallbacks
-    if (activeTab === 'appointment') activeTab = 'appointments';
-    const setActiveTab = (tab) => navigate(`/doctordashboard/${tab}`);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  let activeTab = pathParts[1] || 'dashboard';
+  if (activeTab === 'appointment') activeTab = 'appointments';
+  const setActiveTab = (tab) => navigate(`/doctordashboard/${tab}`);
 
-    const [appointments, setAppointments] = useState([]); // Today's dynamic appointments
-    const [historyAppointments, setHistoryAppointments] = useState([]); // Master absolute total records
-    const [profile, setProfile] = useState({});
-    const [showHistoryView, setShowHistoryView] = useState(false); // New Interactive Gateway
-    const activeUserEmail = "doctor@clinic.com"; // Conceptually grabbed from auth state
+  const [appointments, setAppointments] = useState([]);
+  const [historyAppointments, setHistoryAppointments] = useState([]);
+  const [profile, setProfile] = useState({});
+  const [showHistoryView, setShowHistoryView] = useState(false);
+  const activeUserEmail = "doctor@clinic.com";
 
-    // Intercept pure Native Window Back Buttons actively stopping dashboard leaks completely
-    useEffect(() => {
-        // Only map the popstate strictly natively if the User is fundamentally at the Root Base layer physically!
-        if (activeTab !== 'dashboard') return;
-
-        const handlePopState = (e) => {
-            e.preventDefault();
-            const confirmLogout = window.confirm("You are explicitly leaving the secure Doctor Dashboard. You will be get logged out. Do you wish to proceed ?");
-            if (confirmLogout) {
-                sessionStorage.removeItem('user');
-                sessionStorage.removeItem('token');
-                window.location.href = '/'; // Shift architecture securely to landing page directly
-            } else {
-                window.history.pushState(null, "", window.location.pathname);
-            }
-        };
-        // Lock the first frame implicitly preventing default pops
+  useEffect(() => {
+    if (activeTab !== 'dashboard') return;
+    const handlePopState = (e) => {
+      e.preventDefault();
+      if (window.confirm("You are explicitly leaving the secure Doctor Dashboard. You will be get logged out. Do you wish to proceed ?")) {
+        sessionStorage.clear();
+        window.location.href = '/';
+      } else {
         window.history.pushState(null, "", window.location.pathname);
-        window.addEventListener("popstate", handlePopState);
-        return () => window.removeEventListener("popstate", handlePopState);
-    }, [activeTab]);
-
-    // Generic backend routing natively syncing sidebar identity
-    const loadDoctorProfile = async () => {
-        try {
-            const res = await fetch('http://localhost:5001/api/auth/profile', { credentials: 'include' });
-            if (res.ok) {
-                const data = await res.json();
-                setProfile({
-                    firstName: data.fullName?.split(' ')[0] || '',
-                    lastName: data.fullName?.split(' ').slice(1).join(' ') || '',
-                    specialization: data.specialization || '',
-                    photo: data.photo || ''
-                });
-            }
-        } catch (err) {
-            console.error("Binding profile structure natively failed.");
-        }
+      }
     };
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [activeTab]);
 
-    // Generic backend routing network polling
-    const loadDoctorAppointments = async () => {
-        try {
-            const res = await fetch('http://localhost:5001/api/appointments/doctor', { credentials: 'include' });
-            if (res.ok) {
-                const data = await res.json();
-                // Data formatting mapping DB standard precisely
-                const mapped = data.map(app => ({
-                    id: app._id,
-                    patientId: app.patientId?._id || app.patientId,
-                    name: app.patientId?.fullName || "Walk-In",
-                    age: app.patientId?.age || "--",
-                    gender: app.patientId?.gender || "Unknown",
-                    time: app.time,
-                    date: app.date,
-                    symptoms: app.symptoms,
-                    status: app.status
-                }));
-                setAppointments(mapped);
-            }
-        } catch (err) {
-            console.error("Binding failure natively", err);
-        }
+  const loadDoctorProfile = async () => {
+    try {
+      const res = await fetch('http://localhost:5001/api/auth/profile', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setProfile({
+          firstName: data.fullName?.split(' ')[0] || '',
+          lastName: data.fullName?.split(' ').slice(1).join(' ') || '',
+          specialization: data.specialization || '',
+          photo: data.photo || ''
+        });
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  const loadDoctorAppointments = async () => {
+    try {
+      const res = await fetch('http://localhost:5001/api/appointments/doctor', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setAppointments(data.map(app => ({
+          id: app._id,
+          patientId: app.patientId?._id || app.patientId,
+          name: app.patientId?.fullName || "Walk-In",
+          age: app.patientId?.age || "--",
+          gender: app.patientId?.gender || "Unknown",
+          time: app.time,
+          date: app.date,
+          symptoms: app.symptoms,
+          status: app.status
+        })));
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  const loadDoctorHistory = async () => {
+    try {
+      const res = await fetch('http://localhost:5001/api/appointments/doctor/history', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setHistoryAppointments(data.map(app => ({
+          id: app._id,
+          patientId: app.patientId?._id || app.patientId,
+          name: app.patientId?.fullName || "Walk-In",
+          age: app.patientId?.age || "--",
+          gender: app.patientId?.gender || "Unknown",
+          time: app.time,
+          date: app.date,
+          symptoms: app.symptoms,
+          status: app.status
+        })));
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  useEffect(() => {
+    ensureMockData(); loadDoctorAppointments(); loadDoctorHistory(); loadDoctorProfile();
+    const handleUpdate = () => { loadDoctorAppointments(); loadDoctorHistory(); };
+    window.addEventListener("appointmentsUpdated", handleUpdate);
+    window.addEventListener("doctorProfileUpdated", loadDoctorProfile);
+    const interval = setInterval(handleUpdate, 15000);
+    return () => {
+      window.removeEventListener("appointmentsUpdated", handleUpdate);
+      window.removeEventListener("doctorProfileUpdated", loadDoctorProfile);
+      clearInterval(interval);
     };
+  }, []);
 
-    const loadDoctorHistory = async () => {
-        try {
-            const res = await fetch('http://localhost:5001/api/appointments/doctor/history', { credentials: 'include' });
-            if (res.ok) {
-                const data = await res.json();
-                const mapped = data.map(app => ({
-                    id: app._id,
-                    patientId: app.patientId?._id || app.patientId,
-                    name: app.patientId?.fullName || "Walk-In",
-                    age: app.patientId?.age || "--",
-                    gender: app.patientId?.gender || "Unknown",
-                    time: app.time,
-                    date: app.date,
-                    symptoms: app.symptoms,
-                    status: app.status
-                }));
-                setHistoryAppointments(mapped);
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    };
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await fetch(`http://localhost:5001/api/appointments/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status: newStatus })
+      });
+      loadDoctorAppointments();
+    } catch (err) { console.error(err); }
+  };
 
-    useEffect(() => {
-        ensureMockData();
-        loadDoctorAppointments();
-        loadDoctorHistory();
-        loadDoctorProfile();
+  const handleFinishConsultation = async (id, patientId, prescriptionData) => {
+    try {
+      const formattedMedicines = (prescriptionData.medicines || []).map(med => ({
+        name: med.name, dosage: med.dosage,
+        frequency: `${(med.timing || []).join(' - ')} (${med.food || 'After Food'})`,
+        duration: med.duration || "As Directed"
+      }));
+      await fetch('http://localhost:5001/api/prescriptions/issue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          appointmentId: id, patientId: patientId || "60b8c8d8f1e6b3b3a4a9c123",
+          diagnosis: "General evaluation completed.", medicines: formattedMedicines,
+          pdfBase64: prescriptionData.pdfBase64,
+          clinicalNotes: "Issued securely via Advanced Prescription Builder natively."
+        })
+      });
+      loadDoctorAppointments();
+    } catch (err) { console.error(err); }
+  };
 
-        const handleUpdate = () => { loadDoctorAppointments(); loadDoctorHistory(); };
-        window.addEventListener("appointmentsUpdated", handleUpdate);
-        window.addEventListener("doctorProfileUpdated", loadDoctorProfile);
-        const interval = setInterval(handleUpdate, 15000); return () => {
-            window.removeEventListener("appointmentsUpdated", handleUpdate);
-            window.removeEventListener("doctorProfileUpdated", loadDoctorProfile);
-            clearInterval(interval);
-        };
-    }, []);
+  const handleDeclareEmergency = async (data) => {
+    localStorage.setItem('emergency_start_time', Date.now());
+    window.dispatchEvent(new Event("emergencyStateToggled"));
+    try {
+      await fetch('http://localhost:5001/api/appointments/book', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+        body: JSON.stringify({
+          patientIdOverride: "60b8c8d8f1e6b3b3a4a9c123",
+          date: `${String(new Date().getDate()).padStart(2, '0')}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${new Date().getFullYear()}`,
+          symptoms: `[EMERGENCY] ${data.reason}`, status: "emergency_active"
+        })
+      });
+      loadDoctorAppointments();
+    } catch (err) { }
+  };
 
+<<<<<<< HEAD
     // Action Mutators strictly utilizing the explicit Dispatch payload flow
     const handleStatusChange = async (id, newStatus) => {
         try {
@@ -202,8 +228,25 @@ const DoctorDashboard = () => {
         const timestamp = Date.now();
         localStorage.setItem('emergency_start_time', timestamp);
         // Broadcast state universally locally for blazing fast UI bounce
+=======
+  const handleResolveEmergency = async () => {
+    const startTimeStr = localStorage.getItem('emergency_start_time');
+    localStorage.removeItem('emergency_start_time');
+    if (startTimeStr) {
+      const elapsedMinutes = Math.floor((Date.now() - parseInt(startTimeStr, 10)) / 60000);
+      try {
+        await fetch('http://localhost:5001/api/appointments/emergency-resolve', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+          body: JSON.stringify({ elapsedMinutes, date: `${String(new Date().getDate()).padStart(2, '0')}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${new Date().getFullYear()}` })
+        });
+>>>>>>> Nitish
         window.dispatchEvent(new Event("emergencyStateToggled"));
+        loadDoctorAppointments();
+      } catch (err) { }
+    }
+  };
 
+<<<<<<< HEAD
         try {
             // Create Database mapping
             await fetch('http://localhost:5001/api/appointments/book', {
@@ -324,8 +367,83 @@ const DoctorDashboard = () => {
                 )}
 
             </div>
+=======
+  const renderPatientCard = (patient) => (
+    <div className="bg-slate-50/80 rounded-3xl p-6 border border-slate-100 flex flex-col items-center text-center relative overflow-hidden transition-all duration-300 w-full hover:bg-white hover:shadow-xl hover:shadow-blue-500/5 group">
+      <div className="w-16 h-16 rounded-full bg-linear-to-tr from-clinic-600 to-blue-400 flex items-center justify-center text-white font-extrabold text-2xl shadow-lg mb-3 ring-4 ring-blue-50">
+        {(patient.name || "P")[0].toUpperCase()}
+      </div>
+      <h2 className="text-xl font-black text-slate-800 mb-1">{patient.name}</h2>
+      <div className="text-[10px] font-black text-clinic-600 bg-blue-50 px-3 py-1 rounded-full tracking-widest uppercase mb-4">
+        {patient.age || "--"} yrs • {patient.gender || "Unknown"}
+      </div>
+      <div className="w-full bg-white/80 rounded-2xl p-4 flex justify-between items-center text-left border border-slate-50 group-hover:border-blue-100 transition-colors">
+        <div>
+          <div className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-0.5">Scheduled</div>
+          <div className="font-extrabold text-slate-700 text-lg">{patient.time}</div>
+>>>>>>> Nitish
         </div>
-    );
+        <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-clinic-600">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen w-full bg-slate-50/50 p-0 md:p-8 flex items-center justify-center font-sans tracking-tight text-slate-800 transition-colors duration-300 relative overflow-hidden selection:bg-blue-200">
+      <div className="absolute top-0 left-0 w-full h-[500px] bg-linear-to-b from-blue-50 via-cyan-50/30 to-transparent pointer-events-none z-0"></div>
+      <div className="w-full max-w-[1500px] h-[100vh] md:h-[90vh] md:min-h-[800px] bg-white/80 backdrop-blur-2xl md:rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.06)] flex overflow-hidden border-white/60 z-10 relative">
+        <DoctorSidebar activeTab={activeTab} setActiveTab={(t) => { setActiveTab(t); setShowHistoryView(false); }} profile={profile} />
+
+        {(activeTab === 'dashboard' || activeTab === 'appointments') && (
+          <div className="flex-1 h-full pt-4 md:pt-6 pb-8 md:pb-12 px-6 md:px-12 flex flex-col overflow-hidden bg-transparent">
+            {showHistoryView ? (
+              <div className="flex-1 overflow-y-auto no-scrollbar">
+                <PatientHistoryView historyData={historyAppointments} onBack={() => setShowHistoryView(false)} />
+              </div>
+            ) : (
+              <>
+                {activeTab === 'dashboard' && (
+                  <div className="flex flex-col h-full overflow-hidden">
+                    <div className="flex justify-between items-center mb-4 w-full shrink-0">
+                      <h1 className="text-3xl font-black text-slate-800 tracking-tighter">Dashboard</h1>
+                      <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                    </div>
+                    <div className="relative w-full min-h-[110px] rounded-[2rem] overflow-hidden mb-4 bg-linear-to-r from-clinic-600 to-blue-400 flex items-center shadow-xl shadow-clinic-600/20 px-10 shrink-0">
+                      <div className="relative z-10 flex flex-col">
+                        <h2 className="text-3xl font-black text-white mb-1">Welcome , Dr. {profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}` : 'Doctor'}</h2>
+                        <p className="text-blue-50 font-medium opacity-90">Have a nice and healthy day!</p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 mb-4">
+                        <StatCards appointments={appointments} historicalTotal={historyAppointments.length} onCardClick={(id) => { if (id === 'total-patients') setShowHistoryView(true); }} />
+                    </div>
+
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 w-full flex-1 min-h-0 pb-10">
+                      <UpcomingPatient appointments={appointments} onStatusChange={handleStatusChange} renderPatientCard={renderPatientCard} />
+                      <CurrentPatient appointments={appointments} onStatusChange={handleStatusChange} onFinishConsultation={handleFinishConsultation} renderPatientCard={renderPatientCard} />
+                      <TodayAppointments appointments={appointments} />
+                    </div>
+                  </div>
+                )}
+                {activeTab === 'appointments' && (
+                  <div className="flex justify-between items-center mb-8 w-full">
+                    <h1 className="text-3xl font-black text-slate-800 tracking-tighter">All Queue Records</h1>
+                    <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+        {activeTab === 'profile' && <DoctorProfile email={activeUserEmail} />}
+        {activeTab === 'availability' && <AvailabilityConfig />}
+        {activeTab === 'blogs' && <ManageBlogs />}
+        {activeTab === 'emergency' && <EmergencyCase onDeclareEmergency={handleDeclareEmergency} onResolveEmergency={handleResolveEmergency} />}
+      </div>
+    </div>
+  );
 };
 
 export default DoctorDashboard;
