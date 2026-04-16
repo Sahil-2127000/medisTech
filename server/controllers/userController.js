@@ -176,24 +176,3 @@ exports.disable2FA = async (req, res) => {
     res.status(500).json({ message: 'Failed dissolving 2FA natively' });
   }
 };
-
-exports.updatePreferences = async (req, res) => {
-  try {
-    const { emailNotifications, smsNotifications } = req.body;
-    const updates = {};
-    if (emailNotifications !== undefined) updates.emailNotifications = emailNotifications;
-    if (smsNotifications !== undefined) updates.smsNotifications = smsNotifications;
-
-    let updated;
-    if (req.user.role === 'doctor') {
-      updated = await Doctor.findByIdAndUpdate(req.user.id, { $set: updates }, { new: true }).select('-password');
-    } else {
-      updated = await User.findByIdAndUpdate(req.user.id, { $set: updates }, { new: true }).select('-password');
-    }
-    
-    res.status(200).json({ message: 'Preferences updated dynamically.', user: updated });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to update user preferences natively.' });
-  }
-};

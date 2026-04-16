@@ -1,119 +1,151 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const DocumentsView = ({ prescriptions = [] }) => {
+const DocumentsView = ({ prescriptions = [], labResults = [], reports = [] }) => {
+  const [activeTab, setActiveTab] = useState('prescriptions');
+
   const safeFormatLong = (d) => {
     if (!d) return 'Recently';
-    const date = d && d.includes('-') && d.split('-')[0].length === 4 ? new Date(d) : new Date(d);
-    // If it's a standard Date string or ISO
-    const parsedDate = new Date(d);
-    return isNaN(parsedDate.getTime()) ? 'Recently' : parsedDate.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const date = new Date(d);
+    return isNaN(date.getTime()) ? 'Recently' : date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   };
 
-  const downloadPDF = (base64, filename) => {
-    if (!base64) return;
-    const link = document.createElement('a');
-    link.href = base64;
-    link.download = filename || 'prescription.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const safeFormatShort = (d) => {
+    if (!d) return 'Recently';
+    const date = new Date(d);
+    return isNaN(date.getTime()) ? 'Recently' : date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   return (
-    <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar bg-transparent">
-      <div className="mb-10">
-        <h1 className="text-4xl font-extrabold text-[#021024]">My Prescriptions</h1>
-        <p className="text-gray-400 font-medium mt-1">Access and download your digital prescriptions</p>
+    <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar">
+      <div className="mb-8">
+        <h1 className="text-4xl font-extrabold text-[#021024]">Medical Documents</h1>
+        <p className="text-gray-400 font-medium mt-1">Access your prescriptions, lab results, and reports</p>
+      </div>
+
+      <div className="flex gap-4 mb-8 border-b border-gray-100 pb-2 overflow-x-auto no-scrollbar">
+        <button onClick={() => setActiveTab('prescriptions')} className={`px-4 py-2 font-semibold whitespace-nowrap transition-colors ${activeTab === 'prescriptions' ? 'text-[#5265ec] border-b-2 border-[#5265ec]' : 'text-gray-400 hover:text-slate-700'}`}>Prescriptions</button>
+        <button onClick={() => setActiveTab('lab')} className={`px-4 py-2 font-semibold whitespace-nowrap transition-colors ${activeTab === 'lab' ? 'text-[#5265ec] border-b-2 border-[#5265ec]' : 'text-gray-400 hover:text-slate-700'}`}>Lab Results</button>
+        <button onClick={() => setActiveTab('reports')} className={`px-4 py-2 font-semibold whitespace-nowrap transition-colors ${activeTab === 'reports' ? 'text-[#5265ec] border-b-2 border-[#5265ec]' : 'text-gray-400 hover:text-slate-700'}`}>Reports</button>
       </div>
 
       <div className="flex-1">
-        <div className="space-y-6">
-          {prescriptions.length === 0 ? (
-            <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_15px_50px_rgba(0,0,0,0.04)] p-16 flex flex-col items-center justify-center animate-fade-in shadow-inner">
-               <div className="w-20 h-20 bg-[#5265ec]/10 text-[#5265ec] rounded-2xl flex items-center justify-center mb-6 shadow-sm ring-8 ring-[#5265ec]/5 animate-pulse">
-                 <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-               </div>
-               <h3 className="text-2xl font-black text-slate-800 mb-3">No Prescriptions Found</h3>
-               <p className="text-gray-400 text-center max-w-xs font-medium">Your medical history is currently empty. Once a doctor issues a prescription, it will appear here instantly.</p>
-            </div>
-          ) : (
-            prescriptions.map((px, i) => (
-              <div key={px._id || i} className="bg-white rounded-[2rem] border border-gray-50 shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-8 transition-all hover:shadow-[0_20px_60px_rgba(82,101,236,0.08)] group relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50/50 rounded-full -mr-16 -mt-16 blur-3xl transition-colors group-hover:bg-blue-100/50"></div>
-                
-                <div className="flex flex-col lg:flex-row justify-between lg:items-center mb-8 gap-6 relative z-10">
-                  <div className="flex items-start gap-5">
-                    <div className="w-16 h-16 rounded-2xl bg-[#5265ec]/10 text-[#5265ec] flex items-center justify-center shadow-inner shrink-0 group-hover:scale-110 transition-transform">
-                      <svg className="w-8 h-8 font-black" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
-                    </div>
+        {activeTab === 'prescriptions' && (
+          <div className="space-y-6">
+            {prescriptions.length === 0 ? (
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-10 flex flex-col items-center justify-center">
+                 <div className="w-16 h-16 bg-[#5265ec]/10 text-[#5265ec] rounded-full flex items-center justify-center mb-4">
+                   <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                 </div>
+                 <h3 className="text-xl font-bold text-slate-800 mb-2">No Prescriptions Yet</h3>
+                 <p className="text-gray-500 text-center">You don't have any prescriptions assigned by doctors yet.</p>
+              </div>
+            ) : (
+              prescriptions.map((px, i) => (
+                <div key={i} className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-6">
+                  <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
                     <div>
-                      <h3 className="font-extrabold text-2xl text-slate-800 tracking-tight">
-                        Prescription from <span className="text-[#5265ec]">Dr. {px.doctorId?.fullName || 'Specialist'}</span>
+                      <h3 className="font-bold text-xl text-slate-800 flex items-center gap-2">
+                        <svg className="w-5 h-5 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Prescription from Dr. {px.doctorId?.fullName || 'Doctor'}
                       </h3>
-                      <div className="flex items-center gap-3 mt-1.5 font-bold">
-                        <span className="text-xs uppercase tracking-widest text-gray-400 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">{safeFormatLong(px.createdAt)}</span>
-                        <span className="w-1 h-1 bg-gray-200 rounded-full"></span>
-                        <span className="text-sm text-[#5265ec]/80">ID: {px._id?.toString().slice(-6).toUpperCase()}</span>
-                      </div>
+                      <p className="text-sm text-gray-400 font-medium mt-1 border-l-2 border-[#5265ec] pl-2 ml-1">{safeFormatLong(px.createdAt)}</p>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 shrink-0">
-                    {px.pdfBase64 && (
-                      <button 
-                        onClick={() => downloadPDF(px.pdfBase64, `Prescription_${px._id}.pdf`)}
-                        className="bg-slate-900 hover:bg-[#5265ec] text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-xl shadow-slate-900/10 transition-all flex items-center gap-2.5 active:scale-95 group/btn"
-                      >
-                        <svg className="w-5 h-5 transition-transform group-hover/btn:translate-y-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                        Download PDF Copy
-                      </button>
-                    )}
-                    <div className="bg-blue-50 text-[#5265ec] px-5 py-3 rounded-2xl text-sm font-extrabold border border-blue-100 shadow-sm whitespace-nowrap">
+                    <div className="bg-blue-50 text-[#5265ec] px-4 py-2 rounded-xl text-sm font-bold border border-blue-100 shadow-sm shrink-0">
                       Diagnosis: {px.diagnosis}
                     </div>
                   </div>
-                </div>
-                
-                {px.clinicalNotes && (
-                  <div className="mb-8 p-6 rounded-3xl bg-slate-50/50 border border-gray-100 relative group-hover:bg-blue-50/30 transition-colors">
-                    <div className="flex items-center gap-2 mb-2">
-                       <svg className="w-4 h-4 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
-                       <span className="text-[10px] uppercase tracking-widest font-black text-[#5265ec]">Clinical Observations</span>
+                  
+                  {px.clinicalNotes && (
+                    <div className="mb-6 text-sm text-slate-600 bg-[#fafcff] p-4 rounded-2xl border border-blue-100 shadow-sm relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-[#5265ec]"></div>
+                      <strong className="text-slate-800 block mb-1">Clinical Notes</strong> 
+                      {px.clinicalNotes}
                     </div>
-                    <p className="text-slate-600 font-medium leading-relaxed">{px.clinicalNotes}</p>
-                  </div>
-                )}
+                  )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {px.medicines && px.medicines.map((med, idx) => (
-                    <div key={idx} className="flex flex-col bg-white border border-gray-100 rounded-3xl p-6 shadow-sm hover:border-[#5265ec]/30 hover:shadow-md transition-all group/med">
-                      <div className="font-extrabold text-slate-800 text-lg mb-4 flex items-center justify-between">
-                        {med.name}
-                        <div className="w-8 h-8 rounded-xl bg-green-50 text-green-600 flex items-center justify-center group-hover/med:bg-green-600 group-hover/med:text-white transition-colors">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  <div className="mt-4">
+                    <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                      <span className="w-6 h-6 bg-green-100 text-green-600 rounded flex items-center justify-center text-xs">Rx</span>
+                      Medicines & Timing
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {px.medicines && px.medicines.map((med, idx) => (
+                        <div key={idx} className="flex flex-col bg-white hover:bg-[#fafcff] transition-colors border border-gray-200 rounded-2xl p-5 shadow-sm group">
+                          <div className="font-bold text-slate-800 text-lg mb-3 flex items-start justify-between">
+                            {med.name}
+                            <svg className="w-5 h-5 text-gray-300 group-hover:text-[#5265ec] transition-colors" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3 mt-auto">
+                             <div className="bg-gray-50 rounded-xl p-2 border border-gray-100">
+                               <span className="text-gray-400 text-[10px] uppercase font-bold tracking-wider block mb-0.5">Dosage</span>
+                               <span className="font-semibold text-slate-700 text-sm">{med.dosage}</span>
+                             </div>
+                             <div className="bg-gray-50 rounded-xl p-2 border border-gray-100">
+                               <span className="text-gray-400 text-[10px] uppercase font-bold tracking-wider block mb-0.5">Frequency</span>
+                               <span className="font-semibold text-slate-700 text-sm">{med.frequency}</span>
+                             </div>
+                             <div className="col-span-2 bg-[#5265ec]/5 rounded-xl p-2 border border-[#5265ec]/10">
+                               <span className="text-[#5265ec]/70 text-[10px] uppercase font-bold tracking-wider block mb-0.5">Duration</span>
+                               <span className="font-semibold text-[#5265ec] text-sm">{med.duration}</span>
+                             </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="space-y-3">
-                         <div className="flex justify-between items-center bg-slate-50 rounded-2xl px-4 py-2.5">
-                            <span className="text-[10px] uppercase font-bold text-gray-400">Dosage</span>
-                            <span className="font-bold text-slate-700">{med.dosage}</span>
-                         </div>
-                         <div className="flex justify-between items-center bg-slate-50 rounded-2xl px-4 py-2.5">
-                            <span className="text-[10px] uppercase font-bold text-gray-400">Frequency</span>
-                            <span className="font-bold text-slate-700">{med.frequency}</span>
-                         </div>
-                         <div className="flex justify-between items-center bg-blue-50/50 rounded-2xl px-4 py-2.5 ring-1 ring-blue-100">
-                            <span className="text-[10px] uppercase font-bold text-[#5265ec]/70">Duration</span>
-                            <span className="font-bold text-[#5265ec]">{med.duration}</span>
-                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+              ))
+            )}
+          </div>
+        )}
+        
+        {activeTab === 'lab' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+            {labResults.length === 0 ? (
+              <div className="col-span-full text-center text-gray-500 py-10 font-medium">No lab results available.</div>
+            ) : (
+              labResults.map((item, idx) => (
+                <div key={idx} className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-6 flex flex-col hover:-translate-y-1 transition-transform cursor-pointer group">
+                  <div className="w-14 h-14 bg-pink-50 text-pink-500 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-pink-100 transition-colors">
+                    <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                  </div>
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="font-bold text-lg text-slate-800">{item.title}</h3>
+                    <span className="bg-pink-100 text-pink-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">{item.status}</span>
+                  </div>
+                  <p className="text-sm text-gray-400 font-medium mb-4">Added {safeFormatShort(item.createdAt || item.date)}</p>
+                  <button onClick={() => window.open(item.fileUrl, '_blank')} className="mt-auto text-pink-500 font-semibold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    View Document
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === 'reports' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+             {reports.length === 0 ? (
+               <div className="col-span-full text-center text-gray-500 py-10 font-medium">No reports available.</div>
+             ) : (
+               reports.map((item, idx) => (
+                <div key={idx} className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-6 flex flex-col hover:-translate-y-1 transition-transform cursor-pointer group">
+                  <div className="w-14 h-14 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-teal-100 transition-colors">
+                    <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  </div>
+                  <h3 className="font-bold text-lg mb-1 text-slate-800">{item.title}</h3>
+                  <p className="text-sm text-[#5265ec] font-semibold mb-1">Dr. {item.doctorId?.fullName || 'Doctor'}</p>
+                  <p className="text-sm text-gray-400 font-medium mb-4">Added {safeFormatShort(item.createdAt || item.date)}</p>
+                  <button onClick={() => window.open(item.fileUrl, '_blank')} className="mt-auto text-teal-500 font-semibold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    View Document
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                  </button>
+                </div>
+              ))
+             )}
+          </div>
+        )}
       </div>
     </div>
   );

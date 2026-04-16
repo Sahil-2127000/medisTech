@@ -21,6 +21,8 @@ const PatientDashboard = () => {
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
+  const [labResults, setLabResults] = useState([]);
+  const [reports, setReports] = useState([]);
   const [emergencyAlert, setEmergencyAlert] = useState(null);
   const [showBooking, setShowBooking] = useState(false);
   const [userProfile, setUserProfile] = useState(savedUser);
@@ -71,12 +73,19 @@ const PatientDashboard = () => {
      } catch(e) { }
 
      try {
-       console.log("[PatientDashboard] Fetching prescriptions...");
        const resRx = await fetch('http://localhost:5001/api/prescriptions/my', { credentials: 'include' });
        if (resRx.ok) {
          const rxData = await resRx.json();
-         console.log("[PatientDashboard] Prescriptions received:", rxData);
          setPrescriptions(rxData);
+       }
+     } catch(e) { }
+
+     try {
+       const resDocs = await fetch('http://localhost:5001/api/documents/my', { credentials: 'include' });
+       if (resDocs.ok) {
+         const d = await resDocs.json();
+         setLabResults(d.labResults || []);
+         setReports(d.reports || []);
        }
      } catch(e) { }
 
@@ -108,8 +117,11 @@ const PatientDashboard = () => {
     appointmentsCount: upcomingFiltered.length, 
     prescriptionsCount: prescriptions.length,
     prescriptions: prescriptions,
+    labTestsCount: labResults.length,
+    labResults: labResults,
+    reports: reports,
+    reportsCount: reports.length,
     upcoming: upcomingFiltered.map(app => ({
-      doctorId: app.doctorId,
       doctor: `Dr. ${app.doctorId?.fullName || 'Unknown'}`,
       date: app.date,
       time: app.time,

@@ -14,6 +14,4 @@ router.get('/doctor/history', authMiddleware, appointmentController.getDoctorHis
 router.put('/:id/status', authMiddleware, appointmentController.updateStatus);
 router.post('/emergency-resolve', authMiddleware, appointmentController.resolveEmergencyShift);
 
-router.get('/queue-status', authMiddleware, appointmentController.getQueueStatus);
-
 module.exports = router;

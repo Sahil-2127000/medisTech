@@ -20,8 +20,7 @@ const AppointmentSchema = new mongoose.Schema({
   
   // High-priority notification flag indicating mathematical delays
   emergencyDelayedMinutes: { type: Number, default: 0 },
-  originalTime: { type: String }, // Snapshot to compare against 'time' shifts
-  tokenNumber: { type: Number } // Sequential Daily Token for the Queue System
+  originalTime: { type: String } // Snapshot to compare against 'time' shifts
   
 }, { timestamps: true });
 

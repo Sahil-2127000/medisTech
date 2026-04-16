@@ -3,19 +3,12 @@ import AppointmentsView from './AppointmentsView';
 import DocumentsView from './DocumentsView';
 import ProfileView from './ProfileView';
 import SettingsView from './SettingsView';
-import LiveQueueUI from './LiveQueueUI';
 
 const MainPanel = ({ patientData, activeTab, onBookClick }) => {
   if (activeTab === 'calendar') return <AppointmentsView appointments={[...(patientData.upcoming || []), ...(patientData.history || [])]} onBookClick={onBookClick} />;
-  if (activeTab === 'docs') return <DocumentsView prescriptions={patientData.prescriptions || []} />;
+  if (activeTab === 'docs') return <DocumentsView prescriptions={patientData.prescriptions || []} labResults={patientData.labResults || []} reports={patientData.reports || []} />;
   if (activeTab === 'profile') return <ProfileView patientData={patientData} />;
   if (activeTab === 'settings') return <SettingsView patientData={patientData} />
-  if (activeTab === 'queue') {
-    // We assume the first upcoming appointment's doctor is the one to track, or we'd need a doctor selector
-    const doctorId = patientData.upcoming?.[0]?.doctorId?._id || "60b8c8d8f1e6b3b3a4a9c888"; 
-    const doctorName = patientData.upcoming?.[0]?.doctor || "Dr. Specialist";
-    return <LiveQueueUI doctorId={doctorId} doctorName={doctorName} />;
-  }
 
   return (
     <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto overflow-x-hidden no-scrollbar">
@@ -56,29 +49,35 @@ const MainPanel = ({ patientData, activeTab, onBookClick }) => {
       {/* Quick Metrics */}
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-2xl font-bold text-slate-800">Your Records</h3>
+        <button className="text-gray-400 text-sm font-semibold flex items-center gap-1 hover:text-slate-600">
+          This month
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
         {[
           { title: 'Appointments', count: patientData.appointmentsCount, color: 'bg-[#5265ec]', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /> },
+          { title: 'Consultations', count: 18, color: 'bg-teal-400', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /> },
+          { title: 'Lab Tests', count: patientData.labTestsCount, color: 'bg-pink-500', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /> },
           { title: 'Prescriptions', count: patientData.prescriptionsCount, color: 'bg-blue-400', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /> }
         ].map((stat, i) => (
-          <div key={i} className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_10px_20px_rgba(0,0,0,0.02)] p-8 flex flex-col items-center justify-center hover:shadow-xl hover:shadow-blue-500/5 transition-all group cursor-pointer">
-            <div className={`w-16 h-16 ${stat.color} rounded-2xl flex items-center justify-center text-white mb-5 shadow-lg group-hover:scale-110 transition-transform`}>
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{stat.icon}</svg>
+          <div key={i} className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-6 flex flex-col items-center justify-center hover:-translate-y-1 transition-transform cursor-pointer">
+            <div className={`w-14 h-14 ${stat.color} rounded-2xl flex items-center justify-center text-white mb-4 shadow-md`}>
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{stat.icon}</svg>
             </div>
-            <div className="text-gray-400 font-bold text-sm mb-1 uppercase tracking-wider">{stat.title}</div>
-            <div className="text-3xl font-black text-slate-800 tracking-tight">{stat.count}</div>
+            <div className="text-gray-400 font-semibold text-sm mb-1">{stat.title}</div>
+            <div className="text-2xl font-bold text-slate-800">{stat.count}</div>
           </div>
         ))}
 
         {/* Empty Add slot mimicking the design dashed block */}
         <div 
           onClick={onBookClick}
-          className="bg-white rounded-[2rem] border-2 border-dashed border-[#5265ec]/20 bg-blue-50/20 flex items-center justify-center hover:bg-blue-50 hover:border-[#5265ec]/40 transition-all cursor-pointer group"
+          className="bg-white rounded-3xl border-2 border-dashed border-[#5265ec]/40 bg-[#5265ec]/5 flex items-center justify-center hover:bg-[#5265ec]/10 transition-colors cursor-pointer min-h-[140px]"
         >
-          <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#5265ec] shadow-md group-hover:scale-110 transition-transform">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#5265ec] shadow-sm">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
           </div>
         </div>
       </div>
@@ -131,8 +130,8 @@ const MainPanel = ({ patientData, activeTab, onBookClick }) => {
               <div className="absolute top-0 left-0 w-full h-1 bg-pink-500"></div>
               <div className="mb-4">
                 <div className="text-xs font-bold text-pink-500 bg-pink-500/10 w-max px-3 py-1 rounded-full mb-3">28 Jan</div>
-                <div className="font-bold text-slate-800 group-hover:text-pink-500 transition-colors leading-tight">General Medical Review</div>
-                <div className="text-xs text-gray-400 font-medium mt-1">Reviewing monthly health vitals</div>
+                <div className="font-bold text-slate-800 group-hover:text-pink-500 transition-colors leading-tight">Lab Results Followup</div>
+                <div className="text-xs text-gray-400 font-medium mt-1">Check blood panels</div>
               </div>
               <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -144,8 +143,8 @@ const MainPanel = ({ patientData, activeTab, onBookClick }) => {
               <div className="absolute top-0 left-0 w-full h-1 bg-teal-400"></div>
               <div className="mb-4">
                 <div className="text-xs font-bold text-teal-500 bg-teal-400/10 w-max px-3 py-1 rounded-full mb-3">30 Jan</div>
-                <div className="font-bold text-slate-800 group-hover:text-teal-400 transition-colors leading-tight">Follow-up Consultation</div>
-                <div className="text-xs text-gray-400 font-medium mt-1">Status check on medication</div>
+                <div className="font-bold text-slate-800 group-hover:text-teal-400 transition-colors leading-tight">Vaccine Injection</div>
+                <div className="text-xs text-gray-400 font-medium mt-1">Flu shot booster</div>
               </div>
               <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
