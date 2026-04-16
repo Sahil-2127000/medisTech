@@ -65,6 +65,26 @@ const SettingsView = ({ patientData }) => {
 
 
 
+  const [emailEnabled, setEmailEnabled] = useState(patientData?.emailNotifications !== false);
+  const [smsEnabled, setSmsEnabled] = useState(patientData?.smsNotifications !== false);
+
+  const togglePreference = async (type, currentVal) => {
+    const newVal = !currentVal;
+    if (type === 'email') setEmailEnabled(newVal);
+    else setSmsEnabled(newVal);
+
+    try {
+      await fetch('http://localhost:5001/api/auth/preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ [type === 'email' ? 'emailNotifications' : 'smsNotifications']: newVal })
+      });
+    } catch (e) {
+      console.error('Failed to sync preference natively.');
+    }
+  };
+
   return (
     <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar">
       <div className="mb-8">
@@ -149,8 +169,11 @@ const SettingsView = ({ patientData }) => {
                 <div className="font-bold text-slate-800">Email Notifications</div>
                 <div className="text-sm text-gray-400 font-medium mt-1">Receive alerts via email</div>
               </div>
-              <div className="w-12 h-6 bg-[#5265ec] rounded-full relative cursor-pointer shadow-inner">
-                <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5 shadow-sm"></div>
+              <div 
+                onClick={() => togglePreference('email', emailEnabled)}
+                className={`w-12 h-6 ${emailEnabled ? 'bg-[#5265ec]' : 'bg-gray-200'} rounded-full relative cursor-pointer shadow-inner transition-colors`}
+              >
+                <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-sm transition-all ${emailEnabled ? 'right-0.5' : 'left-0.5'}`}></div>
               </div>
             </div>
             <div className="flex justify-between items-center pt-2">
@@ -158,8 +181,11 @@ const SettingsView = ({ patientData }) => {
                 <div className="font-bold text-slate-800">SMS Alerts</div>
                 <div className="text-sm text-gray-400 font-medium mt-1">Get updates on your phone</div>
               </div>
-              <div className="w-12 h-6 bg-gray-200 rounded-full relative cursor-pointer shadow-inner">
-                <div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5 shadow-sm"></div>
+              <div 
+                onClick={() => togglePreference('sms', smsEnabled)}
+                className={`w-12 h-6 ${smsEnabled ? 'bg-[#5265ec]' : 'bg-gray-200'} rounded-full relative cursor-pointer shadow-inner transition-colors`}
+              >
+                <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-sm transition-all ${smsEnabled ? 'right-0.5' : 'left-0.5'}`}></div>
               </div>
             </div>
           </div>
