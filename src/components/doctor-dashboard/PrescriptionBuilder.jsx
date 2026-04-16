@@ -172,7 +172,9 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
 
 
       {/* RIGHT PANEL: Live PDF Preview (40%) */}
-      <div className="w-[40%] bg-slate-100 h-full p-8 flex items-center justify-center overflow-y-auto w-full        {/* Printable A4 Paper Container Concept */}
+      <div className="w-[40%] bg-slate-100 h-full p-8 flex items-center justify-center overflow-y-auto w-full" >       
+
+        {/* Printable A4 Paper Container Concept */}
         <div id="prescription-preview" className="w-[100%] max-w-[600px] bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-sm min-h-[850px] relative overflow-hidden flex flex-col justify-start mx-auto print-view-paper">
 
           {/* Graphic Horizontal Watermark */}
@@ -288,9 +290,7 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
         </div>
         </div>
         </div>
-        </div>div>
-      </div>
-    </div>
+        
   );
 };
 
