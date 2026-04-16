@@ -1,265 +1,260 @@
 import React, { useState, useEffect } from 'react';
 
 const AvailabilityConfig = () => {
- const [loading, setLoading] = useState(true);
- const [saving, setSaving] = useState(false);
- const [holidayYear, setHolidayYear] = useState(new Date().getFullYear());
- const [publicHolidays, setPublicHolidays] = useState([]);
- // Core Configuration States mapping purely to MongoDB architecture
- const [weeklyConfig, setWeeklyConfig] = useState([]);
- const [slotDuration, setSlotDuration] = useState(20);
- const [bufferTime, setBufferTime] = useState(2);
- const [blackoutDates, setBlackoutDates] = useState([]);
- const [customDateInput, setCustomDateInput] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [weeklyConfig, setWeeklyConfig] = useState([]);
+  const [slotDuration, setSlotDuration] = useState(20);
+  const [bufferTime, setBufferTime] = useState(2);
+  const [blackoutDates, setBlackoutDates] = useState([]);
+  const [customDateInput, setCustomDateInput] = useState('');
 
- // 1. Fetch Master Configuration from Backend
- useEffect(() => {
- const fetchConfig = async () => {
- try {
- const response = await fetch('http://localhost:5001/api/availability/config', {
- credentials: 'include'
- });
- if (response.ok) {
- const data = await response.json();
- setWeeklyConfig(data.weeklyConfig || []);
- setSlotDuration(data.slotDuration || 10);
- setBufferTime(data.bufferTime || 1);
- setBlackoutDates(data.blackoutDates || []);
- } else {
- console.error("Failed to fetch core availability structure.");
- }
- } catch (err) {
- console.error("Network binding completely failed:", err);
- } finally {
- setLoading(false);
- }
- };
+  // 1. Fetch Master Configuration from Backend
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/api/availability/config', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setWeeklyConfig(data.weeklyConfig || []);
+          setSlotDuration(data.slotDuration || 10);
+          setBufferTime(data.bufferTime || 1);
+          setBlackoutDates(data.blackoutDates || []);
+        }
+      } catch (err) {
+        console.error("Network binding completely failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchConfig();
+  }, []);
 
- fetchConfig();
- }, []);
+  const handleToggleDay = (index) => {
+    const updated = [...weeklyConfig];
+    updated[index].isOff = !updated[index].isOff;
+    if (updated[index].isOff) updated[index].slots = [];
+    else updated[index].slots = [{ start: "09:00", end: "17:00" }];
+    setWeeklyConfig(updated);
+  };
 
- // 2. Fetch standard Holidays (Nager.Date) uniquely defaulting to IN timezone parameters
- // useEffect(() => {
- // const fetchHolidays = async () => {
- // try {
- // const res = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${holidayYear}/IN`);
- // if (res.ok) {
- // try {
- // const data = await res.json();
- // setPublicHolidays(data);
- // } catch (jsonErr) {
- // console.warn("Holiday API returned 200 OK but invalid/empty JSON natively.", jsonErr);
- // setPublicHolidays([]);
- // }
- // } else {
- // setPublicHolidays([]); // Fallback safely gracefully if API year explicitly undefined
- // }
- // } catch (err) {
- // console.error("Failed explicitly calling public holiday API", err);
- // }
- // };
- // fetchHolidays();
- // }, [holidayYear]);
+  const addTimeBlock = (index) => {
+    const updated = [...weeklyConfig];
+    updated[index].slots.push({ start: "12:00", end: "13:00" });
+    setWeeklyConfig(updated);
+  };
 
- // UI Event Handlers
- const handleToggleDay = (index) => {
- const updated = [...weeklyConfig];
- updated[index].isOff = !updated[index].isOff;
- if (updated[index].isOff) updated[index].slots = [];
- else updated[index].slots = [{ start: "09:00", end: "17:00" }];
- setWeeklyConfig(updated);
- };
+  const removeTimeBlock = (dayIndex, slotIndex) => {
+    const updated = [...weeklyConfig];
+    updated[dayIndex].slots.splice(slotIndex, 1);
+    setWeeklyConfig(updated);
+  };
 
- const addTimeBlock = (index) => {
- const updated = [...weeklyConfig];
- updated[index].slots.push({ start: "12:00", end: "13:00" });
- setWeeklyConfig(updated);
- };
+  const updateTime = (dayIndex, slotIndex, type, value) => {
+    const updated = [...weeklyConfig];
+    updated[dayIndex].slots[slotIndex][type] = value;
+    setWeeklyConfig(updated);
+  };
 
- const removeTimeBlock = (dayIndex, slotIndex) => {
- const updated = [...weeklyConfig];
- updated[dayIndex].slots.splice(slotIndex, 1);
- setWeeklyConfig(updated);
- };
+  const addBlackoutDate = (dateString) => {
+    if (dateString && !blackoutDates.includes(dateString)) {
+      setBlackoutDates([...blackoutDates, dateString]);
+    }
+  };
 
- const updateTime = (dayIndex, slotIndex, type, value) => {
- const updated = [...weeklyConfig];
- updated[dayIndex].slots[slotIndex][type] = value;
- setWeeklyConfig(updated);
- };
+  const removeBlackoutDate = (dateString) => {
+    setBlackoutDates(blackoutDates.filter(d => d !== dateString));
+  };
 
- const addBlackoutDate = (dateString, description = "") => {
- if (!blackoutDates.includes(dateString)) {
- setBlackoutDates([...blackoutDates, dateString]);
- }
- };
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const response = await fetch('http://localhost:5001/api/availability/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ weeklyConfig, slotDuration, bufferTime, blackoutDates })
+      });
+      if (response.ok) alert('Availability Successfully Saved!');
+    } catch (err) {
+      alert("Failed to connect to database.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
- const removeBlackoutDate = (dateString) => {
- setBlackoutDates(blackoutDates.filter(d => d !== dateString));
- };
+  if (loading) {
+    return (
+      <div className="flex-1 flex flex-col justify-center items-center h-full bg-slate-50/30">
+        <div className="w-16 h-16 border-4 border-blue-100 border-t-[rgb(32,94,251)] rounded-full animate-spin mb-4"></div>
+        <div className="text-[rgb(32,94,251)] font-black text-xs uppercase tracking-[0.3em] animate-pulse">Syncing Matrix...</div>
+      </div>
+    );
+  }
 
- const handleSave = async () => {
- setSaving(true);
- try {
- const response = await fetch('http://localhost:5001/api/availability/config', {
- method: 'POST',
- headers: { 'Content-Type': 'application/json' },
- credentials: 'include',
- body: JSON.stringify({
- weeklyConfig,
- slotDuration,
- bufferTime,
- blackoutDates
- })
- });
- if (!response.ok) throw new Error("Binding save layout structurally failed.");
- alert('Availability Successfully Saved & Dispatched natively!');
- } catch (err) {
- alert("Failed explicitly connecting to database router.");
- console.error(err);
- } finally {
- setSaving(false);
- }
- };
+  return (
+    <div className="flex-1 overflow-y-auto no-scrollbar py-12 px-8 flex flex-col items-center bg-transparent">
+      <div className="w-full max-w-6xl space-y-10">
+        
+        {/* Header Block: Glassmorphism Gradient */}
+        <div className="relative group overflow-hidden bg-linear-to-r from-[rgb(32,94,251)] to-blue-400 rounded-[3rem] p-10 shadow-2xl shadow-blue-500/20">
+          <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+              <h2 className="text-4xl font-black text-white mb-2 tracking-tight">Availability Matrix</h2>
+              <p className="text-blue-50 font-bold opacity-80 text-sm max-w-lg leading-relaxed">Customize your clinical shifts, slot timings, and blackout dates with real-time database synchronization.</p>
+            </div>
+            <button 
+              onClick={handleSave}
+              disabled={saving}
+              className={`bg-white text-[rgb(32,94,251)] px-10 py-5 rounded-[2rem] font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95 ${saving ? 'opacity-50' : 'hover:bg-blue-50 hover:shadow-2xl'}`}
+            >
+              {saving ? 'Syncing...' : 'Publish Shifts'}
+            </button>
+          </div>
+        </div>
 
- if (loading) {
- return <div className="flex-1 flex justify-center items-center h-full text-clinic-600 font-bold text-xl animate-pulse">Initializing Layout Mathematics...</div>;
- }
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          
+          {/* Main Recurring Schedule Cards */}
+          <div className="lg:col-span-8 space-y-6">
+            <div className="flex items-center justify-between mb-2 px-6">
+               <h3 className="text-xl font-black text-slate-800 tracking-tight">Weekly Recurring Schedule</h3>
+               <div className="flex gap-4">
+                  <div className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-2xl px-4 py-2 flex flex-col items-center shadow-sm">
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Slot Duration</span>
+                    <div className="flex items-center gap-1">
+                      <input type="number" value={slotDuration} onChange={e => setSlotDuration(e.target.value)} className="w-9 text-sm font-black text-[rgb(32,94,251)] bg-transparent outline-none text-center" />
+                      <span className="text-[10px] font-bold text-slate-400 lowercase">min</span>
+                    </div>
+                  </div>
+                  <div className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-2xl px-4 py-2 flex flex-col items-center shadow-sm">
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Buffer Time</span>
+                    <div className="flex items-center gap-2">
+                      <input type="number" value={bufferTime} onChange={e => setBufferTime(e.target.value)} className="w-8 text-sm font-black text-amber-500 bg-transparent outline-none text-center" />
+                      <span className="text-[10px] font-bold text-slate-400 lowercase">hr</span>
+                    </div>
+                  </div>
+               </div>
+            </div>
 
- return (
- <div className="flex-1 overflow-y-auto no-scrollbar py-12 px-8 flex justify-center bg-transparent transition-colors duration-300">
- <div className="w-full max-w-5xl space-y-8">
- {/* Header Block */}
- <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white border border-gray-100 rounded-[2.5rem] shadow-sm p-8 transition-colors">
- <div>
- <h2 className="text-3xl font-extrabold text-[#021024] mb-2 transition-colors">Availability Matrix</h2>
- <p className="text-sm font-semibold text-gray-500 max-w-xl transition-colors">Configure split-shifts natively dictating how many patient slots are generated globally per day.</p>
- </div>
- <button onClick={handleSave}
- disabled={saving}
- className="mt-6 md:mt-0 flex items-center gap-3 bg-clinic-600 hover:bg-clinic-800 text-white px-8 py-3.5 rounded-2xl font-bold shadow-lg shadow-blue-500/30 transition-all active:scale-95"
- >
- {saving ? 'Saving Config...' : (
- <><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg> Publish Availability</>
- )}
- </button>
- </div>
+            {weeklyConfig.map((dayConfig, dIndex) => (
+              <div key={dayConfig.day} className={`group bg-blue-20 backdrop-blur-xl border-1 border-gray-100 rounded-[2.5rem] p-4 transition-all duration-300 ${dayConfig.isOff ? 'border-gray-100/50 opacity-60 grayscale' : 'border-gray-300 shadow-md shadow-gray-400 hover:scale-[1.01] hover:bg-blue-50 hover:shadow-blue-500/10'}`}>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  
+                  {/* Day Toggle Area */}
+                  <div className="flex items-center gap-2 min-w-[150px]">
+                    <button 
+                      onClick={() => handleToggleDay(dIndex)}
+                      className={`w-14 h-8 rounded-full flex items-center p-1.5 transition-all duration-500 ${dayConfig.isOff ? 'bg-slate-200' : 'bg-[rgb(32,94,251)]'}`}
+                    >
+                      <div className={`w-5 h-5 bg-white rounded-full shadow-lg transform transition-transform duration-300 ${dayConfig.isOff ? '' : 'translate-x-6'}`}></div>
+                    </button>
+                    <span className={`text-lg font-black tracking-tight ${dayConfig.isOff ? 'text-slate-400' : 'text-slate-800'}`}>{dayConfig.day}</span>
+                  </div>
 
- <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
- {/* Left Core Component: Weekly Recurring Calendar Map */}
- <div className="xl:col-span-2 bg-white border border-gray-100 rounded-[2rem] shadow-sm p-8 transition-colors">
- <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-50 ">
- <h3 className="text-xl font-bold text-slate-800 transition-colors">Weekly Recurring Master</h3>
- <div className="flex gap-4">
- <div className="flex flex-col">
- <label className="text-[10px] font-bold uppercase text-clinic-600 mb-1 transition-colors">Slot Duration (Mins)</label>
- <input type="number" min="5" max="120" value={slotDuration} onChange={e => setSlotDuration(e.target.value)} className="w-20 bg-slate-50 text-slate-800 font-bold rounded-xl px-3 py-2 outline-none text-center transition-colors" />
- </div>
- <div className="flex flex-col">
- <label className="text-[10px] font-bold uppercase text-amber-500 mb-1 transition-colors">Buffer Blocks (Hrs)</label>
- <input type="number" min="0" max="24" value={bufferTime} onChange={e => setBufferTime(e.target.value)} className="w-20 bg-amber-50 text-amber-600 font-bold rounded-xl px-3 py-2 outline-none text-center transition-colors" />
- </div>
- </div>
- </div>
+                  {/* Slot Editor Area */}
+                  <div className="flex-1">
+                    {dayConfig.isOff ? (
+                      <div className="flex items-center gap-2 text-slate-400">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                        <span className="text-xs font-black uppercase tracking-widest italic">Clinic Closed</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-3 items-center">
+                        {dayConfig.slots.map((slot, sIndex) => (
+                          <div key={sIndex} className="bg-slate-50 border border-slate-200/50 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all hover:border-[rgb(32,94,251)]/30 group/slot relative">
+                            <input 
+                              type="time" 
+                              value={slot.start} 
+                              onChange={e => updateTime(dIndex, sIndex, 'start', e.target.value)} 
+                              className="bg-transparent text-sm font-black text-slate-700 outline-none cursor-pointer" 
+                            />
+                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
+                            <input 
+                              type="time" 
+                              value={slot.end} 
+                              onChange={e => updateTime(dIndex, sIndex, 'end', e.target.value)} 
+                              className="bg-transparent text-sm font-black text-slate-700 outline-none cursor-pointer" 
+                            />
+                            <button 
+                              onClick={() => removeTimeBlock(dIndex, sIndex)}
+                              className="ml-2 w-6 h-6 flex items-center justify-center rounded-lg bg-white/80 text-rose-500 shadow-sm hover:bg-rose-500 hover:text-white transition-all scale-0 group-hover/slot:scale-100"
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                          </div>
+                        ))}
+                        <button 
+                          onClick={() => addTimeBlock(dIndex)}
+                          className="bg-blue-50/50 text-[rgb(32,94,251)] px-4 py-3 rounded-2xl border border-dashed border-[rgb(32,94,251)]/30 text-[10px] font-black uppercase tracking-widest hover:bg-[rgb(32,94,251)] hover:text-white hover:border-transparent transition-all active:scale-95"
+                        >
+                          + Split Shift
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
 
- <div className="space-y-4">
- {weeklyConfig.map((dayConfig, dIndex) => (
- <div key={dayConfig.day} className={`flex flex-col md:flex-row items-start md:items-center p-5 rounded-2xl border transition-colors ${dayConfig.isOff ? 'bg-gray-50 border-gray-100 opacity-60' : 'bg-transparent border-slate-100 '}`}>
- <div className="w-32 flex items-center justify-between mb-4 md:mb-0 mr-6">
- <span className="font-bold text-slate-800 transition-colors">{dayConfig.day}</span>
- <button onClick={() => handleToggleDay(dIndex)}
- className={`w-11 h-6 rounded-full flex items-center p-1 transition-colors ${dayConfig.isOff ? 'bg-gray-300 ' : 'bg-clinic-600'}`}
- >
- <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${dayConfig.isOff ? '' : 'translate-x-5'}`}></div>
- </button>
- </div>
+          {/* Right Sidebar: Exception Management */}
+          <div className="lg:col-span-4 space-y-8 sticky top-8">
+             <div className="bg-blue-100 backdrop-blur-xl border border-white rounded-[2.5rem] p-8 shadow-lg shadow-gray-400 transition-all">
+                <div className="flex items-center gap-3 mb-8">
+                   <div className="w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500">
+                     <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                   </div>
+                   <h4 className="text-xl font-black text-slate-800 tracking-tight">Custom Off-Days</h4>
+                </div>
 
- <div className="flex-1 w-full space-y-3">
- {dayConfig.isOff ? (
- <span className="text-sm font-bold text-gray-400 italic transition-colors">Explicitly designated as off-duty</span>
- ) : (
- <>
- {dayConfig.slots.map((slot, sIndex) => (
- <div key={sIndex} className="flex gap-3 items-center">
- <input type="time" value={slot.start} onChange={e => updateTime(dIndex, sIndex, 'start', e.target.value)} className="bg-white border border-gray-200 text-slate-800 px-3 py-1.5 rounded-lg text-sm font-bold outline-none transition-colors" />
- <span className="text-gray-400 font-bold transition-colors">to</span>
- <input type="time" value={slot.end} onChange={e => updateTime(dIndex, sIndex, 'end', e.target.value)} className="bg-white border border-gray-200 text-slate-800 px-3 py-1.5 rounded-lg text-sm font-bold outline-none transition-colors" />
- <button onClick={() => removeTimeBlock(dIndex, sIndex)} className="w-7 h-7 flex items-center justify-center rounded-lg text-red-400 hover:bg-red-50 transition-colors">
- <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
- </button>
- </div>
- ))}
- <button onClick={() => addTimeBlock(dIndex)} className="text-[11px] font-bold text-clinic-600 uppercase tracking-widest hover:underline transition-colors">+ Add Split Shift</button>
- </>
- )}
- </div>
- </div>
- ))}
- </div>
- </div>
+                <div className="flex gap-3 mb-8">
+                   <input 
+                     type="date" 
+                     value={customDateInput ? customDateInput.split('-').reverse().join('-') : ''}
+                     onChange={(e) => setCustomDateInput(e.target.value ? e.target.value.split('-').reverse().join('-') : '')}
+                     className="flex-1 bg-slate-50 border-none rounded-2xl px-5 py-4 text-xs font-black text-slate-800 outline-none focus:ring-2 focus:ring-[rgb(32,94,251)]/20 transition-all shadow-inner" 
+                   />
+                   <button 
+                     onClick={() => { if(customDateInput) addBlackoutDate(customDateInput); setCustomDateInput(''); }}
+                     className="bg-slate-800 text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-700 transition-all active:scale-95 shadow-lg"
+                   >
+                     Block
+                   </button>
+                </div>
 
- {/* Right Configuration: Explicit Blackouts & Holiday Integration */}
- <div className="space-y-8">
- {/* Immediate Exceptions Sync */}
- <div className="bg-white border border-gray-100 rounded-[2rem] shadow-sm p-8 transition-colors">
- <h3 className="text-xl font-bold text-slate-800 mb-6 transition-colors">Custom Ad-Hoc Days</h3>
- <div className="flex gap-2 mb-6">
- <input type="date" value={customDateInput ? customDateInput.split('-').reverse().join('-') : ''}
- onChange={(e) => {
- if (e.target.value) {
- setCustomDateInput(e.target.value.split('-').reverse().join('-'));
- } else {
- setCustomDateInput('');
- }
- }}
- className="flex-1 bg-gray-50 border border-gray-200 text-slate-800 px-3 py-2 rounded-xl text-sm font-bold outline-none transition-colors" />
- <button onClick={() => { if(customDateInput) addBlackoutDate(customDateInput); setCustomDateInput(''); }}
- className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors"
- >Block</button>
- </div>
+                <div className="space-y-3 max-h-[400px] overflow-y-auto no-scrollbar pr-1">
+                   {blackoutDates.map((date, i) => (
+                      <div key={i} className="group flex justify-between items-center bg-slate-50 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-rose-200 px-5 py-4 rounded-[1.5rem] transition-all duration-300">
+                         <div className="flex flex-col">
+                            <span className="text-xs font-black text-slate-800 tracking-tight">{date}</span>
+                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Medical Exception</span>
+                         </div>
+                         <button 
+                           onClick={() => removeBlackoutDate(date)}
+                           className="w-8 h-8 rounded-xl bg-white text-rose-500 shadow-sm flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all scale-90 group-hover:scale-100"
+                         >
+                           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                         </button>
+                      </div>
+                   ))}
+                   {blackoutDates.length === 0 && (
+                     <div className="text-center py-10 opacity-30 select-none">
+                        <svg className="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em]">No Exceptions Logged</p>
+                     </div>
+                   )}
+                </div>
+             </div>
+          </div>
 
- <div className="max-h-48 overflow-y-auto space-y-2 no-scrollbar">
- {blackoutDates.length === 0 && <span className="text-xs text-gray-400 font-semibold transition-colors">No custom exceptions mapped.</span>}
- {blackoutDates.map((date, i) => (
- <div key={i} className="flex justify-between items-center bg-red-50 px-4 py-3 rounded-xl border border-red-100 transition-colors">
- <span className="text-sm font-bold text-red-600 transition-colors">{date}</span>
- <button onClick={() => removeBlackoutDate(date)} className="text-red-400 hover:text-red-600 transition-colors"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
- </div>
- ))}
- </div>
- </div>
-
- {/* External API Holiday Syncer */}
- {/* <div className="bg-white border border-gray-100 rounded-[2rem] shadow-sm p-8 overflow-hidden relative transition-colors">
- <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500 blur-3xl opacity-10 rounded-full"></div>
- <h3 className="text-xl font-bold text-[#021024] mb-2 transition-colors">Public Holiday Sync</h3>
- <p className="text-[10px] uppercase font-bold text-clinic-600 tracking-wider mb-6 transition-colors">Nager.Date Deep Integration (IN)</p>
- <div className="h-64 overflow-y-auto space-y-3 no-scrollbar pr-2">
- {publicHolidays.map((holiday, i) => {
- const isBlocked = blackoutDates.includes(holiday.date);
- return (
- <div key={i} className={`p-4 rounded-xl border transition-colors ${isBlocked ? 'bg-red-50 border-red-200 ' : 'bg-gray-50 border-gray-100 '}`}>
- <div className="flex justify-between items-start mb-2">
- <div className="font-bold text-sm text-slate-800 transition-colors">{holiday.name}</div>
- <span className="text-xs font-bold text-gray-500 transition-colors">{holiday.date}</span>
- </div>
- <button onClick={() => isBlocked ? removeBlackoutDate(holiday.date) : addBlackoutDate(holiday.date, holiday.name)}
- className={`text-[10px] w-full py-1.5 rounded-lg font-bold uppercase tracking-widest transition-colors ${isBlocked ? 'bg-red-100 text-red-600 ' : 'bg-white text-slate-600 shadow-sm'}`}
- >
- {isBlocked ? 'Blocked (Unmark)' : 'Mark as Off-Day'}
- </button>
- </div>
- );
- })}
- </div>
- </div> */}
-
- </div>
-
- </div>
- </div>
- </div>
- );
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default AvailabilityConfig;
