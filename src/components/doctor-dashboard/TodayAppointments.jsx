@@ -10,21 +10,22 @@ const TodayAppointments = ({ appointments }) => {
  .sort((a, b) => a.time.localeCompare(b.time));
 
  return (
- <div className="bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-6 mb-10 w-full transition-colors duration-300 h-[340px] flex flex-col shadow-xl shadow-clinic-600/20">
- <div className="flex justify-between items-center mb-4 shrink-0">
+ <div className="bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-6 mb-10 w-full transition-colors duration-300 h-[340px] flex flex-col shadow-xl shadow-clinic-600/20 relative overflow-hidden">
+    <div className="absolute -bottom-10 -right-10 w-58  h-50 bg-blue-300 rounded-full opacity-20 blur-2xl pointer-events-none z-0"></div>
+ <div className="flex justify-between items-center mb-4 shrink-0 z-1">
  <h3 className="text-xl font-bold text-slate-800 transition-colors">Today's Appointments</h3>
- <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-clinic-600 rounded-full transition-colors">{todayList.length} matches</span>
+ <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-clinic-600 rounded-full transition-colors z-1">{todayList.length} matches</span>
  </div>
 
- <div className="flex flex-col gap-3 overflow-y-auto no-scrollbar flex-1 pb-4">
+ <div className="flex flex-col gap-3 overflow-y-auto no-scrollbar flex-1 pb-4 z-1">
  {todayList.length === 0 ? (
- <div className="text-center text-sm py-4 text-gray-400 font-medium transition-colors">No scheduled appointments for today.</div>
+ <div className="text-center text-sm py-4 text-gray-400 font-medium transition-colors z-1">No scheduled appointments for today.</div>
  ) : (
  todayList.map(app => {
  const displayName = app.name || (app.patient && app.patient.name) || "Walk-In";
  const displayChar = typeof displayName === 'string' && displayName.length > 0 ? displayName.charAt(0).toUpperCase() : "W";
  return (
- <div key={app.id} className="flex items-center justify-between p-4 bg-transparent border border-gray-50 rounded-2xl hover:shadow-md transition-all group">
+ <div key={app.id} className="flex items-center justify-between p-4 bg-white h-17 border-2 border-gray-100 rounded-2xl hover:shadow-md transition-all group z-1">
  <div className="flex items-center gap-4">
  <div className="w-12 h-12 rounded-full bg-blue-100 text-clinic-600 flex items-center justify-center font-bold text-lg shadow-sm transition-colors">
  {displayChar}
