@@ -7,30 +7,30 @@ import LiveQueueUI from './LiveQueueUI';
 
 const MainPanel = ({ patientData, activeTab, onBookClick }) => {
   if (activeTab === 'calendar') return <AppointmentsView appointments={[...(patientData.upcoming || []), ...(patientData.history || [])]} onBookClick={onBookClick} />;
-  if (activeTab === 'docs') return <DocumentsView prescriptions={patientData.prescriptions || []} />;
+  if (activeTab === 'docs') return <DocumentsView prescriptions={patientData.prescriptions || []} patientData={patientData} />;
   if (activeTab === 'profile') return <ProfileView patientData={patientData} />;
   if (activeTab === 'settings') return <SettingsView patientData={patientData} />
   if (activeTab === 'queue') {
     // We assume the first upcoming appointment's doctor is the one to track, or we'd need a doctor selector
-    const doctorId = patientData.upcoming?.[0]?.doctorId?._id || "60b8c8d8f1e6b3b3a4a9c888"; 
+    const doctorId = patientData.upcoming?.[0]?.doctorId?._id || "60b8c8d8f1e6b3b3a4a9c888";
     const doctorName = patientData.upcoming?.[0]?.doctor || "Dr. Specialist";
     return <LiveQueueUI doctorId={doctorId} doctorName={doctorName} />;
   }
 
   return (
     <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto overflow-x-hidden no-scrollbar">
-      
+
       {/* Header row */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
           <h1 className="text-4xl font-extrabold text-[#021024]">Dashboard</h1>
           <p className="text-gray-400 font-medium mt-1">Thursday, 28 Jan 2026</p>
         </div>
-        
+
         <div className="flex items-center gap-6">
-          
+
           <button onClick={onBookClick} className="bg-[#5265ec] hover:bg-[#4254d3] text-white px-6 py-3 rounded-2xl font-semibold shadow-lg shadow-[#5265ec]/30 transition-all flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
             Book Appointment
           </button>
         </div>
@@ -40,10 +40,10 @@ const MainPanel = ({ patientData, activeTab, onBookClick }) => {
       <div className="w-full shrink-0 bg-[#5265ec] rounded-[2rem] h-[160px] flex items-center relative overflow-hidden mb-12 shadow-md">
         {/* Massive faded circle overlapping graphic */}
         <div className="absolute -right-20 -bottom-20 w-64 h-64 border-[30px] border-white/10 rounded-full pointer-events-none"></div>
-        
+
         {/* The Clinic/Doctor Graphic offset to the left */}
         <div className="hidden sm:block absolute left-4 md:left-8 bottom-0 w-28 md:w-32 h-36 md:h-40 z-10">
-           <img src="/doctor_auth.png" style={{ height: '100%', objectFit: 'contain' }} alt="Doctor" className="w-full h-full object-contain -scale-x-100 drop-shadow-lg" />
+          <img src="/doctor_auth.png" style={{ height: '100%', objectFit: 'contain' }} alt="Doctor" className="w-full h-full object-contain -scale-x-100 drop-shadow-lg" />
         </div>
 
         {/* Banner Text Area */}
@@ -73,47 +73,47 @@ const MainPanel = ({ patientData, activeTab, onBookClick }) => {
         ))}
 
         {/* Empty Add slot mimicking the design dashed block */}
-        <div 
+        <div
           onClick={onBookClick}
           className="bg-white rounded-[2rem] border-2 border-dashed border-[#5265ec]/20 bg-blue-50/20 flex items-center justify-center hover:bg-blue-50 hover:border-[#5265ec]/40 transition-all cursor-pointer group"
         >
           <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#5265ec] shadow-md group-hover:scale-110 transition-transform">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
           </div>
         </div>
       </div>
 
       {/* Bottom Section: Health Metric & Upcoming Schedule */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         {/* Health Metric Block */}
         <div className="lg:col-span-1 bg-[#5265ec] rounded-[2rem] p-6 relative overflow-hidden shadow-[0_20px_40px_rgba(82,101,236,0.3)] text-white flex flex-col justify-between min-h-[220px]">
           <div>
             <h4 className="font-extrabold text-xl mb-1">Health Metric</h4>
             <div className="text-sm text-white/70 mb-4">Blood pressure average</div>
           </div>
-          
+
           <div className="relative w-full h-32 mt-4 flex items-end justify-center">
-             <svg viewBox="0 0 200 100" className="absolute top-0 w-[120%] h-[120%] stroke-pink-400 stroke-[3px] fill-transparent overflow-visible">
-               <path d="M-10,80 Q30,50 60,90 T140,40 T210,80" />
-               <circle cx="140" cy="40" r="5" fill="white" className="stroke-pink-400 stroke-[3px]" />
-             </svg>
-             <div className="absolute top-1 right-[30%] text-center text-sm font-bold bg-white text-[#5265ec] px-3 py-1 rounded-full shadow-md z-10">120/80</div>
-             
-             <div className="flex justify-between w-full text-xs text-white/70 mt-auto opacity-70 relative z-10">
-               <span>Tue</span>
-               <span>Wed</span>
-               <span className="text-white font-bold opacity-100">Thu</span>
-               <span>Fri</span>
-               <span>Sat</span>
-             </div>
+            <svg viewBox="0 0 200 100" className="absolute top-0 w-[120%] h-[120%] stroke-pink-400 stroke-[3px] fill-transparent overflow-visible">
+              <path d="M-10,80 Q30,50 60,90 T140,40 T210,80" />
+              <circle cx="140" cy="40" r="5" fill="white" className="stroke-pink-400 stroke-[3px]" />
+            </svg>
+            <div className="absolute top-1 right-[30%] text-center text-sm font-bold bg-white text-[#5265ec] px-3 py-1 rounded-full shadow-md z-10">120/80</div>
+
+            <div className="flex justify-between w-full text-xs text-white/70 mt-auto opacity-70 relative z-10">
+              <span>Tue</span>
+              <span>Wed</span>
+              <span className="text-white font-bold opacity-100">Thu</span>
+              <span>Fri</span>
+              <span>Sat</span>
+            </div>
           </div>
         </div>
 
         {/* Schedule Blocks */}
         <div className="lg:col-span-2 flex flex-col justify-end">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
-            
+
             <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between group cursor-pointer">
               <div className="absolute top-0 left-0 w-full h-1 bg-[#5265ec]"></div>
               <div className="mb-4">
@@ -156,7 +156,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick }) => {
           </div>
         </div>
       </div>
-      
+
     </div>
   );
 };
