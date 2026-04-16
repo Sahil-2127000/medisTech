@@ -40,8 +40,8 @@ const DoctorDashboard = () => {
     const [historyAppointments, setHistoryAppointments] = useState([]);
     const [historyPageInfo, setHistoryPageInfo] = useState({ currentPage: 1, totalPages: 1, totalCount: 0 });
     const [historySearch, setHistorySearch] = useState('');
-    const [historyStatus, setHistoryStatus] = useState(''); 
-    
+    const [historyStatus, setHistoryStatus] = useState('');
+
     // Tracking Refs to prevent background sync from wiping out user filters
     const historyPageRef = useRef(1);
     const historySearchRef = useRef('');
@@ -169,10 +169,10 @@ const DoctorDashboard = () => {
         loadDoctorHistory();
         loadDoctorProfile();
 
-        const handleUpdate = () => { 
-            loadDoctorAppointments(); 
+        const handleUpdate = () => {
+            loadDoctorAppointments();
             // Use refs to ensure we don't reset filters during background sync
-            loadDoctorHistory(historyPageRef.current, historySearchRef.current, historyStatusRef.current); 
+            loadDoctorHistory(historyPageRef.current, historySearchRef.current, historyStatusRef.current);
         };
         window.addEventListener("appointmentsUpdated", handleUpdate);
         window.addEventListener("doctorProfileUpdated", loadDoctorProfile);
@@ -350,9 +350,9 @@ const DoctorDashboard = () => {
                                                 <h1 className="text-4xl font-extrabold text-[#021024] transition-colors">All Queue Records</h1>
                                                 <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
                                             </div>
-                                            <AppointmentRequests 
-                                                appointments={historyAppointments} 
-                                                onStatusChange={handleStatusChange} 
+                                            <AppointmentRequests
+                                                appointments={historyAppointments}
+                                                onStatusChange={handleStatusChange}
                                                 pageInfo={historyPageInfo}
                                                 onFetchHistory={loadDoctorHistory}
                                                 searchQuery={historySearch}
