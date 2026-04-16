@@ -1,13 +1,13 @@
 import React from 'react';
 
 const TodayAppointments = ({ appointments }) => {
- // Ensure we format current date correctly matching DD-MM-YYYY
- const todayRaw = new Date();
- const todayFormatted = `${String(todayRaw.getDate()).padStart(2, '0')}-${String(todayRaw.getMonth() + 1).padStart(2, '0')}-${todayRaw.getFullYear()}`;
+  // Ensure we format current date correctly matching DD-MM-YYYY
+  const todayRaw = new Date();
+  const todayFormatted = `${String(todayRaw.getDate()).padStart(2, '0')}-${String(todayRaw.getMonth() + 1).padStart(2, '0')}-${todayRaw.getFullYear()}`;
 
- const todayList = appointments
- .filter(app => app.date === todayFormatted)
- .sort((a, b) => a.time.localeCompare(b.time));
+  const todayList = appointments
+    .filter(app => app.date === todayFormatted)
+    .sort((a, b) => a.time.localeCompare(b.time));
 
  return (
  <div className="bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-6 mb-10 w-full transition-colors duration-300 h-[340px] flex flex-col shadow-xl shadow-clinic-600/20 relative overflow-hidden">
@@ -38,26 +38,26 @@ const TodayAppointments = ({ appointments }) => {
  </div>
  </div>
 
- <div className="flex flex-col items-end">
- <div className="font-bold text-clinic-600 flex items-center gap-1 transition-colors">
- <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
- {app.time}
- </div>
- <div className="mt-1">
- {app.status === 'in_progress' && <span className="bg-blue-100 text-blue-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors shadow-sm animate-pulse">In Progress</span>}
- {app.status === 'completed' && <span className="bg-gray-200 text-gray-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Completed</span>}
- {app.status === 'approved' && <span className="bg-green-100 text-green-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Approved</span>}
- {app.status === 'pending' && <span className="bg-amber-100 text-amber-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Pending</span>}
- {app.status === 'rejected' && <span className="bg-red-100 text-red-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Rejected</span>}
- </div>
- </div>
- </div>
- );
- })
- )}
- </div>
- </div>
- );
+                <div className="flex flex-col items-end">
+                  <div className="font-bold text-clinic-600 flex items-center gap-1 transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {app.time}
+                  </div>
+                  <div className="mt-1">
+                    {app.status === 'in_progress' && <span className="bg-blue-100 text-blue-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors shadow-sm animate-pulse">In Progress</span>}
+                    {app.status === 'completed' && <span className="bg-gray-200 text-gray-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Completed</span>}
+                    {app.status === 'approved' && <span className="bg-green-100 text-green-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Approved</span>}
+                    {app.status === 'pending' && <span className="bg-amber-100 text-amber-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Pending</span>}
+                    {app.status === 'rejected' && <span className="bg-red-100 text-red-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Rejected</span>}
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default TodayAppointments;

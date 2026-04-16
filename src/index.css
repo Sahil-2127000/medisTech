@@ -4,7 +4,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 /* Trigger Vite Tailwind Rebuild 2 */
 
-@theme{
+@theme {
   --color-clinic-900: #021024;
   --color-clinic-800: #052659;
   --color-clinic-600: #5483B3;
@@ -13,9 +13,17 @@
 }
 
 @keyframes gradient-xy {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .animate-gradient-xy {
@@ -24,9 +32,19 @@
 }
 
 @keyframes float-blob {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.05); }
-  66% { transform: translate(-20px, 20px) scale(0.95); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.05);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
 }
 
 .animate-float-blob {

@@ -4,7 +4,7 @@ import DoctorSidebar from '../components/doctor-dashboard/DoctorSidebar';
 import StatCards from '../components/doctor-dashboard/StatCards';
 import TodayAppointments from '../components/doctor-dashboard/TodayAppointments';
 import CurrentPatient from '../components/doctor-dashboard/CurrentPatient';
-// import AppointmentRequests from '../components/doctor-dashboard/AppointmentRequests';
+import AppointmentRequests from '../components/doctor-dashboard/AppointmentRequests';
 import DoctorProfile from '../components/doctor-dashboard/DoctorProfile';
 import AvailabilityConfig from '../components/doctor-dashboard/AvailabilityConfig';
 import EmergencyCase from '../components/doctor-dashboard/EmergencyCase';
@@ -21,8 +21,6 @@ const ensureMockData = () => {
             { id: '1', accountEmail: 'patient1@email.com', name: 'Alice Smith', age: 34, gender: 'Female', date: today, time: '09:00', status: 'approved' },
             { id: '2', accountEmail: 'patient2@email.com', name: 'Bob Jones', age: 45, gender: 'Male', date: today, time: '10:30', status: 'pending' },
             { id: '3', accountEmail: 'patient3@email.com', name: 'Charlie Day', age: 29, gender: 'Male', date: today, time: '11:00', status: 'approved' },
-            { id: '4', accountEmail: 'patient4@email.com', name: 'Diana Prince', age: 38, gender: 'Female', date: '01-12-2027', time: '14:00', status: 'completed' },
-            { id: '5', accountEmail: 'patient5@email.com', name: 'Evan Vance', age: 50, gender: 'Male', date: '05-01-2028', time: '08:30', status: 'rejected' }
         ];
         localStorage.setItem('doc_appointments', JSON.stringify(mocks));
     }

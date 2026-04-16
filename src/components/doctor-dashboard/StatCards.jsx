@@ -18,7 +18,7 @@ const StatCards = ({ appointments, historicalTotal, onCardClick }) => {
  ];
 
  return (
- <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10 w-full">
+ <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4 w-full">
  {stats.map((stat, i) => (
  <div key={i} onClick={() => stat.id && onCardClick && onCardClick(stat.id)}
  className={`bg-white/60 backdrop-blur-md rounded-2xl border border-white/60 shadow-[0_8px_20px_rgba(0,0,0,0.2)] p-4 flex items-center gap-4 transition-all relative overflow-hidden shadow-xl shadow-clinic-600/20 ${stat.id ? 'cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:shadow-clinic-600/20' : 'opacity-90'}`}
