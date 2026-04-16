@@ -89,15 +89,27 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) 
  </div>
 
  {activePatient ? (
- <div className="w-full flex flex-col">
- {renderPatientCard(activePatient)}
- <button onClick={() => setShowPrescriptionModal(true)}
- className="w-full bg-clinic-600 hover:bg-clinic-800 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 text-base mt-2 active:scale-95"
- >
- <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
- Finish Consultation
- </button>
- </div>
+  <div className="w-full flex flex-col">
+  {renderPatientCard(activePatient)}
+  
+  {!activePatient.patientId ? (
+  <div className="mt-2 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-3">
+  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+  <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+  </div>
+  <p className="text-amber-700 text-[11px] font-bold leading-tight">
+  Unregistered Walk-In: Please link this patient to a registered account before issuing a prescription.
+  </p>
+  </div>
+  ) : (
+  <button onClick={() => setShowPrescriptionModal(true)}
+  className="w-full bg-clinic-600 hover:bg-clinic-800 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 text-base mt-2 active:scale-95"
+  >
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+  Finish Consultation
+  </button>
+  )}
+  </div>
  ) : (
  <div className="flex-1 flex flex-col items-center justify-center opacity-60">
  <svg className="w-16 h-16 text-gray-300 mb-4 transition-colors" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>

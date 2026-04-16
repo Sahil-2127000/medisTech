@@ -164,6 +164,10 @@ const DoctorDashboard = () => {
     };
 
     const handleFinishConsultation = async (id, patientId, prescriptionData) => {
+        if (!patientId) {
+            alert("Cannot issue prescription: This patient is not registered in the system. Please register them or link to an existing account first.");
+            return;
+        }
         try {
             const formattedMedicines = (prescriptionData.medicines || []).map(med => ({
                 name: med.name,
@@ -178,7 +182,7 @@ const DoctorDashboard = () => {
                 credentials: 'include',
                 body: JSON.stringify({
                     appointmentId: id,
-                    patientId: patientId || "60b8c8d8f1e6b3b3a4a9c123", // fallback
+                    patientId: patientId, // Removed hardcoded fallback
                     diagnosis: "General evaluation completed.",
                     medicines: formattedMedicines,
                     pdfBase64: prescriptionData.pdfBase64,
@@ -208,7 +212,7 @@ const DoctorDashboard = () => {
                 credentials: 'include',
                 body: JSON.stringify({
                     // Backend middleware dynamically injects doctorId natively if caller is Doctor
-                    patientIdOverride: "60b8c8d8f1e6b3b3a4a9c123", // mock originalTime: "09:00",
+                    patientIdOverride: null, // Removed hardcoded fallback for unregistered emergencies
                     date: `${String(new Date().getDate()).padStart(2, '0')}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${new Date().getFullYear()}`,
                     symptoms: `[EMERGENCY] ${patientData.reason}`,
                     status: "emergency_active"

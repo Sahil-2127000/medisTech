@@ -11,7 +11,9 @@ const TodayAppointments = ({ appointments }) => {
 
  return (
  <div className="bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-6 mb-10 w-full transition-colors duration-300 h-[340px] flex flex-col shadow-xl shadow-clinic-600/20 relative overflow-hidden">
-    <div className="absolute -bottom-10 -right-10 w-58  h-50 bg-blue-300 rounded-full opacity-20 blur-2xl pointer-events-none z-0"></div>
+
+    <div className="absolute -top-20 -left-30 w-68  h-50 bg-blue-300 rounded-full opacity-20 blur-2xl pointer-events-none z-0"></div>
+
  <div className="flex justify-between items-center mb-4 shrink-0 z-1">
  <h3 className="text-xl font-bold text-slate-800 transition-colors">Today's Appointments</h3>
  <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-clinic-600 rounded-full transition-colors z-1">{todayList.length} matches</span>
