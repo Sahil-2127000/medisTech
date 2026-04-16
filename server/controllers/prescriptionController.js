@@ -11,6 +11,7 @@ const capitalizeNames = (name) => {
 exports.issuePrescription = async (req, res) => {
   try {
     const { appointmentId, patientId, diagnosis, medicines, clinicalNotes, pdfBase64 } = req.body;
+    // We are optimizing DB weight by potentially receiving empty pdfBase64
     const doctorId = req.user.id; // Authorized endpoint inherently
 
     const rx = new Prescription({

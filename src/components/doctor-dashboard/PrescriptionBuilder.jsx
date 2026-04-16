@@ -39,32 +39,37 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
       return;
     }
 
-    // Capture visually perfect PDF using robust async parsing
-    const element = document.getElementById('prescription-preview');
-    if (!element) {
-      onSave && onSave(medicines, "");
+    // Optimization: We no longer save the heavy PDF Base64 string to the database.
+    // Instead, we just pass the medicine data.
+    onSave && onSave(medicines, "");
+  };
+
+  const handlePrintPrescription = async () => {
+    if (medicines.length === 0) {
+      message.warning("Please add medicine before printing.");
       return;
     }
 
-    const hideLoading = message.loading("Generating Secure PDF Prescription...", 0);
-    try {
-      // html-to-image utilizes native browser rendering bypassing manual CSS parser errors natively tracking perfectly
-      const imgData = await htmlToImage.toPng(element, { pixelRatio: 2, backgroundColor: '#ffffff' });
+    const element = document.getElementById('prescription-preview');
+    if (!element) return;
 
+    const hideLoading = message.loading("Preparing Print Document...", 0);
+    try {
+      const imgData = await htmlToImage.toPng(element, { pixelRatio: 2, backgroundColor: '#ffffff' });
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (element.offsetHeight * pdfWidth) / element.offsetWidth;
-
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      const pdfBase64 = pdf.output('datauristring');
-
+      
+      // Open in a new tab for printing
+      const blob = pdf.output('blob');
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
       hideLoading();
-      onSave && onSave(medicines, pdfBase64);
     } catch (error) {
-      console.error("PDF Parsing failed natively:", error);
+      console.error("Print generation failed:", error);
       hideLoading();
-      message.error("PDF conversion failed: " + (error?.message || String(error)));
-      onSave && onSave(medicines, "");
+      message.error("Failed to generate print document.");
     }
   };
 
@@ -163,8 +168,16 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
         {/* Action Bottom Layout */}
         <div className="p-6 md:p-10 border-t border-gray-100 bg-gray-50 flex justify-end shrink-0 gap-4 mt-auto">
           <Button size="large" className="rounded-xl px-8 font-bold" onClick={onCancel}>Cancel</Button>
+          <Button 
+            size="large" 
+            icon={<FilePdfOutlined />} 
+            onClick={handlePrintPrescription} 
+            className="rounded-xl px-8 font-bold text-blue-600 border-blue-100 hover:border-blue-300"
+          >
+            Print Prescription
+          </Button>
           <Button type="primary" size="large" icon={<CheckCircleOutlined />} onClick={handleFinalSubmit} className="rounded-xl px-10 bg-green-500 hover:bg-green-600 shadow-green-500/30 shadow-lg font-extrabold pb-0 pt-0">
-            Finalize Prescription & Close
+            Finalize & Save
           </Button>
         </div>
 
