@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import DoctorSidebar from '../components/doctor-dashboard/DoctorSidebar';
 import StatCards from '../components/doctor-dashboard/StatCards';
@@ -37,7 +37,27 @@ const DoctorDashboard = () => {
     const setActiveTab = (tab) => navigate(`/doctordashboard/${tab}`);
 
     const [appointments, setAppointments] = useState([]); // Today's dynamic appointments
-    const [historyAppointments, setHistoryAppointments] = useState([]); // Master absolute total records
+    const [historyAppointments, setHistoryAppointments] = useState([]);
+    const [historyPageInfo, setHistoryPageInfo] = useState({ currentPage: 1, totalPages: 1, totalCount: 0 });
+    const [historySearch, setHistorySearch] = useState('');
+    const [historyStatus, setHistoryStatus] = useState(''); 
+    
+    // Tracking Refs to prevent background sync from wiping out user filters
+    const historyPageRef = useRef(1);
+    const historySearchRef = useRef('');
+    const historyStatusRef = useRef('');
+
+    useEffect(() => {
+        historyPageRef.current = historyPageInfo.currentPage;
+    }, [historyPageInfo.currentPage]);
+
+    useEffect(() => {
+        historySearchRef.current = historySearch;
+    }, [historySearch]);
+
+    useEffect(() => {
+        historyStatusRef.current = historyStatus;
+    }, [historyStatus]);
     const [profile, setProfile] = useState({});
     const [showHistoryView, setShowHistoryView] = useState(false); // New Interactive Gateway
     const activeUserEmail = "doctor@clinic.com"; // Conceptually grabbed from auth state
@@ -93,6 +113,7 @@ const DoctorDashboard = () => {
                     id: app._id,
                     patientId: app.patientId?._id || app.patientId,
                     name: app.patientId?.fullName || "Walk-In",
+                    patientUid: app.patientId?.patientUid || "---",
                     age: app.patientId?.age || "--",
                     gender: app.patientId?.gender || "Unknown",
                     time: app.time,
@@ -107,15 +128,22 @@ const DoctorDashboard = () => {
         }
     };
 
-    const loadDoctorHistory = async () => {
+    const loadDoctorHistory = async (page = 1, search = '', status = '') => {
         try {
-            const res = await fetch('http://localhost:5001/api/appointments/doctor/history', { credentials: 'include' });
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                limit: '10',
+                search: search,
+                status: status
+            });
+            const res = await fetch(`http://localhost:5001/api/appointments/doctor/history?${queryParams}`, { credentials: 'include' });
             if (res.ok) {
-                const data = await res.json();
-                const mapped = data.map(app => ({
+                const result = await res.json();
+                const mapped = result.data.map(app => ({
                     id: app._id,
                     patientId: app.patientId?._id || app.patientId,
                     name: app.patientId?.fullName || "Walk-In",
+                    patientUid: app.patientId?.patientUid || "---",
                     age: app.patientId?.age || "--",
                     gender: app.patientId?.gender || "Unknown",
                     time: app.time,
@@ -124,6 +152,11 @@ const DoctorDashboard = () => {
                     status: app.status
                 }));
                 setHistoryAppointments(mapped);
+                setHistoryPageInfo({
+                    currentPage: result.currentPage,
+                    totalPages: result.totalPages,
+                    totalCount: result.totalCount
+                });
             }
         } catch (err) {
             console.error(err);
@@ -136,7 +169,11 @@ const DoctorDashboard = () => {
         loadDoctorHistory();
         loadDoctorProfile();
 
-        const handleUpdate = () => { loadDoctorAppointments(); loadDoctorHistory(); };
+        const handleUpdate = () => { 
+            loadDoctorAppointments(); 
+            // Use refs to ensure we don't reset filters during background sync
+            loadDoctorHistory(historyPageRef.current, historySearchRef.current, historyStatusRef.current); 
+        };
         window.addEventListener("appointmentsUpdated", handleUpdate);
         window.addEventListener("doctorProfileUpdated", loadDoctorProfile);
         const interval = setInterval(handleUpdate, 15000); return () => {
@@ -156,6 +193,7 @@ const DoctorDashboard = () => {
                 body: JSON.stringify({ status: newStatus })
             });
             loadDoctorAppointments();
+            loadDoctorHistory(historyPageInfo.currentPage, historySearch, historyStatus);
         } catch (error) {
             console.error("Status migration failed", error);
         }
@@ -307,12 +345,23 @@ const DoctorDashboard = () => {
                                         </>
                                     )}
                                     {activeTab === 'appointments' && (
-                                        <div className="flex justify-between items-center mb-8 w-full">
-                                            <h1 className="text-4xl font-extrabold text-[#021024] transition-colors">All Queue Records</h1>
-                                            <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                                        <div className="w-full flex flex-col">
+                                            <div className="flex justify-between items-center mb-8 w-full">
+                                                <h1 className="text-4xl font-extrabold text-[#021024] transition-colors">All Queue Records</h1>
+                                                <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                                            </div>
+                                            <AppointmentRequests 
+                                                appointments={historyAppointments} 
+                                                onStatusChange={handleStatusChange} 
+                                                pageInfo={historyPageInfo}
+                                                onFetchHistory={loadDoctorHistory}
+                                                searchQuery={historySearch}
+                                                setSearchQuery={setHistorySearch}
+                                                statusFilter={historyStatus}
+                                                setStatusFilter={setHistoryStatus}
+                                            />
                                         </div>
                                     )}
-                                    {/* <AppointmentRequests appointments={appointments} onStatusChange={handleStatusChange} /> */}
                                 </>
                             )}
                         </div>

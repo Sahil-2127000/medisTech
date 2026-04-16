@@ -156,7 +156,16 @@ exports.register = async (req, res) => {
     if (actualRole === 'doctor') {
        newlyCreatedEntity = new Doctor({ fullName, email, password: hashedPassword, role: 'doctor', phone });
     } else {
-       newlyCreatedEntity = new User({ fullName, email, password: hashedPassword, role: 'patient', age, gender, phone });
+       // Generate Unique Patient UID strictly natively
+       let patientUid;
+       let isUnique = false;
+       while (!isUnique) {
+         const digits = Math.floor(100000 + Math.random() * 900000);
+         patientUid = `P${digits}`;
+         const existingUid = await User.findOne({ patientUid });
+         if (!existingUid) isUnique = true;
+       }
+       newlyCreatedEntity = new User({ fullName, email, password: hashedPassword, role: 'patient', age, gender, phone, patientUid });
     }
     await newlyCreatedEntity.save();
 

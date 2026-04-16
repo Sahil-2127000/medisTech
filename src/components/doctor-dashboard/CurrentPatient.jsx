@@ -44,6 +44,7 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) 
  <div className=" rounded-3xl p-5 shadow-xl shadow-blue-500/5 flex flex-col items-center text-center border border-gray-50 relative overflow-hidden transition-colors duration-300 w-full mb-4 shrink-0 px-8 ">
  <div className="absolute w-24 h-24 bg-blue-500 rounded-full opacity-10 -right-5 -top-5 blur-xl "></div>
  <h2 className="text-xl font-black text-slate-800 mb-1 transition-colors">{displayName}</h2>
+ <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">ID: {patient.patientUid || "---"}</div>
  <div className="text-xs font-bold text-clinic-600 bg-blue-50 px-3 py-1 rounded-full inline-block tracking-wider transition-colors">
  {patient.age || "--"} yrs • {patient.gender || "Unknown"}
  </div>
@@ -67,12 +68,21 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) 
  {nextPatient ? (
  <>
  {renderPatientCard(nextPatient)}
- <button onClick={() => onStatusChange(nextPatient.id, 'in_progress')}
- className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-2xl transition-all shadow-md mt-2 flex items-center justify-center gap-2 text-sm active:scale-95"
- >
- <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
- Attend this patient now
- </button>
+ <div className="flex gap-3 mt-2">
+   <button onClick={() => onStatusChange(nextPatient.id, 'in_progress')}
+     className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 text-sm active:scale-95"
+   >
+     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+     Attend
+   </button>
+   <button onClick={() => onStatusChange(nextPatient.id, 'rejected')}
+     className="px-4 bg-rose-50 hover:bg-rose-100 text-rose-500 font-bold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 text-sm active:scale-95 border border-rose-100"
+     title="Skip/Reject this patient"
+   >
+     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+     Skip
+   </button>
+ </div>
  </>
  ) : (
  <div className="flex-1 flex flex-col items-center justify-center opacity-60 py-6">

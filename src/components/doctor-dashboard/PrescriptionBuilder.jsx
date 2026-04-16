@@ -225,16 +225,20 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
                    <span className="flex-1 border-b border-gray-100 font-black text-slate-800 pb-0.5">{patientName}</span>
                 </div>
                 <div className="flex gap-2 items-end ml-4">
+                   <span className="text-gray-400 font-bold whitespace-nowrap">Patient ID :</span>
+                   <span className="flex-1 border-b border-gray-100 font-black text-slate-800 pb-0.5">{activePatient?.patientUid || '---'}</span>
+                </div>
+                <div className="flex gap-2 items-end">
                    <span className="text-gray-400 font-bold whitespace-nowrap">Date :</span>
                    <span className="flex-1 border-b border-gray-100 font-black text-slate-800 pb-0.5">{new Date().toLocaleDateString()}</span>
                 </div>
-                <div className="flex gap-2 items-end">
+                <div className="flex gap-2 items-end ml-4">
                    <span className="text-gray-400 font-bold">Age/Gender :</span>
                    <span className="flex-1 border-b border-gray-100 font-black text-slate-800 pb-0.5">{patientAge} yrs • {activePatient?.gender || '---'}</span>
                 </div>
-                <div className="flex gap-2 items-end ml-4">
+                <div className="flex gap-2 items-end">
                    <span className="text-gray-400 font-bold whitespace-nowrap">Diagnosis :</span>
-                   <span className="flex-1 border-b border-gray-100 font-bold text-slate-800 pb-0.5 italic">General evaluation completed.</span>
+                   <span className="flex-1 border-b border-gray-100 font-bold text-slate-800 pb-0.5 italic text-xs">General evaluation completed.</span>
                 </div>
              </div>
           </div>

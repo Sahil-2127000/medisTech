@@ -20,7 +20,7 @@ const RightPanel = ({ patientData }) => {
            <img src={patientData.avatar} alt="Patient Avatar" className="w-full h-full rounded-full object-cover shadow-lg relative z-10" />
         </div>
         <h2 className="text-xl font-bold sm-text-center">{patientData.name}</h2>
-        <span className="text-gray-400 text-xs font-semibold mt-1">Patient ID: #88902</span>
+        <span className="text-gray-400 text-xs font-bold mt-1 uppercase tracking-widest text-clinic-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">ID: {patientData.patientUid || '----'}</span>
       </div>
 
     </div>

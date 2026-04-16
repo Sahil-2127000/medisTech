@@ -170,7 +170,7 @@ exports.getDoctorAppointmentsDaily = async (req, res) => {
      const date = req.query.date || fallbackDate;
      
      const appointments = await Appointment.find({ doctorId: req.user.id, date })
-                                           .populate('patientId', 'fullName age gender phone')
+                                           .populate('patientId', 'fullName age gender phone patientUid')
                                            .sort({ time: 1 });
      res.status(200).json(appointments);
   } catch (err) {
@@ -182,11 +182,48 @@ exports.getDoctorAppointmentsDaily = async (req, res) => {
 // Global massive historical fetch natively sorting by newest descending
 exports.getDoctorHistory = async (req, res) => {
   try {
-     const history = await Appointment.find({ doctorId: req.user.id })
-                                      .populate('patientId', 'fullName age gender') // Grab complex meta
-                                      .sort({ date: -1, time: -1 }); // Newest absolute dates first
-     res.status(200).json(history);
+     const page = parseInt(req.query.page) || 1;
+     const limit = parseInt(req.query.limit) || 10;
+     const skip = (page - 1) * limit;
+     const search = req.query.search || '';
+     const statusFilter = req.query.status || '';
+
+     let query = { doctorId: req.user.id };
+     
+     // Only include non-pending in history if asked (or just return all requested)
+     // Actually, let's just make it a general query for the doctor
+     if (statusFilter) {
+       query.status = statusFilter;
+     }
+
+     // Search logic for populated fields in Mongoose is best done via aggregation or dual-query
+     let patientIds = [];
+     if (search) {
+       const users = await require('../models/User').find({ 
+         fullName: { $regex: search, $options: 'i' },
+         role: 'patient'
+       }).select('_id');
+       patientIds = users.map(u => u._id);
+       query.patientId = { $in: patientIds };
+     }
+
+     const totalCount = await Appointment.countDocuments(query);
+     const totalPages = Math.ceil(totalCount / limit);
+
+     const history = await Appointment.find(query)
+                                      .populate('patientId', 'fullName age gender patientUid')
+                                      .sort({ date: -1, time: -1 })
+                                      .skip(skip)
+                                      .limit(limit);
+
+     res.status(200).json({
+       data: history,
+       totalCount,
+       totalPages,
+       currentPage: page
+     });
   } catch (error) {
+     console.error(error);
      res.status(500).json({ message: 'Historical absolute binding failed inherently' });
   }
 };
