@@ -144,6 +144,11 @@ const LoginForm = ({ onSwitch }) => {
           placeholder="••••••••" 
           className="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-blue-500 text-sm text-gray-800 placeholder-gray-300 transition-colors"
         />
+        <div className="flex justify-end pt-1">
+          <button type="button" className="text-xs text-gray-500 hover:text-blue-600 font-medium transition-colors">
+            Forgot password?
+          </button>
+        </div>
       </div>
 
       {error && <div className="text-xs font-bold text-red-500 text-center mt-2">{error}</div>}
@@ -151,18 +156,22 @@ const LoginForm = ({ onSwitch }) => {
       <button 
         type="submit" 
         disabled={loading}
-        className="w-full bg-[#3963F9] hover:bg-blue-700 text-white font-medium py-3 rounded-xl mt-4 transition-all shadow-lg shadow-blue-500/30 disabled:opacity-50"
+        className="w-full bg-[#3963F9] hover:bg-blue-700 text-white font-medium py-3 rounded-xl mt-4 transition-all shadow-lg shadow-blue-500/30 hover:cursor-pointer disabled:opacity-50"
       >
         {loading ? 'Processing...' : 'Sign In'}
       </button>
 
-      <div className="text-center pt-2">
+      <div className="text-center pt-4">
+        <span className="text-sm text-gray-500 font-medium">
+          Don't have an account?{' '}
+        </span>
         <button 
           type="button"
           onClick={onSwitch}
-          className="text-xs text-pink-500 font-medium hover:text-pink-600"
+          className="text-sm text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors"
+    
         >
-          Don't have an Account?
+          Create an account
         </button>
       </div>
     </form>

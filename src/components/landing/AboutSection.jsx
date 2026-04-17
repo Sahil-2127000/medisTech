@@ -56,7 +56,7 @@ const AboutSection = () => {
              🩺
           </div>
           <div>
-            <div className="font-bold text-slate-900 text-lg">Dr. Anand Kumar</div>
+            <div className="font-bold text-slate-900 text-lg">Dr. MV Sharma</div>
             <div className="text-sm text-slate-500 font-medium">General Physician</div>
           </div>
         </motion.div>
@@ -89,7 +89,7 @@ const AboutSection = () => {
             </div>
             <div>
               <h4 className="text-slate-900 font-bold mb-1 text-base">Education & Expertise</h4>
-              <p className="text-sm leading-relaxed">Dr. Anand Kumar earned their medical degree from a prestigious university and completed rigorous residency training, specializing in comprehensive primary care and holistic health.</p>
+              <p className="text-sm leading-relaxed">Dr. MV Sharma earned their medical degree from a prestigious university and completed rigorous residency training, specializing in comprehensive primary care and holistic health.</p>
             </div>
           </motion.div>
           
