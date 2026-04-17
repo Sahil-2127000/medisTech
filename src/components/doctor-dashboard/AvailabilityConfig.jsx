@@ -88,8 +88,8 @@ const AvailabilityConfig = () => {
   if (loading) {
     return (
       <div className="flex-1 flex flex-col justify-center items-center h-full bg-slate-50/30">
-        <div className="w-16 h-16 border-4 border-blue-100 border-t-[rgb(32,94,251)] rounded-full animate-spin mb-4"></div>
-        <div className="text-[rgb(32,94,251)] font-black text-xs uppercase tracking-[0.3em] animate-pulse">Syncing Matrix...</div>
+        <div className="w-16 h-16 border-4 border-blue-100 border-t-clinic-600 rounded-full animate-spin mb-4"></div>
+        <div className="text-clinic-600 font-black text-xs uppercase tracking-[0.3em] animate-pulse">Syncing Matrix...</div>
       </div>
     );
   }
@@ -99,7 +99,7 @@ const AvailabilityConfig = () => {
       <div className="w-full max-w-6xl space-y-10">
         
         {/* Header Block: Glassmorphism Gradient */}
-        <div className="relative group overflow-hidden bg-linear-to-r from-[rgb(32,94,251)] to-blue-400 rounded-[3rem] p-10 shadow-2xl shadow-blue-500/20">
+        <div className="relative group overflow-hidden bg-linear-to-r from-clinic-600 to-blue-400 rounded-[3rem] p-10 shadow-2xl shadow-blue-500/20">
           <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
@@ -109,7 +109,7 @@ const AvailabilityConfig = () => {
             <button 
               onClick={handleSave}
               disabled={saving}
-              className={`bg-white text-[rgb(32,94,251)] px-10 py-5 rounded-[2rem] font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95 ${saving ? 'opacity-50' : 'hover:bg-blue-50 hover:shadow-2xl'}`}
+              className={`bg-white text-clinic-600 px-10 py-5 rounded-[2rem] font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95 ${saving ? 'opacity-50' : 'hover:bg-blue-50 hover:shadow-2xl'}`}
             >
               {saving ? 'Syncing...' : 'Publish Shifts'}
             </button>
@@ -126,7 +126,7 @@ const AvailabilityConfig = () => {
                   <div className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-2xl px-4 py-2 flex flex-col items-center shadow-sm">
                     <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Slot Duration</span>
                     <div className="flex items-center gap-1">
-                      <input type="number" value={slotDuration} onChange={e => setSlotDuration(e.target.value)} className="w-9 text-sm font-black text-[rgb(32,94,251)] bg-transparent outline-none text-center" />
+                      <input type="number" value={slotDuration} onChange={e => setSlotDuration(e.target.value)} className="w-9 text-sm font-black text-clinic-600 bg-transparent outline-none text-center" />
                       <span className="text-[10px] font-bold text-slate-400 lowercase">min</span>
                     </div>
                   </div>
@@ -148,7 +148,7 @@ const AvailabilityConfig = () => {
                   <div className="flex items-center gap-2 min-w-[150px]">
                     <button 
                       onClick={() => handleToggleDay(dIndex)}
-                      className={`w-14 h-8 rounded-full flex items-center p-1.5 transition-all duration-500 ${dayConfig.isOff ? 'bg-slate-200' : 'bg-[rgb(32,94,251)]'}`}
+                      className={`w-14 h-8 rounded-full flex items-center p-1.5 transition-all duration-500 ${dayConfig.isOff ? 'bg-slate-200' : 'bg-clinic-600'}`}
                     >
                       <div className={`w-5 h-5 bg-white rounded-full shadow-lg transform transition-transform duration-300 ${dayConfig.isOff ? '' : 'translate-x-6'}`}></div>
                     </button>
@@ -165,7 +165,7 @@ const AvailabilityConfig = () => {
                     ) : (
                       <div className="flex flex-wrap gap-3 items-center">
                         {dayConfig.slots.map((slot, sIndex) => (
-                          <div key={sIndex} className="bg-slate-50 border border-slate-200/50 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all hover:border-[rgb(32,94,251)]/30 group/slot relative">
+                          <div key={sIndex} className="bg-slate-50 border border-slate-200/50 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all hover:border-clinic-600/30 group/slot relative">
                             <input 
                               type="time" 
                               value={slot.start} 
@@ -189,7 +189,7 @@ const AvailabilityConfig = () => {
                         ))}
                         <button 
                           onClick={() => addTimeBlock(dIndex)}
-                          className="bg-blue-50/50 text-[rgb(32,94,251)] px-4 py-3 rounded-2xl border border-dashed border-[rgb(32,94,251)]/30 text-[10px] font-black uppercase tracking-widest hover:bg-[rgb(32,94,251)] hover:text-white hover:border-transparent transition-all active:scale-95"
+                          className="bg-blue-50/50 text-clinic-600 px-4 py-3 rounded-2xl border border-dashed border-clinic-600/30 text-[10px] font-black uppercase tracking-widest hover:bg-clinic-600 hover:text-white hover:border-transparent transition-all active:scale-95"
                         >
                           + Split Shift
                         </button>
@@ -216,7 +216,7 @@ const AvailabilityConfig = () => {
                      type="date" 
                      value={customDateInput ? customDateInput.split('-').reverse().join('-') : ''}
                      onChange={(e) => setCustomDateInput(e.target.value ? e.target.value.split('-').reverse().join('-') : '')}
-                     className="flex-1 bg-slate-50 border-none rounded-2xl px-5 py-4 text-xs font-black text-slate-800 outline-none focus:ring-2 focus:ring-[rgb(32,94,251)]/20 transition-all shadow-inner" 
+                     className="flex-1 bg-slate-50 border-none rounded-2xl px-5 py-4 text-xs font-black text-slate-800 outline-none focus:ring-2 focus:ring-clinic-600/20 transition-all shadow-inner" 
                    />
                    <button 
                      onClick={() => { if(customDateInput) addBlackoutDate(customDateInput); setCustomDateInput(''); }}

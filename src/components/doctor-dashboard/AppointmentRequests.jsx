@@ -44,7 +44,7 @@ const AppointmentRequests = ({
           <button 
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
-            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all bg-[rgb(32,94,251)] border border-gray-200 shadow-sm hover:translate-x-[-2px] ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'text-slate-700  cursor-pointer' }`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all bg-clinic-600 border border-gray-200 shadow-sm hover:translate-x-[-2px] ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'text-slate-700  cursor-pointer' }`}
           >
             <svg className="w-4 h-4 " fill="none" stroke="white" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
           </button>
@@ -56,7 +56,7 @@ const AppointmentRequests = ({
           <button 
             disabled={currentPage === totalPages}
             onClick={() => handlePageChange(currentPage + 1)}
-            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-md hover:translate-x-[2px] ${currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[rgb(32,94,251)] text-white hover:brightness-110 cursor-pointer active:scale-95'}`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-md hover:translate-x-[2px] ${currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-clinic-600 text-white hover:brightness-110 cursor-pointer active:scale-95'}`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
           </button>
@@ -93,7 +93,7 @@ const AppointmentRequests = ({
                   <tr key={app.id} className="bg-white group hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
                     <td className="py-4 pl-4 rounded-l-2xl border-y border-l border-gray-100">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-[rgb(32,94,251)] text-white flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/20">
+                        <div className="w-12 h-12 rounded-2xl bg-clinic-600 text-white flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/20">
                           {displayChar}
                         </div>
                         <div>

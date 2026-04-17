@@ -37,7 +37,7 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile }) => {
                 {navItems.map(item => (
                     <button key={item.id}
                         onClick={() => setActiveTab(item.id)}
-                        className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all font-semibold ${activeTab === item.id ? (item.id === 'emergency' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-[rgb(32,94,251)] text-white shadow-lg shadow-blue-500/30') : (item.id === 'emergency' ? 'text-red-500 hover:bg-red-50 ' : 'text-gray-500 hover:bg-slate-50/80 hover:text-clinic-600 ')
+                        className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all font-semibold ${activeTab === item.id ? (item.id === 'emergency' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-clinic-600 text-white shadow-lg shadow-blue-500/30') : (item.id === 'emergency' ? 'text-red-500 hover:bg-red-50 ' : 'text-gray-500 hover:bg-slate-50/80 hover:text-clinic-600 ')
                             }`}
                     >
                         <svg className="w-5 h-5 flex-shrink-0" fill={activeTab === item.id ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{item.icon}</svg>
