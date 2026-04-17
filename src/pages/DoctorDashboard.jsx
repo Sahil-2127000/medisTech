@@ -209,6 +209,25 @@ const DoctorDashboard = () => {
         }
     };
 
+    const handleSkipAppointment = async (id) => {
+        try {
+            const res = await fetch(`http://localhost:5001/api/appointments/${id}/skip`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            if (res.ok) {
+                loadDoctorAppointments();
+                loadDoctorHistory(historyPageInfo.currentPage, historySearch, historyStatus);
+            } else {
+                const data = await res.json();
+                alert(data.message || "Failed to skip appointment.");
+            }
+        } catch (error) {
+            console.error("Skip action failed", error);
+        }
+    };
+
     const handleFinishConsultation = async (id, patientId, prescriptionData) => {
         if (!patientId) {
             alert("Cannot issue prescription: This patient is not registered in the system. Please register them or link to an existing account first.");
@@ -346,7 +365,12 @@ const DoctorDashboard = () => {
 
                                             <div className="flex flex-col lg:flex-row gap-8 w-full mt-2 pb-10 ">
                                                 <div className="flex-1 w-full ">
-                                                    <CurrentPatient appointments={appointments} onStatusChange={handleStatusChange} onFinishConsultation={handleFinishConsultation} />
+                                                    <CurrentPatient 
+                                                        appointments={appointments} 
+                                                        onStatusChange={handleStatusChange} 
+                                                        onSkip={handleSkipAppointment}
+                                                        onFinishConsultation={handleFinishConsultation} 
+                                                    />
                                                 </div>
                                                 <div className="w-full lg:w-[400px] flex-shrink-0">
                                                     <TodayAppointments appointments={appointments} />
