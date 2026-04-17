@@ -19,10 +19,10 @@ const Auth = () => {
         >
           {/* Logo */}
           <div className="text-white font-bold text-xl flex items-center gap-2 z-20">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
-            Clinic@Flow
+            medisTech
           </div>
 
           {/* Center Graphic Container */}
@@ -82,12 +82,7 @@ const Auth = () => {
             
           </div>
 
-          <div className="absolute bottom-6 w-full flex justify-center gap-6 text-gray-400 text-lg">
-            <span className="cursor-pointer hover:text-gray-600">in</span>
-            <span className="cursor-pointer hover:text-gray-600">ig</span>
-            <span className="cursor-pointer hover:text-gray-600">fb</span>
-            <span className="cursor-pointer hover:text-gray-600">tw</span>
-          </div>
+        
 
         </div>
       </div>
