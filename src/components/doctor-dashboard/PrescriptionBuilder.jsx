@@ -34,6 +34,7 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
   };
 
   const handleFinalSubmit = async () => {
+    
     if (medicines.length === 0) {
       message.warning("Please add at least one medicine before finalizing the prescription.");
       return;
