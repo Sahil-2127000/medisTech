@@ -39,17 +39,14 @@ const AppointmentRequests = ({
     if (totalPages <= 1) return null;
 
     return (
-      <div className="flex items-center justify-between mt-10 px-4 py-6 bg-slate-50/50 rounded-[2.5rem] border border-gray-100/50">
-        <div className="text-xs font-black text-gray-400 uppercase tracking-widest">
-          Showing <span className="text-slate-800">{appointments.length}</span> of <span className="text-slate-800">{totalCount}</span> records
-        </div>
+      <div className="flex items-center justify-center mt-10 px-4 py-1 bg-slate-50/50 rounded-[2.5rem] border border-gray-100/50">
         <div className="flex items-center gap-2">
           <button 
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${currentPage === 1 ? 'text-gray-200 bg-white border border-gray-50' : 'text-slate-600 bg-white border border-gray-100 hover:text-clinic-600 hover:shadow-lg active:scale-90 cursor-pointer'}`}
+            className={`w-6 h-6 rounded-xl flex items-center bg-blue-600 justify-center transition-all ${currentPage === 1 ? 'text-gray-200  border border-gray-50' : 'text-slate-600 bg-white border border-gray-100 hover:text-clinic-600 hover:shadow-lg active:scale-90 cursor-pointer'}`}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            <svg className="w-3 h-3" fill="none" stroke="white" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
           </button>
           
           {[...Array(totalPages)].map((_, i) => {

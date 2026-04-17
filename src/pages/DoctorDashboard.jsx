@@ -11,6 +11,7 @@ import EmergencyCase from '../components/doctor-dashboard/EmergencyCase';
 import PatientHistoryView from '../components/doctor-dashboard/PatientHistoryView';
 import AlertBell from '../components/doctor-dashboard/AlertBell';
 import ManageBlogs from '../components/doctor-dashboard/ManageBlogs';
+import { useSocket } from '../context/SocketContext';
 
 // Helper mock seeder if localStorage is uniquely empty
 const ensureMockData = () => {
@@ -35,6 +36,7 @@ const DoctorDashboard = () => {
     // Safely mapping plural constraint fallbacks
     if (activeTab === 'appointment') activeTab = 'appointments';
     const setActiveTab = (tab) => navigate(`/doctordashboard/${tab}`);
+    const socket = useSocket();
 
     const [appointments, setAppointments] = useState([]); // Today's dynamic appointments
     const [historyAppointments, setHistoryAppointments] = useState([]);
@@ -176,12 +178,20 @@ const DoctorDashboard = () => {
         };
         window.addEventListener("appointmentsUpdated", handleUpdate);
         window.addEventListener("doctorProfileUpdated", loadDoctorProfile);
-        const interval = setInterval(handleUpdate, 15000); return () => {
+        
+        if (socket) {
+            socket.on('queueUpdated', handleUpdate);
+        }
+
+        const interval = setInterval(handleUpdate, 15000); 
+        
+        return () => {
             window.removeEventListener("appointmentsUpdated", handleUpdate);
             window.removeEventListener("doctorProfileUpdated", loadDoctorProfile);
+            if (socket) socket.off('queueUpdated', handleUpdate);
             clearInterval(interval);
         };
-    }, []);
+    }, [socket]);
 
     // Action Mutators strictly utilizing the explicit Dispatch payload flow
     const handleStatusChange = async (id, newStatus) => {
