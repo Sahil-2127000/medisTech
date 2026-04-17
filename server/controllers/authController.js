@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_for_development';
 const otps = {};
 
 exports.sendOtp = async (req, res) => {
-  const { email } = req.body;
+  const { email, phone } = req.body;
   if (!email) return res.status(400).json({ message: 'Email is required' });
 
   try {
@@ -19,6 +19,15 @@ exports.sendOtp = async (req, res) => {
     
     if (existingPatient || existingDoctor) {
       return res.status(400).json({ message: 'User already exists with this email across any clinical role' });
+    }
+
+    if (phone) {
+      const existingPatientPhone = await User.findOne({ phone });
+      const existingDoctorPhone = await Doctor.findOne({ phone });
+      
+      if (existingPatientPhone || existingDoctorPhone) {
+        return res.status(400).json({ message: 'User already exists with this phone number' });
+      }
     }
   } catch (error) {
     console.error('Database Error:', error);
@@ -128,6 +137,15 @@ exports.register = async (req, res) => {
     
     if (existingPatient || existingDoctor) {
       return res.status(400).json({ message: 'Entity already exists with this email' });
+    }
+
+    if (phone) {
+      const existingPatientPhone = await User.findOne({ phone });
+      const existingDoctorPhone = await Doctor.findOne({ phone });
+      
+      if (existingPatientPhone || existingDoctorPhone) {
+        return res.status(400).json({ message: 'Entity already exists with this phone number' });
+      }
     }
 
     // Validate OTP

@@ -24,7 +24,7 @@ const Footer = () => {
             <a href="#" className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-colors">fb</a>
           </div>
           <p className="text-slate-400 text-xs">
-            Copyright © 2026 Dr. Anand Kumar Clinic. <br/>All rights reserved.
+            Copyright © 2026 Dr. MV Sharma Clinic. <br/>All rights reserved.
           </p>
         </div>
 
@@ -33,7 +33,7 @@ const Footer = () => {
           <h4 className="font-bold text-slate-900 mb-6 text-lg">Quick Links</h4>
           <ul className="space-y-4 text-sm text-slate-500 font-medium">
             <li><a href="#home" className="hover:text-blue-600 transition-colors inline-block">Home</a></li>
-            <li><a href="#about" className="hover:text-blue-600 transition-colors inline-block">About Dr. Anand Kumar</a></li>
+            <li><a href="#about" className="hover:text-blue-600 transition-colors inline-block">About Dr. MV Sharma</a></li>
             <li><a href="#services" className="hover:text-blue-600 transition-colors inline-block">Our Services</a></li>
             <li><a href="#blog" className="hover:text-blue-600 transition-colors inline-block">Health Insights (Blog)</a></li>
             <li><a href="#faq" className="hover:text-blue-600 transition-colors inline-block">FAQs</a></li>
@@ -64,7 +64,7 @@ const Footer = () => {
                   className="w-4 h-4 lg:w-5 lg:h-5 object-contain drop-shadow-sm"
                 />
               </span>
-              <span>anandkumarclinic@gmail.com</span>
+              <span>mvsharmaclinic@gmail.com</span>
             </li>
             <li className="flex items-start gap-3 pt-2">
               <span className="text-blue-600 text-base mt-0.5">🕒</span>

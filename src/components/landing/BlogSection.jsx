@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const BlogSection = () => {
   const [dbPosts, setDbPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -36,13 +37,20 @@ const BlogSection = () => {
     },
     {
       title: "Why You Shouldn't Skip Your Annual Medical Check-up",
-      image: "https://www.docwirenews.com/cdn-cgi/image/w=400,h=280,q=85,f=auto,fit=scale-down,width=828/https://mumcdnstorage.blob.core.windows.net/dwnews/2020/10/Specialist-Care-May-Reduce-Healthcare-Resource-Utilization.jpg",
+      image: "https://cdn.openviowebsites.com/source/sites/5835a1c0-9e3c-4d5e-b068-5c4d69b63968/images/26a01d7d-6cbd-422a-bfe5-dc7ddaa0be2c_preventive-health-checkup.png",
       category: "Preventive Care",
       date: "Oct 05, 2026"
+    },
+    {
+      title: "How Sleep Affects Your Long-term Health and Wellness",
+      image: "https://www.sleepfoundation.org/wp-content/uploads/2020/03/sleep-timeline.jpg",
+      category: "Wellness",
+      date: "Oct 01, 2026"
     }
   ];
 
-  const allPosts = [...dbPosts, ...staticPosts].slice(0, 6);
+  const allPosts = [...dbPosts, ...staticPosts];
+  const displayedPosts = showAll ? allPosts : allPosts.slice(0, 3);
 
   const headerVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -73,7 +81,7 @@ const BlogSection = () => {
       >
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Health Insights & Wellness Tips</h2>
         <p className="text-slate-500 text-sm md:text-base leading-relaxed">
-          Read the latest medical advice and wellness strategies written directly by Dr. Anand Kumar.
+          Read the latest medical advice and wellness strategies written directly by Dr. MV Sharma.
         </p>
       </motion.div>
 
@@ -84,7 +92,7 @@ const BlogSection = () => {
         whileInView="visible"
         viewport={{ once: false, amount: 0.2 }}
       >
-        {allPosts.map((post, idx) => {
+        {displayedPosts.map((post, idx) => {
           const dateStr = post.createdAt ? new Date(post.createdAt).toLocaleDateString() : post.date;
           const categoryStr = post.category || "Health Updates";
           return (
@@ -115,6 +123,23 @@ const BlogSection = () => {
         })}
       </motion.div>
 
+      {allPosts.length > 3 && (
+        <motion.div 
+          className="mt-16 flex justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <button 
+            onClick={() => setShowAll(!showAll)}
+            className="px-8 py-3.5 bg-blue-50 text-blue-500 hover:bg-blue-500 hover:text-white font-bold rounded-full transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-2"
+          >
+            {showAll ? 'View Less' : 'Read More Blogs'}
+            {!showAll && <span className="group-hover:translate-x-1 transition-transform">→</span>}
+          </button>
+        </motion.div>
+      )}
+
       {/* Modal for Reading Blog */}
       <AnimatePresence>
         {selectedPost && (
@@ -130,7 +155,7 @@ const BlogSection = () => {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white w-full max-w-3xl max-h-[85vh] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden relative"
+              className="bg-white w-full max-w-3xl max-h-[85vh] rounded-4xl shadow-2xl flex flex-col overflow-hidden relative"
             >
               <button 
                 onClick={() => setSelectedPost(null)}
