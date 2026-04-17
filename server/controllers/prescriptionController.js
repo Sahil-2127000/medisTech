@@ -44,6 +44,16 @@ exports.issuePrescription = async (req, res) => {
        await sendEmail(appt.patientId.email, subject, html);
     }
 
+    // Trigger Socket.io natively to notify all participants of the queue shift
+    const io = req.app.get('socketio');
+    if (io) {
+      io.emit('queueUpdated', { 
+        doctorId: doctorId.toString(),
+        patientId: patientId.toString(),
+        type: 'prescription_issued'
+      });
+    }
+
     res.status(201).json({ message: 'Prescription generated perfectly.', prescription: rx });
   } catch (error) {
     console.error(error);

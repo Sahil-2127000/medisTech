@@ -14,10 +14,15 @@ router.get('/doctors', authController.getDoctors);
 router.get('/profile', authMiddleware, userController.getProfile);
 router.put('/profile', authMiddleware, userController.updateProfile);
 router.put('/change-password', authMiddleware, userController.changePassword);
+router.post('/verify-password', authMiddleware, userController.verifyPassword);
 
 router.post('/2fa/setup', authMiddleware, userController.setup2FA);
 router.post('/2fa/setup-verify', authMiddleware, userController.verifySetup2FA);
 router.post('/2fa/disable', authMiddleware, userController.disable2FA);
 router.put('/preferences', authMiddleware, userController.updatePreferences);
+
+// Forgot Password Flow (Authenticated)
+router.post('/forgot-password-otp', authMiddleware, authController.forgotPasswordRequestOtp);
+router.post('/forgot-password-reset', authMiddleware, authController.forgotPasswordReset);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSocket } from '../context/SocketContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/patient-dashboard/Sidebar';
 import MainPanel from '../components/patient-dashboard/MainPanel';
@@ -13,6 +14,7 @@ const PatientDashboard = () => {
   const pathParts = location.pathname.split('/').filter(Boolean);
   const activeTab = pathParts[1] || 'home'; 
   const setActiveTab = (tab) => navigate(`/patientdashboard/${tab}`);
+  const socket = useSocket();
 
   // Attempt to load real logged-in user profile, fallback to Guest
   const savedUser = JSON.parse(sessionStorage.getItem('user')) || {};
@@ -91,9 +93,20 @@ const PatientDashboard = () => {
 
   useEffect(() => {
     pollAppointments();
-    const interval = setInterval(pollAppointments, 15000); // Poll intensely natively every 15s syncing
-    return () => clearInterval(interval);
-  }, []);
+    
+    if (socket) {
+      // Listen for global queue or prescription updates to refresh dashboard data
+      socket.on('queueUpdated', pollAppointments);
+    }
+
+    const interval = setInterval(pollAppointments, 30000); // Polling legacy fallback (reduced frequency)
+    return () => {
+      clearInterval(interval);
+      if (socket) {
+        socket.off('queueUpdated', pollAppointments);
+      }
+    };
+  }, [socket]);
 
   // Structural mock data blending with actual fetched lengths natively dynamically
   const upcomingFiltered = upcomingAppointments.filter(app => ['pending', 'approved', 'emergency_active'].includes(app.status));

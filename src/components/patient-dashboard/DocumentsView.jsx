@@ -71,7 +71,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
   const currentPrescriptions = allRecords[currentMember.id] || [];
 
   return (
-    <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar bg-transparent relative">
+    <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar bg-slate-50/50 relative">
       
       {/* Header with Back Button (if Multiple) */}
       <div className="mb-10 animate-fade-in flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -112,32 +112,45 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
               <div 
                 key={px._id || i} 
                 onClick={() => setActivePrescription(px)}
-                className="group bg-white rounded-[2rem] p-8 border border-gray-50 shadow-sm hover:shadow-xl hover:shadow-[#5265ec]/5 transition-all cursor-pointer flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+                className="group relative bg-white rounded-[2.5rem] p-7 border border-slate-200 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 cursor-pointer flex flex-col lg:flex-row lg:items-center justify-between gap-6 overflow-hidden active:scale-[0.98] ring-1 ring-slate-100 hover:ring-[#5265ec]/20"
               >
-                <div className="flex items-center gap-6">
-                  {/* Date Badge */}
-                  <div className="w-16 h-16 rounded-2xl bg-slate-50 flex flex-col items-center justify-center text-slate-400 group-hover:bg-[#5265ec]/5 group-hover:text-[#5265ec] transition-colors shrink-0">
-                    <span className="text-[10px] font-black uppercase tracking-widest">{new Date(px.createdAt).toLocaleString('default', { month: 'short' })}</span>
-                    <span className="text-2xl font-black leading-none">{new Date(px.createdAt).getDate()}</span>
+                {/* Visual Accent Gradient (hidden by default, revealed on hover) */}
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-[#5265ec] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                
+                <div className="flex items-center gap-7 relative z-10">
+                  {/* High-Contrast Date Badge */}
+                  <div className="w-20 h-20 rounded-[1.75rem] bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center text-white shadow-xl group-hover:from-[#5265ec] group-hover:to-[#3963F9] transition-all duration-500 shrink-0">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] opacity-60 mb-0.5">{new Date(px.createdAt).toLocaleString('default', { month: 'short' })}</span>
+                    <span className="text-3xl font-black">{new Date(px.createdAt).getDate()}</span>
                   </div>
+
                   <div>
-                    <h3 className="text-2xl font-black text-slate-800 tracking-tight group-hover:text-[#5265ec] transition-colors line-clamp-1">{currentMember.name}</h3>
-                    <div className="flex items-center gap-4 mt-1.5 font-bold">
-                       <span className="text-xs uppercase text-[#5265ec] tracking-widest">Dr. {px.doctorId?.fullName || 'Specialist'}</span>
-                       <span className="w-1.5 h-1.5 rounded-full bg-blue-100"></span>
-                       <span className="text-xs uppercase text-gray-400 tracking-widest">{px.diagnosis || 'General Checkup'}</span>
-                       <span className="w-1.5 h-1.5 rounded-full bg-blue-100"></span>
-                       <span className="text-xs text-gray-400">{px.medicines?.length || 0} Medicines</span>
+                    <h3 className="text-2xl font-black text-[#021024] tracking-tight group-hover:text-[#5265ec] transition-colors leading-tight mb-2 uppercase">{currentMember.name}</h3>
+                    <div className="flex flex-wrap items-center gap-3">
+                       <div className="flex items-center gap-1.5 bg-[#5265ec]/10 px-3.5 py-1.5 rounded-full border border-[#5265ec]/10">
+                          <svg className="w-3.5 h-3.5 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                          <span className="text-[10px] font-black text-[#5265ec] uppercase tracking-wider">Dr. {px.doctorId?.fullName || 'Specialist'}</span>
+                       </div>
+                       
+                       <div className="flex items-center gap-1.5 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-100">
+                          <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                          <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">{px.diagnosis || 'Evaluation'}</span>
+                       </div>
+
+                       <div className="flex items-center gap-1.5 bg-rose-50 px-3.5 py-1.5 rounded-full border border-rose-100">
+                          <svg className="w-3.5 h-3.5 text-rose-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.638.319a4 4 0 01-1.833.446H8.442a1 1 0 01-1-1V6.26c0-.287.12-.56.333-.756L10 3.333m-1.583 6.167L3.417 9.5M3.417 9.5L1 12l2.417 2.5m0-10l-2.417 2.5L2.417 7.5"/></svg>
+                          <span className="text-[10px] font-black text-rose-600 uppercase tracking-wider">{px.medicines?.length || 0} Meds</span>
+                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 align-self-end lg:align-self-center">
+                <div className="flex items-center gap-6 relative z-10 lg:ml-auto">
                   <div className="text-right hidden sm:block">
-                    <div className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Digital Prescription</div>
-                    <div className="text-xs font-mono font-bold text-slate-400">#{(px._id || 'RX').toString().slice(-6).toUpperCase()}</div>
+                    <div className="text-[9px] font-black text-[#5265ec] uppercase tracking-[0.2em] mb-1 opacity-50">Auth Node Signature</div>
+                    <div className="text-xs font-mono font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200 shadow-inner">#{(px._id || 'RX').toString().slice(-6).toUpperCase()}</div>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#5265ec] group-hover:text-white transition-all shadow-inner">
+                  <div className="w-14 h-14 rounded-2xl bg-white shadow-[0_4px_10px_rgb(0,0,0,0.05)] border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#5265ec] group-hover:text-white group-hover:shadow-[0_10px_20px_rgb(82,101,236,0.3)] group-hover:scale-110 transition-all duration-300">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7-7 7"/></svg>
                   </div>
                 </div>

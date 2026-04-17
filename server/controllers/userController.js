@@ -83,21 +83,8 @@ exports.changePassword = async (req, res) => {
     
     if (!targetUser) return res.status(404).json({ message: 'Entity structural mapping not found natively.' });
 
-    // Enforce 24-hour limit structurally mapped over physical time bounds
-    console.log("[DEBUG] lastPasswordChange from DB in changePassword:", targetUser.lastPasswordChange);
-    if (targetUser.lastPasswordChange) {
-       const twentyFourHours = 24 * 60 * 60 * 1000;
-       const timeSinceLastChange = Date.now() - new Date(targetUser.lastPasswordChange).getTime();
-       console.log("[DEBUG] timeSinceLastChange (ms):", timeSinceLastChange, "| vs Limit:", twentyFourHours);
-       if (timeSinceLastChange < twentyFourHours) {
-          const hoursLeft = Math.ceil((twentyFourHours - timeSinceLastChange) / (60 * 60 * 1000));
-          console.log("[DEBUG] Aborting password change. Hours left:", hoursLeft);
-          return res.status(400).json({ message: 'For security reasons, password changes are limited to once every 24 hours. Please try again later.' });
-       }
-    }
-
     const isMatch = await bcrypt.compare(oldPassword, targetUser.password);
-    if (!isMatch) return res.status(400).json({ message: 'The old password you provided is incorrectly mapped.' });
+    if (!isMatch) return res.status(400).json({ message: 'Please enter the old password correctly' });
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
@@ -113,6 +100,24 @@ exports.changePassword = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server core failed securely patching password.' });
+  }
+};
+
+exports.verifyPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password) return res.status(400).json({ message: 'Password required' });
+
+    let targetUser = req.user.role === 'doctor' ? await Doctor.findById(req.user.id) : await User.findById(req.user.id);
+    if (!targetUser) return res.status(404).json({ message: 'User mapping failed' });
+
+    const isMatch = await bcrypt.compare(password, targetUser.password);
+    if (!isMatch) return res.status(400).json({ message: 'Please enter the old password correctly' });
+
+    res.status(200).json({ ok: true, message: 'Password verified successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Verification bridge failed.' });
   }
 };
 
