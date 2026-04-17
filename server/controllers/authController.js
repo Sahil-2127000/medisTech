@@ -331,3 +331,64 @@ exports.logout = (req, res) => {
   res.clearCookie('token');
   res.status(200).json({ message: 'Logged out successfully' });
 };
+
+// Forgot Password Workflow for Authenticated Users (Settings Page)
+exports.forgotPasswordRequestOtp = async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    if (!userEmail) return res.status(400).json({ message: 'Email context missing' });
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    otps[userEmail] = {
+      otp: otpCode,
+      expiresAt: Date.now() + 10 * 60 * 1000, 
+    };
+
+    const html = `
+      <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+        <h2 style="color: #3b82f6;">Password Reset Verification</h2>
+        <p>A request was made to reset your password. Use the code below to proceed:</p>
+        <div style="background: #f1f5f9; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1e293b;">
+          ${otpCode}
+        </div>
+        <p style="color: #64748b; font-size: 13px; margin-top: 20px;">If you did not request this, please secure your account immediately.</p>
+      </div>
+    `;
+
+    await sendEmail(userEmail, 'Password Reset OTP', html);
+    res.status(200).json({ message: 'Reset OTP sent successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to transmit reset OTP.' });
+  }
+};
+
+exports.forgotPasswordReset = async (req, res) => {
+  try {
+    const { otp, newPassword } = req.body;
+    const userEmail = req.user.email;
+
+    if (!otp || !newPassword) return res.status(400).json({ message: 'OTP and New Password required.' });
+
+    const record = otps[userEmail];
+    if (!record || record.otp !== otp || Date.now() > record.expiresAt) {
+      return res.status(400).json({ message: 'Invalid or expired OTP.' });
+    }
+
+    delete otps[userEmail];
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    if (req.user.role === 'doctor') {
+      await Doctor.findByIdAndUpdate(req.user.id, { password: hashedPassword, lastPasswordChange: new Date() });
+    } else {
+      await User.findByIdAndUpdate(req.user.id, { password: hashedPassword, lastPasswordChange: new Date() });
+    }
+
+    res.status(200).json({ message: 'Password reset successfully!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Structural failure during password reset.' });
+  }
+};

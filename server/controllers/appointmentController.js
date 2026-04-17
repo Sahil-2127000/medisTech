@@ -155,6 +155,12 @@ exports.bookAppointment = async (req, res) => {
        await sendEmail(populatedAppt.patientId.email, subject, html);
     }
 
+    // Notify everyone via Socket.io inherently
+    const io = req.app.get('socketio');
+    if (io) {
+      io.emit('queueUpdated', { doctorId: ultimateDoctorId.toString() });
+    }
+
     res.status(201).json({ message: 'Slot cleanly locked securely.', appointment: newAppt });
   } catch (error) {
     console.error(error);
