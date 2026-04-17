@@ -272,6 +272,12 @@ exports.updateStatus = async (req, res) => {
        }
     }
 
+    // Trigger Socket.io natively
+    const io = req.app.get('socketio');
+    if (io) {
+      io.emit('queueUpdated', { doctorId: appt.doctorId._id ? appt.doctorId._id.toString() : appt.doctorId.toString() });
+    }
+
     res.status(200).json(appt);
   } catch (error) {
     console.error('Status Update Error:', error);
@@ -343,13 +349,35 @@ exports.getQueueStatus = async (req, res) => {
     // If the caller is a patient, find their token and calculate wait
     let patientToken = null;
     let waitTime = 0;
+    let estimatedTimeFormatted = null;
+
     if (req.user && req.user.role === 'patient') {
       const myAppt = await Appointment.findOne({ doctorId, date, patientId: req.user.id, status: { $in: ['pending', 'approved'] } });
       if (myAppt) {
         patientToken = myAppt.tokenNumber;
-        // Calculation: (MyToken - CurrentlyServing) * average slot duration (30 mins baseline)
+        // Calculation: (MyToken - CurrentlyServing) * dynamic basis
         const gap = patientToken - currentlyServing;
-        waitTime = gap > 0 ? gap * 30 : 0; // Baseline 30 mins
+        waitTime = gap > 0 ? gap * 15 : 0; // Baseline 15 mins
+
+        // Dynamically shift physical clock forward
+        if (gap > 0 && currentlyServing > 0) {
+            const eta = new Date();
+            eta.setMinutes(eta.getMinutes() + waitTime);
+            
+            let hours = eta.getHours();
+            const minutes = eta.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            const minStr = minutes < 10 ? '0' + minutes : minutes;
+            estimatedTimeFormatted = `${hours}:${minStr} ${ampm}`;
+        } else if (gap > 0 && currentlyServing === 0) {
+            // Queue hasn't started natively, fallback to original physical slot mapping
+            estimatedTimeFormatted = myAppt.originalTime || myAppt.time;
+        } else {
+            // Already time
+            estimatedTimeFormatted = "Now";
+        }
       }
     }
 
@@ -357,6 +385,7 @@ exports.getQueueStatus = async (req, res) => {
       currentlyServing,
       patientToken,
       estimatedWaitMinutes: waitTime,
+      estimatedTimeFormatted,
       activeAppointmentId: active ? active._id : null
     });
   } catch (error) {

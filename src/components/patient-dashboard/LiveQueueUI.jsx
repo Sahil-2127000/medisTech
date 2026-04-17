@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Tag, Button, Empty, Spin, Statistic, Result } from 'antd';
 import { ClockCircleOutlined, UserOutlined, ArrowRightOutlined, SyncOutlined } from '@ant-design/icons';
 import { calculateWaitTime } from '../../utils/queueUtils';
+import { useSocket } from '../../context/SocketContext';
 
 const LiveQueueUI = ({ doctorId, doctorName }) => {
   const [queueData, setQueueData] = useState(null);
@@ -29,15 +30,27 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
     }
   };
 
+  const socket = useSocket();
+
   useEffect(() => {
     fetchQueueStatus();
-    const interval = setInterval(fetchQueueStatus, 10000); // Polling every 10s
-    return () => clearInterval(interval);
-  }, [doctorId]);
+    const interval = setInterval(fetchQueueStatus, 15000); // Polling fallback every 15s
+    
+    if (socket) {
+      socket.on('queueUpdated', fetchQueueStatus);
+    }
+
+    return () => {
+      clearInterval(interval);
+      if (socket) {
+         socket.off('queueUpdated', fetchQueueStatus);
+      }
+    };
+  }, [doctorId, socket]);
 
   if (loading) return <div className="p-10 text-center"><Spin size="large" tip="Loading Live Queue..." /></div>;
 
-  const { currentlyServing, patientToken, estimatedWaitMinutes } = queueData || {};
+  const { currentlyServing, patientToken, estimatedWaitMinutes, estimatedTimeFormatted } = queueData || {};
 
   return (
     <div className="w-full flex flex-col gap-6 animate-fade-in">
@@ -87,9 +100,9 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
                   <ClockCircleOutlined className="text-xl" />
                 </div>
                 <div>
-                  <div className="text-gray-400 text-xs font-bold uppercase">Estimated Wait</div>
+                  <div className="text-gray-400 text-xs font-bold uppercase">Estimated Time</div>
                   <div className="text-2xl font-black text-slate-800">
-                    {estimatedWaitMinutes > 0 ? `${estimatedWaitMinutes} Mins` : "Next to Serve"}
+                    {estimatedTimeFormatted || (estimatedWaitMinutes === 0 ? "Now" : "Calculating")}
                   </div>
                 </div>
               </div>
@@ -115,8 +128,8 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
       {patientToken && estimatedWaitMinutes > 0 && (
         <div className="bg-white border border-dashed border-gray-200 rounded-[2.5rem] p-8 text-center">
            <p className="text-gray-400 font-medium">
-             There are <strong className="text-blue-600">{patientToken - currentlyServing - 1}</strong> patients ahead of you. 
-             Each consultation is estimated at <strong className="text-slate-800">30 minutes</strong>.
+             There are <strong className="text-blue-600">{patientToken - currentlyServing > 0 ? patientToken - currentlyServing - 1 : 0}</strong> patients ahead of you. 
+             Each consultation is estimated at <strong className="text-slate-800">15 minutes</strong> dynamically tracking current wait.
            </p>
            <div className="flex items-center justify-center gap-4 mt-4">
               <Tag color="blue" className="px-4 py-1 rounded-full font-bold">Token {currentlyServing}</Tag>

@@ -42,6 +42,25 @@ app.get('/', (req, res) => {
 
 // Start listening
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Backend Server running on http://localhost:${PORT}`);
+});
+
+// Initialize Socket.io
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    credentials: true
+  }
+});
+
+// Make io accessible in our routes natively
+app.set('socketio', io);
+
+io.on('connection', (socket) => {
+  console.log('A client connected via WebSocket:', socket.id);
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
 });
