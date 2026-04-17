@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PrescriptionBuilder from './PrescriptionBuilder';
 
 
-const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) => {
+const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, onSkip }) => {
  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
  const [medicine, setMedicine] = useState('');
  const [timing, setTiming] = useState('');
@@ -75,11 +75,11 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) 
      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
      Attend
    </button>
-   <button onClick={() => onStatusChange(nextPatient.id, 'rejected')}
+   <button onClick={() => onSkip(nextPatient.id)}
      className="px-4 bg-rose-50 hover:bg-rose-100 text-rose-500 font-bold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 text-sm active:scale-95 border border-rose-100"
-     title="Skip/Reject this patient"
+     title="Reschedule this patient to the end of the queue"
    >
-     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
      Skip
    </button>
  </div>

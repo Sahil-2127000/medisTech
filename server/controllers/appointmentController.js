@@ -20,77 +20,68 @@ exports.getPatientAppointments = async (req, res) => {
   }
 };
 
+// Helper to compute all potential time slots for a doctor on a specific date strictly mapping grid configuration
+const getSlotsList = async (doctorId, date) => {
+  const config = await Availability.findOne({ doctorId });
+  if (!config) return { error: 'Doctor has not mapped an availability grid.' };
+
+  if (config.blackoutDates.includes(date)) return { slots: [], isOff: true };
+
+  const [dS, mS, yS] = date.split('-').map(Number);
+  const dateObj = new Date(yS, mS - 1, dS);
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const dayOfWeek = dayNames[dateObj.getDay()];
+
+  const shiftData = config.weeklyConfig.find(w => w.day === dayOfWeek);
+  if (!shiftData || shiftData.isOff) return { slots: [], isOff: true };
+
+  let allSlots = [];
+  shiftData.slots.forEach(block => {
+    const [startH, startM] = block.start.split(':').map(Number);
+    const [endH, endM] = block.end.split(':').map(Number);
+    let currentTotalMins = startH * 60 + startM;
+    const endTotalMins = endH * 60 + endM;
+
+    while (currentTotalMins + Number(config.slotDuration) <= endTotalMins) {
+      const h = Math.floor(currentTotalMins / 60).toString().padStart(2, '0');
+      const m = (currentTotalMins % 60).toString().padStart(2, '0');
+      allSlots.push(`${h}:${m}`);
+      currentTotalMins += Number(config.slotDuration);
+    }
+  });
+
+  return { slots: allSlots, config };
+};
+
 // Return available raw parsed time blocks given a strict configuration
 exports.getAvailableSlots = async (req, res) => {
   try {
     const { doctorId, date } = req.query; // date format 'DD-MM-YYYY'
     if (!doctorId || !date) return res.status(400).json({ message: 'DoctorID and Date strictly required.' });
 
-    const config = await Availability.findOne({ doctorId });
-    if (!config) return res.status(404).json({ message: 'Doctor has not mapped an availability grid.' });
-
-    // Validate if explicit blackout
-    if (config.blackoutDates.includes(date)) return res.status(200).json({ isOff: true, slots: [] });
-
-    // Safely parse robust DD-MM-YYYY into a structural Date block natively
-    const [dS, mS, yS] = date.split('-').map(Number);
-    const dateObj = new Date(yS, mS - 1, dS);
-    const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const dayOfWeek = dayNames[dateObj.getDay()];
-
-    console.log(`[DEBUG] getAvailableSlots: DoctorId=${doctorId}, Date=${date}, DayOfWeek=${dayOfWeek}`);
-    
-    const shiftData = config.weeklyConfig.find(w => w.day === dayOfWeek);
-    console.log(`[DEBUG] ShiftData found:`, !!shiftData);
-    
-    if (!shiftData || shiftData.isOff) {
-      console.log(`[DEBUG] Clinic is OFF on ${dayOfWeek}`);
-      return res.status(200).json({ isOff: true, slots: [] });
-    }
-
-    const [startH, startM] = shiftData.slots[0].start.split(':').map(Number);
-    console.log(`[DEBUG] Parsing block: Start=${shiftData.slots[0].start}, StartMins=${startH * 60 + startM}`);
-
+    const result = await getSlotsList(doctorId, date);
+    if (result.error) return res.status(404).json({ message: result.error });
+    if (result.isOff) return res.status(200).json({ isOff: true, slots: [] });
 
     // Grab all pre-booked appointments evaluating collisions uniquely
     const existingAppts = await Appointment.find({ doctorId, date, status: { $in: ['pending', 'approved'] } });
     const bookedTimes = existingAppts.map(a => a.originalTime || a.time);
 
-    let generatedSlots = [];
-    
-    // Assess physical localized time safely against shifting bounds
     const now = new Date();
     const localTodayStr = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
     const isToday = (date === localTodayStr);
-    
-    // Parse the shifts natively mathematically executing structural blocks
-    shiftData.slots.forEach(block => {
-      const [startH, startM] = block.start.split(':').map(Number);
-      const [endH, endM] = block.end.split(':').map(Number);
-      let currentTotalMins = startH * 60 + startM;
-      const endTotalMins = endH * 60 + endM;
 
-      while (currentTotalMins + config.slotDuration <= endTotalMins) {
-        const h = Math.floor(currentTotalMins / 60).toString().padStart(2, '0');
-        const m = (currentTotalMins % 60).toString().padStart(2, '0');
-        const timeStr = `${h}:${m}`;
-        
-        let isPast = false;
-        if (isToday) {
-           const currentH = now.getHours();
-           const currentM = now.getMinutes();
-           const currentMinsTotal = currentH * 60 + currentM;
-           if (currentTotalMins <= currentMinsTotal) {
-              isPast = true;
-           }
-        }
-        
-        generatedSlots.push({ 
-          time: timeStr, 
-          isAvailable: !bookedTimes.includes(timeStr) && !isPast
-        });
-        currentTotalMins += config.slotDuration;
+    const generatedSlots = result.slots.map(timeStr => {
+      let isPast = false;
+      if (isToday) {
+        const [h, m] = timeStr.split(':').map(Number);
+        const currentMinsTotal = now.getHours() * 60 + now.getMinutes();
+        if ((h * 60 + m) <= currentMinsTotal) isPast = true;
       }
+      return { 
+        time: timeStr, 
+        isAvailable: !bookedTimes.includes(timeStr) && !isPast
+      };
     });
 
     res.status(200).json({ slots: generatedSlots });
@@ -99,6 +90,7 @@ exports.getAvailableSlots = async (req, res) => {
     res.status(500).json({ message: 'Failed fetching block structure' });
   }
 };
+
 
 // Book explicitly tracking original times
 exports.bookAppointment = async (req, res) => {
@@ -120,9 +112,13 @@ exports.bookAppointment = async (req, res) => {
        return res.status(400).json({ message: 'This slot was strictly just absorbed dynamically. Please reload slots.' });
     }
 
-    // Calculate the next token number for this doctor on this day
-    const count = await Appointment.countDocuments({ doctorId: ultimateDoctorId, date });
-    const tokenNumber = count + 1;
+    // Calculate token number mapped to the physical slot index (1-indexed)
+    const slotResult = await getSlotsList(ultimateDoctorId, date);
+    let tokenNumber = 0;
+    if (slotResult.slots) {
+       const index = slotResult.slots.indexOf(time);
+       tokenNumber = index !== -1 ? index + 1 : 0;
+    }
 
     const newAppt = new Appointment({
       patientId: patientIdOverride || req.user.id,
@@ -406,3 +402,87 @@ exports.getQueueStatus = async (req, res) => {
     res.status(500).json({ message: 'Queue data failed' });
   }
 };
+
+// Smart Skip: Reschedule patient to the latest available slot of the day
+exports.skipAppointment = async (req, res) => {
+  try {
+    console.log(`[DEBUG] skipAppointment triggered for ID: ${req.params.id}`);
+    const appt = await Appointment.findById(req.params.id)
+                                  .populate('patientId', 'fullName email emailNotifications')
+                                  .populate('doctorId', 'fullName');
+
+    if (!appt) {
+      console.log(`[DEBUG] Appointment ${req.params.id} not found.`);
+      return res.status(404).json({ message: 'Appointment not found natively' });
+    }
+
+    const { doctorId, date } = appt;
+    // Extract ID even if populated to be safe for DB queries and socket emits
+    const targetDoctorId = doctorId._id ? doctorId._id : doctorId;
+    
+    console.log(`[DEBUG] Rescheduling for Doctor: ${targetDoctorId}, Date: ${date}`);
+    const result = await getSlotsList(targetDoctorId, date);
+    
+    if (result.error || result.isOff) {
+      console.log(`[DEBUG] getSlotsList failed: ${result.error || 'isOff'}`);
+      return res.status(400).json({ message: 'Cannot reschedule: Clinic is off or configuration missing.' });
+    }
+
+    // Find already occupied slots for the day (excluding this specific appointment)
+    const busyAppts = await Appointment.find({ 
+      doctorId: targetDoctorId, 
+      date, 
+      _id: { $ne: appt._id }, 
+      status: { $in: ['pending', 'approved', 'in_progress'] } 
+    });
+    const busyTimes = busyAppts.map(a => a.time);
+    console.log(`[DEBUG] Booked times:`, busyTimes);
+
+    // Filter available slots and find the latest one
+    const availableSlots = result.slots.filter(s => !busyTimes.includes(s));
+    console.log(`[DEBUG] Available slots: ${availableSlots.length}`);
+    
+    if (availableSlots.length === 0) {
+      return res.status(400).json({ message: 'No available slots left today to reschedule this patient.' });
+    }
+
+    const latestSlot = availableSlots[availableSlots.length - 1]; // Last slot of the day
+    const newTokenNumber = result.slots.indexOf(latestSlot) + 1;
+
+    const oldTime = appt.time;
+    appt.time = latestSlot;
+    appt.tokenNumber = newTokenNumber;
+    await appt.save();
+    console.log(`[DEBUG] Appt successfully moved from ${oldTime} to ${latestSlot} (Token ${newTokenNumber})`);
+
+    // Notify Patient via Email
+    if (appt.patientId && appt.patientId.email && appt.patientId.emailNotifications !== false) {
+      const pName = capitalizeNames(appt.patientId.fullName);
+      const dName = capitalizeNames(appt.doctorId.fullName);
+      
+      const subject = "Appointment Update - Clinic@Flow";
+      const html = `<h2>Hello ${pName},</h2>
+                    <p>Your appointment with <strong>Dr. ${dName}</strong> has been <strong>Rescheduled</strong> to the end of the day's queue.</p>
+                    <p><strong>New Time:</strong> ${appt.time}<br>
+                    <strong>New Token:</strong> ${appt.tokenNumber}</p>
+                    <p>Previous Time: ${oldTime}</p>
+                    <p>Please log in to your dashboard for live queue updates.</p>`;
+      sendEmail(appt.patientId.email, subject, html).catch(e => console.error("Email fail:", e));
+    }
+
+    // Trigger Socket.io update natively
+    const io = req.app.get('socketio');
+    if (io) {
+      const emitId = targetDoctorId.toString();
+      console.log(`[DEBUG] Emitting queueUpdated for Doctor: ${emitId}`);
+      io.emit('queueUpdated', { doctorId: emitId });
+    }
+
+    res.status(200).json({ message: 'Patient rescheduled to the latest slot.', appointment: appt });
+  } catch (error) {
+    console.error('Skip Error:', error);
+    res.status(500).json({ message: 'Failed to reschedule patient.' });
+  }
+};
+
+
