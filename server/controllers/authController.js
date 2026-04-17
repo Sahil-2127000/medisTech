@@ -29,6 +29,15 @@ exports.sendOtp = async (req, res) => {
         return res.status(400).json({ message: 'User already exists with this phone number' });
       }
     }
+
+    if (phone) {
+      const existingPatientPhone = await User.findOne({ phone });
+      const existingDoctorPhone = await Doctor.findOne({ phone });
+      
+      if (existingPatientPhone || existingDoctorPhone) {
+        return res.status(400).json({ message: 'User already exists with this phone number' });
+      }
+    }
   } catch (error) {
     console.error('Database Error:', error);
     return res.status(500).json({ message: 'Failed to verify email' });
