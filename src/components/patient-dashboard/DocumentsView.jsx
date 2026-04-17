@@ -150,15 +150,16 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
       {/* 3. INTERACTION & VISUAL DESIGN (Glass Overlay) */}
       {activePrescription && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 animate-fade-in"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 animate-fade-in bg-slate-950/40"
+          style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)' }}
           onClick={() => setActivePrescription(null)}
         >
-          {/* Frosted Glass Background */}
-          <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-xl transition-all"></div>
+          {/* Transparent click catcher */}
+          <div className="absolute inset-0"></div>
 
           {/* Prescription Card (Glassmorphism Content) */}
           <div 
-            className="relative w-full max-w-[850px] bg-white/70 backdrop-blur-3xl rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.3)] overflow-hidden animate-slide-up border border-white/40 flex flex-col"
+            className="relative w-full max-w-[850px] max-h-[90vh] bg-white/70 backdrop-blur-3xl rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.3)] overflow-hidden animate-slide-up border border-white/40 flex flex-col"
             onClick={e => e.stopPropagation()}
           >
             {/* Elegant Header X Button */}
@@ -169,7 +170,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
               <svg className="w-7 h-7 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
 
-            <div className="p-10 md:p-16 flex-1 overflow-y-auto no-scrollbar">
+            <div className="p-10 md:p-16 flex-1 flex flex-col overflow-hidden">
               
               {/* Action Buttons */}
               <div className="absolute top-10 right-28 flex gap-3 z-20">
@@ -193,14 +194,14 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                  </button>
               </div>
               {/* Header: Dr. Name */}
-              <div className="flex items-center gap-8 mb-16">
-                <div className="w-24 h-24 rounded-[2.5rem] bg-linear-to-tr from-[#5265ec] to-blue-400 flex items-center justify-center text-white shadow-2xl relative">
-                   <div className="absolute inset-0 rounded-[2.5rem] bg-white opacity-20 animate-pulse"></div>
-                   <svg className="w-12 h-12 relative z-10" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+              <div className="flex items-center gap-6 mb-10">
+                <div className="w-16 h-16 rounded-2xl bg-linear-to-tr from-[#5265ec] to-blue-400 flex items-center justify-center text-white shadow-xl relative">
+                   <div className="absolute inset-0 rounded-2xl bg-white opacity-20 animate-pulse"></div>
+                   <svg className="w-8 h-8 relative z-10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
                 </div>
                 <div>
-                  <h2 className="text-4xl font-black text-slate-800 leading-none">Prescription from</h2>
-                  <h3 className="text-4xl font-black text-[#5265ec] tracking-tighter mt-1">Dr. {activePrescription.doctorId?.fullName}</h3>
+                  <h2 className="text-2xl font-black text-slate-800 leading-none">Prescription from</h2>
+                  <h3 className="text-3xl font-black text-[#5265ec] tracking-tighter mt-1">Dr. {activePrescription.doctorId?.fullName}</h3>
                   <div className="flex items-center gap-3 mt-4 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">
                     <span>{new Date(activePrescription.createdAt).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                   </div>
@@ -208,44 +209,47 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
               </div>
 
               {/* Medicine Table Flow */}
-              <div className="space-y-6">
+              <div className="flex-1 overflow-y-auto pr-4 space-y-6 medicine-scroll">
                 {activePrescription.medicines.map((med, i) => {
                   const freq = med.frequency || '';
                   const isM = freq.includes('Morning');
                   const isA = freq.includes('Afternoon');
                   const isN = freq.includes('Night');
                   const pattern = `(${isM ? '1' : '0'}-${isA ? '1' : '0'}-${isN ? '1' : '0'})`;
-                  const food = freq.includes('(') ? freq.split('(')[1].replace(')', '') : 'After Food';
                   
                   return (
-                    <div key={i} className="bg-white/40 backdrop-blur-md rounded-[2.5rem] border border-white/50 p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div key={i} className="bg-white/40 backdrop-blur-md rounded-[1.5rem] border border-white/50 p-5 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm hover:shadow-md transition-shadow">
                       <div className="flex flex-col flex-1 items-center md:items-start text-center md:text-left">
-                        <div className="flex items-center gap-3 mb-1 flex-wrap justify-center md:justify-start">
-                           <span className="text-2xl font-black text-slate-800">{med.name} {med.dosage}</span>
-                           <span className="text-lg font-black text-[#5265ec] bg-blue-50 px-3 py-1 rounded-xl tracking-tighter">{pattern}</span>
+                        <div className="flex items-center gap-3 mb-1.5 flex-wrap justify-center md:justify-start">
+                           <span className="text-xl font-black text-slate-800">{med.name} {med.dosage}</span>
                         </div>
-                        <span className="text-[12px] font-black text-gray-400 uppercase tracking-[0.3em] font-mono">For {med.duration || '5 Days'}</span>
+                        <div className="flex items-center gap-2 bg-blue-50/50 w-fit px-3 py-1 rounded-full border border-blue-100/30">
+                           <svg className="w-3.5 h-3.5 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                           <span className="text-[11px] font-bold text-slate-600">
+                             For <span className="text-[#5265ec] font-black">{med.duration?.toLowerCase().includes('day') ? med.duration : `${med.duration} Days`}</span>
+                           </span>
+                        </div>
                       </div>
 
                       {/* 3-Column Layout Indicators */}
-                      <div className="flex items-center gap-6">
-                        <div className="flex flex-col items-center gap-2">
-                           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black ${isM ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 text-slate-300'}`}>
-                              {isM ? '1' : '0'}
+                      <div className="flex items-center gap-4">
+                        <div className="flex flex-col items-center gap-1.5">
+                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${isM ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 text-slate-300'}`}>
+                               {isM ? '1' : '0'}
                            </div>
-                           <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Morning</span>
+                           <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Morning</span>
                         </div>
-                        <div className="flex flex-col items-center gap-2">
-                           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black ${isA ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 text-slate-300'}`}>
-                              {isA ? '1' : '0'}
+                        <div className="flex flex-col items-center gap-1.5">
+                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${isA ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 text-slate-300'}`}>
+                               {isA ? '1' : '0'}
                            </div>
-                           <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Afternoon</span>
+                           <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Afternoon</span>
                         </div>
-                        <div className="flex flex-col items-center gap-2">
-                           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black ${isN ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 text-slate-300'}`}>
-                              {isN ? '1' : '0'}
+                        <div className="flex flex-col items-center gap-1.5">
+                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${isN ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 text-slate-300'}`}>
+                               {isN ? '1' : '0'}
                            </div>
-                           <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Night</span>
+                           <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Night</span>
                         </div>
                       </div>
                     </div>
@@ -254,11 +258,11 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
               </div>
 
               {/* Bottom Instructions */}
-              <div className="mt-12 p-10 rounded-[3rem] bg-[#5265ec] text-white flex items-center justify-between shadow-2xl shadow-[#5265ec]/40 overflow-hidden relative">
+              <div className="mt-8 p-6 rounded-[2rem] bg-[#5265ec] text-white flex items-center justify-between shadow-2xl shadow-[#5265ec]/40 overflow-hidden relative">
                  <div className="absolute inset-0 bg-linear-to-r from-white/0 to-white/10"></div>
                  <div className="relative z-10">
-                    <h4 className="font-black text-xl mb-1">Medicinal Guidance</h4>
-                    <p className="text-white/70 text-sm font-medium">Follow prescriptions strictly. If a dose is missed, contact your doctor.</p>
+                    <h4 className="font-black text-lg mb-1">Medicinal Guidance</h4>
+                    <p className="text-white/70 text-xs font-medium">Follow prescriptions strictly. If a dose is missed, contact your doctor.</p>
                  </div>
 
               </div>
@@ -270,7 +274,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
       {/* Hidden PDF Template for Generation */}
       {activePrescription && (
         <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
-          <div id="pdf-template" style={{ width: '800px', minHeight: '1130px', backgroundColor: 'white', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div id="pdf-template" style={{ width: '800px', minHeight: '1130px', backgroundColor: 'white', position: 'relative', display: 'flex', flexDirection: 'column' }}>
              {/* Header Wave */}
              <div style={{ height: '180px', backgroundColor: '#0d9488', position: 'relative' }}>
                 <div style={{ padding: '40px 60px', color: 'white' }}>
@@ -320,41 +324,56 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
              <div style={{ padding: '40px 60px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #0d9488', paddingBottom: '10px', position: 'relative' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                    <div style={{ fontSize: '14px', fontWeight: '900', color: '#0d9488', textTransform: 'uppercase', letterSpacing: '2px' }}>Clinical Prescription</div>
-                   <div style={{ fontSize: '10px', fontWeight: '900', color: '#ffffff', backgroundColor: '#0d9488', padding: '2px 12px', borderRadius: '20px' }}>
-                      Duration: {activePrescription.medicines?.[0]?.duration || 'Course'}
-                   </div>
-                </div>
-                <div style={{ display: 'flex', gap: '30px', paddingRight: '20px' }}>
-                   <div style={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', color: '#999', width: '30px', textAlign: 'center' }}>Morn</div>
-                   <div style={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', color: '#999', width: '30px', textAlign: 'center' }}>Aftn</div>
-                   <div style={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', color: '#999', width: '30px', textAlign: 'center' }}>Nite</div>
-                </div>
-             </div>
 
-             {/* Medicines List Row-Style */}
-             <div style={{ padding: '10px 60px', flex: 1, position: 'relative' }}>
-                {activePrescription.medicines.map((med, i) => {
-                   const freq = med.frequency || '';
-                   const isM = freq.includes('Morning');
-                   const isA = freq.includes('Afternoon');
-                   const isN = freq.includes('Night');
-                   
-                   return (
-                      <div key={i} style={{ padding: '15px 0', borderBottom: '1px solid #f5f5f5', display: 'flex', alignItems: 'center' }}>
-                         <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: '16px', fontWeight: '900', color: '#1a1a1a' }}>{i+1}. {med.name}</div>
-                            <div style={{ fontSize: '10px', fontWeight: '800', color: '#0d9488', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>{med.dosage} • {med.food || 'After Food'}</div>
-                         </div>
-                         
-                         <div style={{ display: 'flex', gap: '30px', paddingRight: '20px' }}>
-                            <div style={{ width: '30px', textAlign: 'center', fontSize: '18px', fontWeight: '900', color: isM ? '#0d9488' : '#eee' }}>{isM ? '1' : '0'}</div>
-                            <div style={{ width: '30px', textAlign: 'center', fontSize: '18px', fontWeight: '900', color: isA ? '#0d9488' : '#eee' }}>{isA ? '1' : '0'}</div>
-                            <div style={{ width: '30px', textAlign: 'center', fontSize: '18px', fontWeight: '900', color: isN ? '#0d9488' : '#eee' }}>{isN ? '1' : '0'}</div>
-                         </div>
-                      </div>
-                   );
-                })}
-             </div>
+                </div>
+                <div style={{ display: 'flex', gap: '20px', paddingRight: '10px' }}>
+                </div>
+              </div>              {/* Medicines List Row-Style */}
+              <div style={{ padding: '30px 60px', flex: 1, position: 'relative' }}>
+                 {activePrescription.medicines.map((med, i) => {
+                    const freq = med.frequency || '';
+                    const isM = freq.includes('Morning');
+                    const isA = freq.includes('Afternoon');
+                    const isN = freq.includes('Night');
+                    
+                    return (
+                       <div key={i} style={{ padding: '20px 0', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <div style={{ flex: 1 }}>
+                             <div style={{ fontSize: '18px', fontWeight: '900', color: '#111827' }}>{i+1}. {med.name} {med.dosage}</div>
+                             <div style={{ display: 'flex', marginTop: '10px' }}>
+                                <div style={{ backgroundColor: '#ecfdf5', padding: '4px 12px', borderRadius: '12px', fontSize: '10px', fontWeight: '900', color: '#0d9488', border: '1px solid #d1fae5', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                   For {med.duration?.toLowerCase().includes('day') ? med.duration : `${med.duration} Days`}
+                                </div>
+                             </div>
+                          </div>
+                          
+                          <div style={{ display: 'flex', gap: '20px', paddingRight: '10px' }}>
+                             {/* Morning */}
+                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: isM ? '#0d9488' : '#f9fafb', color: isM ? 'white' : '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '900' }}>
+                                   {isM ? '1' : '0'}
+                                </div>
+                                <span style={{ fontSize: '7px', fontWeight: '900', color: '#9ca3af', textTransform: 'uppercase' }}>Morn</span>
+                             </div>
+                             {/* Afternoon */}
+                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: isA ? '#0d9488' : '#f9fafb', color: isA ? 'white' : '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '900' }}>
+                                   {isA ? '1' : '0'}
+                                </div>
+                                <span style={{ fontSize: '7px', fontWeight: '900', color: '#9ca3af', textTransform: 'uppercase' }}>Aftn</span>
+                             </div>
+                             {/* Night */}
+                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: isN ? '#0d9488' : '#f9fafb', color: isN ? 'white' : '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '900' }}>
+                                   {isN ? '1' : '0'}
+                                </div>
+                                <span style={{ fontSize: '7px', fontWeight: '900', color: '#9ca3af', textTransform: 'uppercase' }}>Night</span>
+                             </div>
+                          </div>
+                       </div>
+                    );
+                 })}
+              </div>
 
              {/* Footer Wave */}
              <div style={{ marginTop: 'auto', minHeight: '130px', backgroundColor: '#0d9488', position: 'relative', display: 'flex', alignItems: 'flex-end', padding: '30px 60px' }}>
@@ -365,10 +384,6 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                    <div>
                       <h4 style={{ fontSize: '18px', fontWeight: '900', margin: 0 }}>Pulse Health Clinic</h4>
                       <p style={{ fontSize: '10px', fontWeight: 'bold', opacity: 0.8, margin: '2px 0 0' }}>123 Clinical Way, Medica Sector • 000-000-0000</p>
-                   </div>
-                   <div style={{ textAlign: 'center' }}>
-                      <div style={{ width: '120px', borderBottom: '1px solid rgba(255,255,255,0.4)', marginBottom: '5px' }}></div>
-                      <div style={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '2px' }}>Signature</div>
                    </div>
                 </div>
              </div>
@@ -388,6 +403,24 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
         }
         .animate-fade-in { animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-slide-up { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .medicine-scroll::-webkit-scrollbar {
+          width: 8px;
+        }
+        .medicine-scroll::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.05);
+          border-radius: 10px;
+        }
+        .medicine-scroll::-webkit-scrollbar-thumb {
+          background: #5265ec;
+          border-radius: 10px;
+        }
+        .medicine-scroll::-webkit-scrollbar-thumb:hover {
+          background: #4254d3;
+        }
+        .medicine-scroll {
+          scrollbar-width: thin;
+          scrollbar-color: #5265ec rgba(0, 0, 0, 0.05);
+        }
       `}} />
     </div>
   );

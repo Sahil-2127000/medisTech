@@ -82,7 +82,7 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
     <div className="fixed inset-0 z-[100] bg-slate-50 flex overflow-hidden animate-fade-in font-sans">
 
       {/* LEFT PANEL: Builder Form (60%) */}
-      <div className="w-[60%] flex flex-col h-full bg-white shadow-2xl relative overflow-y-auto no-scrollbar border-r border-gray-100">
+      <div className="w-[60%] flex flex-col h-full bg-white shadow-2xl relative overflow-y-auto border-r border-gray-100">
 
         {/* Header Header */}
         <div className="p-6 md:p-10 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white/90 backdrop-blur-md z-20 shrink-0">
@@ -188,7 +188,7 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
       <div className="w-[40%] bg-slate-100 h-full p-8 flex items-center justify-center overflow-y-auto w-full" >       
 
         {/* Printable A4 Paper Container Concept */}
-        <div id="prescription-preview" className="w-[100%] max-w-[600px] bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-sm min-h-[850px] relative overflow-hidden flex flex-col justify-start mx-auto print-view-paper">
+        <div id="prescription-preview" className="w-[100%] max-w-[600px] bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-sm min-h-[850px] relative flex flex-col justify-start mx-auto print-view-paper">
 
           {/* Graphic Horizontal Watermark */}
           <div className="absolute top-[55%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-full flex flex-col items-center pointer-events-none select-none z-0 opacity-5">
