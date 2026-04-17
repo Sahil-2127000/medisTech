@@ -35,42 +35,30 @@ const AppointmentRequests = ({
   const otherHistory = appointments.filter(app => app.status !== 'pending');
 
   const renderPagination = () => {
-    const { currentPage, totalPages, totalCount } = pageInfo;
+    const { currentPage, totalPages } = pageInfo;
     if (totalPages <= 1) return null;
 
     return (
-      <div className="flex items-center justify-center mt-10 px-4 py-1 bg-slate-50/50 rounded-[2.5rem] border border-gray-100/50">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center mt-10">
+        <div className="flex items-center gap-6 bg-slate-50/80 px-4 py-2 rounded-full border border-gray-100 shadow-sm">
           <button 
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
-            className={`w-6 h-6 rounded-xl flex items-center bg-blue-600 justify-center transition-all ${currentPage === 1 ? 'text-gray-200  border border-gray-50' : 'text-slate-600 bg-white border border-gray-100 hover:text-clinic-600 hover:shadow-lg active:scale-90 cursor-pointer'}`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all bg-[rgb(32,94,251)] border border-gray-200 shadow-sm hover:translate-x-[-2px] ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'text-slate-700  cursor-pointer' }`}
           >
-            <svg className="w-3 h-3" fill="none" stroke="white" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            <svg className="w-4 h-4 " fill="none" stroke="white" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
           </button>
           
-          {[...Array(totalPages)].map((_, i) => {
-            const pageNum = i + 1;
-            // Only show limited pages if too many
-            if (totalPages > 5 && Math.abs(pageNum - currentPage) > 2 && pageNum !== 1 && pageNum !== totalPages) return null;
-            
-            return (
-              <button
-                key={pageNum}
-                onClick={() => handlePageChange(pageNum)}
-                className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black transition-all ${currentPage === pageNum ? 'bg-clinic-600 text-white shadow-lg shadow-blue-500/30 ring-4 ring-blue-50' : 'bg-white text-slate-400 border border-gray-100 hover:border-clinic-200 hover:text-clinic-600'}`}
-              >
-                {pageNum}
-              </button>
-            );
-          })}
+          <div className="text-sm font-bold text-slate-700 select-none">
+            {currentPage} of {totalPages}
+          </div>
 
           <button 
             disabled={currentPage === totalPages}
             onClick={() => handlePageChange(currentPage + 1)}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${currentPage === totalPages ? 'text-gray-200 bg-white border border-gray-50' : 'text-slate-600 bg-white border border-gray-100 hover:text-clinic-600 hover:shadow-lg active:scale-90 cursor-pointer'}`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-md hover:translate-x-[2px] ${currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[rgb(32,94,251)] text-white hover:brightness-110 cursor-pointer active:scale-95'}`}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
           </button>
         </div>
       </div>
@@ -105,7 +93,7 @@ const AppointmentRequests = ({
                   <tr key={app.id} className="bg-white group hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
                     <td className="py-4 pl-4 rounded-l-2xl border-y border-l border-gray-100">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-linear-to-tr from-clinic-600 to-blue-400 text-white flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/20">
+                        <div className="w-12 h-12 rounded-2xl bg-[rgb(32,94,251)] text-white flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/20">
                           {displayChar}
                         </div>
                         <div>
@@ -154,7 +142,7 @@ const AppointmentRequests = ({
           </tbody>
         </table>
       </div>
-      {renderPagination()}
+      {activeSubTab === 'history' && renderPagination()}
     </div>
   );
 
