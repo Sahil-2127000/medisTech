@@ -192,16 +192,16 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
         <div id="prescription-preview" className="w-[100%] max-w-[600px] bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-sm min-h-[850px] relative flex flex-col justify-start mx-auto print-view-paper">
 
           {/* Graphic Horizontal Watermark */}
-          <div className="absolute top-[55%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-full flex flex-col items-center pointer-events-none select-none z-0 opacity-5">
-             <div className="text-[120px] font-black text-[#0d9488] tracking-tighter relative">
+          <div className="absolute top-[55%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-full flex flex-col items-center pointer-events-none select-none z-0 opacity-10">
+             <div className="text-[60px] font-black text-[#0d9488] tracking-tighter relative absolute top-22">
                 MedicsTech
                 <div className="absolute -bottom-4 left-0 w-full h-2 bg-gradient-to-r from-transparent via-[#0d9488] to-transparent"></div>
              </div>
              <div className="flex gap-10 mt-8">
-                {[1,2,3,4,5,6].map(i => (
-                   <div key={i} className="w-8 h-8 border-4 border-[#0d9488] rounded-lg rotate-45"></div>
+                {[1,2,3,4,5,6].map((i) =>(
+                   <div key={i} className="w-8 h-8 border-4 border-[#0d9488]  rounded-lg rotate-45"></div>
                 ))}
-             </div>
+             </div> 
           </div>
 
           {/* Header Data */}
