@@ -23,6 +23,7 @@ const PatientDashboard = () => {
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
+  const [vitals, setVitals] = useState([]); // Real-time Health Metrics
   const [emergencyAlert, setEmergencyAlert] = useState(null);
   const [showBooking, setShowBooking] = useState(false);
   const [userProfile, setUserProfile] = useState(savedUser);
@@ -51,6 +52,16 @@ const PatientDashboard = () => {
   }, [activeTab]);
 
   // Poll exactly specifically against live backend mappings targeting array mutations!
+  const pollVitals = async () => {
+     try {
+       const res = await fetch('http://localhost:5001/api/vitals/my', { credentials: 'include' });
+       if (res.ok) {
+         const data = await res.json();
+         setVitals(data);
+       }
+     } catch(e) { }
+  };
+
   const pollAppointments = async () => {
      try {
        const res = await fetch('http://localhost:5001/api/appointments/my', { credentials: 'include' });
@@ -89,6 +100,8 @@ const PatientDashboard = () => {
           setUserProfile(prev => ({ ...prev, ...pData }));
         }
       } catch(e) { }
+      
+      pollVitals();
   };
 
   useEffect(() => {
@@ -121,6 +134,7 @@ const PatientDashboard = () => {
     appointmentsCount: upcomingFiltered.length, 
     prescriptionsCount: prescriptions.length,
     prescriptions: prescriptions,
+    vitals: vitals,
     upcoming: upcomingFiltered.map(app => ({
       doctorId: app.doctorId,
       doctor: `Dr. ${app.doctorId?.fullName || 'Unknown'}`,
@@ -158,15 +172,23 @@ const PatientDashboard = () => {
       <div className="w-full max-w-[1400px] h-[100vh] md:h-[90vh] bg-white dark:bg-slate-900 md:rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50 dark:border-slate-800 transition-colors duration-300">
         
         {/* Left Combined Panel (Profile + Nav) */}
-        <div className="hidden lg:flex flex-col w-[320px] xl:w-[350px] h-full bg-[#fafcff] border-r border-gray-100 shrink-0">
+        <div className="hidden lg:flex flex-col w-[320px] xl:w-[350px] h-full bg-[#fafcff] dark:bg-slate-900/40 shrink-0 relative">
           <RightPanel patientData={patientData} />
           <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          
+          {/* 💎 PREMIUM GRADIENT DIVIDER (Quantum Etched) 💎 */}
+          <div className="absolute right-0 top-0 bottom-0 w-[1px] bg-[#5265ec]/5"></div>
+          <div className="absolute right-0 top-[15%] bottom-[15%] w-[1.5px] bg-linear-to-b from-transparent via-[#5265ec]/40 to-transparent blur-[0.4px]"></div>
+          <div className="absolute right-[-1px] top-[40%] bottom-[40%] w-[3px] bg-[#5265ec]/10 blur-xl rounded-full animate-pulse"></div>
+          <div className="absolute right-0 top-[45%] bottom-[45%] w-[2px] bg-[#5265ec] rounded-full shadow-[0_0_15px_rgba(82,101,236,0.6)]"></div>
         </div>
         
         {/* Render Center UI Data View, filling rest of space */}
         <MainPanel 
           patientData={patientData} 
           activeTab={activeTab} 
+          onVitalsUpdate={pollVitals}
+          onTabChange={setActiveTab}
           onBookClick={() => {
             setActiveTab('calendar');
             setShowBooking(true);
