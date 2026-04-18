@@ -9,6 +9,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const prescriptionRoutes = require('./routes/prescriptionRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const documentRoutes = require('./routes/documentRoutes');
+const vitalRoutes = require('./routes/vitalRoutes');
 const path = require('path');
 
 // Initialize app & connect to Database
@@ -34,6 +35,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/vitals', vitalRoutes);
 
 // General health check route
 app.get('/', (req, res) => {

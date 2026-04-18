@@ -38,7 +38,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
             <div 
               key={member.id}
               onClick={() => setSelectedMember(member)}
-              className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-[#5265ec]/10 transition-all cursor-pointer group flex flex-col items-center text-center relative overflow-hidden"
+              className="bg-white rounded-[3rem] p-10 border border-[#5265ec]/30 shadow-sm hover:shadow-2xl hover:shadow-[#5265ec]/10 transition-all cursor-pointer group flex flex-col items-center text-center relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-blue-100 transition-colors"></div>
               
@@ -56,8 +56,8 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
           ))}
 
           {/* Add member button */}
-          <div className="bg-white/40 rounded-[3rem] border-4 border-dashed border-gray-100 flex flex-col items-center justify-center p-10 hover:border-[#5265ec]/20 hover:bg-blue-50/20 transition-all cursor-pointer group opacity-60 hover:opacity-100">
-            <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-gray-300 group-hover:text-[#5265ec] transition-colors mb-4">
+          <div className="bg-white/40 rounded-[3rem] border-4 border-dashed border-[#5265ec]/20 flex flex-col items-center justify-center p-10 hover:border-[#5265ec]/40 hover:bg-blue-50/20 transition-all cursor-pointer group opacity-60 hover:opacity-100">
+            <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#5265ec]/30 group-hover:text-[#5265ec] transition-colors mb-4">
                <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
             </div>
             <span className="font-extrabold text-gray-400 group-hover:text-[#5265ec]">Add Member</span>
@@ -80,7 +80,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
             {isFamilyAccount && (
               <button 
                 onClick={() => setSelectedMember(null)}
-                className="w-10 h-10 rounded-xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-slate-400 hover:text-[#5265ec] transition-all hover:shadow-md active:scale-90"
+                className="w-10 h-10 rounded-xl bg-white border border-[#5265ec]/30 shadow-sm flex items-center justify-center text-slate-400 hover:text-[#5265ec] transition-all hover:shadow-md active:scale-90"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
               </button>
@@ -100,8 +100,8 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
       <div className="flex-1">
         <div className="space-y-6">
           {currentPrescriptions.length === 0 ? (
-            <div className="bg-white rounded-[2rem] p-16 flex flex-col items-center justify-center text-center">
-              <div className="w-20 h-20 bg-slate-50 text-slate-200 rounded-3xl flex items-center justify-center mb-6">
+            <div className="bg-white rounded-[2rem] p-16 flex flex-col items-center justify-center text-center border border-[#5265ec]/10">
+              <div className="w-20 h-20 bg-blue-50 text-[#5265ec]/20 rounded-3xl flex items-center justify-center mb-6">
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               </div>
               <h3 className="text-xl font-bold text-slate-800">No Prescriptions Issued</h3>
@@ -112,7 +112,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
               <div 
                 key={px._id || i} 
                 onClick={() => setActivePrescription(px)}
-                className="group relative bg-white rounded-[2.5rem] p-7 border border-slate-200 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 cursor-pointer flex flex-col lg:flex-row lg:items-center justify-between gap-6 overflow-hidden active:scale-[0.98] ring-1 ring-slate-100 hover:ring-[#5265ec]/20"
+                className="group relative bg-white rounded-[2.5rem] p-7 border border-[#5265ec]/40 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 cursor-pointer flex flex-col lg:flex-row lg:items-center justify-between gap-6 overflow-hidden active:scale-[0.98] ring-1 ring-[#5265ec]/20 hover:ring-[#5265ec]/40"
               >
                 {/* Visual Accent Gradient (hidden by default, revealed on hover) */}
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-[#5265ec] opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -148,9 +148,9 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                 <div className="flex items-center gap-6 relative z-10 lg:ml-auto">
                   <div className="text-right hidden sm:block">
                     <div className="text-[9px] font-black text-[#5265ec] uppercase tracking-[0.2em] mb-1 opacity-50">Auth Node Signature</div>
-                    <div className="text-xs font-mono font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200 shadow-inner">#{(px._id || 'RX').toString().slice(-6).toUpperCase()}</div>
+                    <div className="text-xs font-mono font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-lg border border-[#5265ec]/10 shadow-inner">#{(px._id || 'RX').toString().slice(-6).toUpperCase()}</div>
                   </div>
-                  <div className="w-14 h-14 rounded-2xl bg-white shadow-[0_4px_10px_rgb(0,0,0,0.05)] border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#5265ec] group-hover:text-white group-hover:shadow-[0_10px_20px_rgb(82,101,236,0.3)] group-hover:scale-110 transition-all duration-300">
+                  <div className="w-14 h-14 rounded-2xl bg-white shadow-[0_4px_10px_rgb(0,0,0,0.05)] border border-[#5265ec]/10 flex items-center justify-center text-slate-400 group-hover:bg-[#5265ec] group-hover:text-white group-hover:shadow-[0_10px_20px_rgb(82,101,236,0.3)] group-hover:scale-110 transition-all duration-300">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7-7 7"/></svg>
                   </div>
                 </div>
@@ -172,7 +172,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
 
           {/* Prescription Card (Glassmorphism Content) */}
           <div 
-            className="relative w-full max-w-[850px] max-h-[90vh] bg-white/70 backdrop-blur-3xl rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.3)] overflow-hidden animate-slide-up border border-white/40 flex flex-col"
+            className="relative w-full max-w-[850px] max-h-[90vh] bg-white/70 backdrop-blur-3xl rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.3)] overflow-hidden animate-slide-up border border-[#5265ec]/50 flex flex-col"
             onClick={e => e.stopPropagation()}
           >
             {/* Elegant Header X Button */}
@@ -231,7 +231,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                   const pattern = `(${isM ? '1' : '0'}-${isA ? '1' : '0'}-${isN ? '1' : '0'})`;
                   
                   return (
-                    <div key={i} className="bg-white/40 backdrop-blur-md rounded-[1.5rem] border border-white/50 p-5 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div key={i} className="bg-white/40 backdrop-blur-md rounded-[1.5rem] border border-[#5265ec]/30 p-5 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm hover:shadow-md transition-shadow">
                       <div className="flex flex-col flex-1 items-center md:items-start text-center md:text-left">
                         <div className="flex items-center gap-3 mb-1.5 flex-wrap justify-center md:justify-start">
                            <span className="text-xl font-black text-slate-800">{med.name} {med.dosage}</span>
