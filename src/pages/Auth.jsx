@@ -58,14 +58,14 @@ const Auth = () => {
             {/* Tabs */}
             <div className="flex items-center gap-6 mb-8 text-lg font-bold border-b border-gray-100 pb-2">
               <button 
-                className={`transition-colors relative ${authMode === 'signup' ? 'text-gray-800' : 'text-gray-400'}`}
+                className={`transition-colors hover:scale-[1.03] relative ${authMode === 'signup' ? 'text-gray-800' : 'text-gray-400'}`}
                 onClick={() => setAuthMode('signup')}
               >
                 Sign Up
                 {authMode === 'signup' && <div className="absolute -bottom-[9px] left-0 right-0 h-0.5 bg-blue-500"></div>}
               </button>
               <button 
-                className={`transition-colors relative ${authMode === 'login' ? 'text-gray-800' : 'text-gray-400'}`}
+                className={`transition-colors hover:scale-[1.03] relative ${authMode === 'login' ? 'text-gray-800' : 'text-gray-400'}`}
                 onClick={() => setAuthMode('login')}
               >
                 Sign In

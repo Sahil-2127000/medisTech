@@ -17,7 +17,7 @@ connectDB();
 
 // Global Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Handle both resolution standards dynamically
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'], // Handle both resolution standards dynamically
   credentials: true // Explicitly instruct Google Chrome/Safari to shuttle explicit cookies 
 }));
 app.use(cookieParser());
