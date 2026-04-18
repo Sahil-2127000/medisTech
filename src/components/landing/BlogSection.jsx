@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:5001');
 
 const BlogSection = () => {
   const [dbPosts, setDbPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [showAll, setShowAll] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -20,6 +23,16 @@ const BlogSection = () => {
       }
     };
     fetchBlogs();
+
+    // Socket listener for real-time blog additions
+    socket.on('newBlog', (newBlog) => {
+      console.log("New blog received via socket:", newBlog);
+      setDbPosts((prev) => [newBlog, ...prev]);
+    });
+
+    return () => {
+      socket.off('newBlog');
+    };
   }, []);
 
   const staticPosts = [
@@ -27,43 +40,53 @@ const BlogSection = () => {
       title: "5 Simple Daily Habits to Boost Your Immune System Naturally",
       image: "https://assets.clevelandclinic.org/transform/LargeFeatureImage/de3bda53-59e5-4342-a45c-e64c72c1207d/foods-with-vitamins-1182014891",
       category: "Wellness",
-      date: "Oct 15, 2026"
+      date: "Oct 15, 2025"
     },
     {
       title: "Understanding Your Blood Pressure: What the Numbers Actually Mean",
       image: "https://static.toiimg.com/thumb/msid-123432364,width-1280,height-720,resizemode-4/123432364.jpg",
       category: "Health Tips",
-      date: "Oct 12, 2026"
+      date: "Nov 12, 2025"
     },
     {
       title: "Why You Shouldn't Skip Your Annual Medical Check-up",
       image: "https://cdn.openviowebsites.com/source/sites/5835a1c0-9e3c-4d5e-b068-5c4d69b63968/images/26a01d7d-6cbd-422a-bfe5-dc7ddaa0be2c_preventive-health-checkup.png",
       category: "Preventive Care",
-      date: "Oct 05, 2026"
+      date: "Dec 05, 2025"
     },
     {
       title: "How Sleep Affects Your Long-term Health and Wellness",
-      image: "https://www.sleepfoundation.org/wp-content/uploads/2020/03/sleep-timeline.jpg",
+      image: "https://mcpress.mayoclinic.org/uploads/2024/01/SleepandLongevityxGettyImages-1356524708-1120x640.jpg",
       category: "Wellness",
-      date: "Oct 01, 2026"
+      date: "Feb 22, 2026"
+    },
+    {
+      title: "Mental Health Awareness: Simple Strategies for Stress Management",
+      image: "https://www.sc.edu/study/colleges_schools/nursing/images/stressawareness_banner825.jpg",
+      category: "Mental Health",
+      date: "March 10, 2026"
     }
   ];
 
   const allPosts = [...dbPosts, ...staticPosts];
-  const displayedPosts = showAll ? allPosts : allPosts.slice(0, 3);
+
+  const nextSlide = () => {
+    const visibleItems = window.innerWidth < 768 ? 1 : 3;
+    const maxIndex = Math.max(0, allPosts.length - visibleItems);
+    setCurrentIndex((prev) => (prev + 1 > maxIndex ? 0 : prev + 1));
+  };
+
+  const prevSlide = () => {
+    const visibleItems = window.innerWidth < 768 ? 1 : 3;
+    const maxIndex = Math.max(0, allPosts.length - visibleItems);
+    setCurrentIndex((prev) => (prev - 1 < 0 ? maxIndex : prev - 1));
+  };
 
   const headerVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2, delayChildren: 0.2 }
-    }
-  };
 
   const cardVariants = {
     hidden: { opacity: 0, y: 40 },
@@ -85,60 +108,69 @@ const BlogSection = () => {
         </p>
       </motion.div>
 
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 gap-8"
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, amount: 0.2 }}
-      >
-        {displayedPosts.map((post, idx) => {
-          const dateStr = post.createdAt ? new Date(post.createdAt).toLocaleDateString() : post.date;
-          const categoryStr = post.category || "Health Updates";
-          return (
-            <motion.div
-              key={idx}
-              variants={cardVariants}
-              onClick={() => setSelectedPost({ ...post, category: categoryStr, displayDate: dateStr })}
-              className="bg-white border border-slate-100 rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group cursor-pointer flex flex-col"
-            >
-              <div className="h-48 overflow-hidden relative">
-                <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
-              </div>
-              <div className="p-6 flex flex-col grow">
-                <div className="flex items-center gap-4 text-xs font-medium mb-3">
-                  <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full">{categoryStr}</span>
-                  <span className="text-slate-400">{dateStr}</span>
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
-                  {post.title}
-                </h3>
-                <div className="mt-auto text-blue-600 font-medium text-sm flex items-center gap-2">
-                  Read Article
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </motion.div>
-
-      {allPosts.length > 3 && (
-        <motion.div 
-          className="mt-16 flex justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+      <div className="relative group/slider px-4">
+        {/* Navigation Arrows */}
+        <button
+          onClick={prevSlide}
+          className="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white border border-slate-100 shadow-lg rounded-full flex items-center justify-center text-slate-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300 opacity-0 group-hover/slider:opacity-100"
+          aria-label="Previous slide"
         >
-          <button 
-            onClick={() => setShowAll(!showAll)}
-            className="px-8 py-3.5 bg-blue-50 text-blue-500 hover:bg-blue-500 hover:text-white font-bold rounded-full transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-2"
+          <span className="text-xl">←</span>
+        </button>
+
+        <button
+          onClick={nextSlide}
+          className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white border border-slate-100 shadow-lg rounded-full flex items-center justify-center text-slate-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300 opacity-0 group-hover/slider:opacity-100"
+          aria-label="Next slide"
+        >
+          <span className="text-xl">→</span>
+        </button>
+
+        <div className="overflow-hidden py-4">
+          <motion.div
+            className="flex"
+            animate={{ x: `-${currentIndex * (window.innerWidth < 768 ? 100 : 33.333)}%` }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            {showAll ? 'View Less' : 'Read More Blogs'}
-            {!showAll && <span className="group-hover:translate-x-1 transition-transform">→</span>}
-          </button>
-        </motion.div>
-      )}
+            {allPosts.map((post, idx) => {
+              const dateStr = post.createdAt ? new Date(post.createdAt).toLocaleDateString() : post.date;
+              const categoryStr = post.category || "Health Updates";
+              return (
+                <motion.div
+                  key={idx}
+                  className="w-full md:w-1/3 shrink-0 px-4"
+                >
+                  <motion.div
+                    variants={cardVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    onClick={() => setSelectedPost({ ...post, category: categoryStr, displayDate: dateStr })}
+                    className="bg-white border border-slate-100 rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group cursor-pointer flex flex-col h-full"
+                  >
+                    <div className="h-48 overflow-hidden relative">
+                      <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                    </div>
+                    <div className="p-6 flex flex-col grow">
+                      <div className="flex items-center gap-4 text-xs font-medium mb-3">
+                        <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full">{categoryStr}</span>
+                        <span className="text-slate-400">{dateStr}</span>
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <div className="mt-auto text-blue-600 font-medium text-sm flex items-center gap-2">
+                        Read Article
+                        <span className="group-hover:translate-x-1 transition-transform">→</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </div>
 
       {/* Modal for Reading Blog */}
       <AnimatePresence>
