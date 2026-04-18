@@ -24,7 +24,7 @@ const StatCards = ({ appointments, historicalTotal, onCardClick }) => {
  className={`bg-white/60 backdrop-blur-md rounded-2xl border border-white/60 shadow-[0_8px_20px_rgba(0,0,0,0.2)] p-4 flex items-center gap-4 transition-all relative overflow-hidden shadow-xl shadow-clinic-600/20 ${stat.id ? 'cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:shadow-clinic-600/20' : 'opacity-90'}`}
  >
  {/* Subtle background glow mimicking patient cards */}
- <div className={`absolute -right-4 -top-4 w-16 h-16 ${stat.color} rounded-full opacity-10 blur-xl pointer-events-none`}></div>
+ <div className={`absolute -right-4 -top-4 w-16 h-16 ${stat.color} rounded-full opacity-30 blur-xl pointer-events-none`}></div>
  
  {/* Compact Icon */}
  <div className={`w-10 h-10 ${stat.color} rounded-xl flex items-center justify-center shrink-0 text-white shadow-sm`}>
