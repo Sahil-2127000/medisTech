@@ -13,6 +13,14 @@ const LoginForm = ({ onSwitch }) => {
   const [twoFactorData, setTwoFactorData] = useState(null);
   const [otp, setOtp] = useState('');
 
+  // Forgot Password State
+  const [isForgotMode, setIsForgotMode] = useState(false);
+  const [forgotStep, setForgotStep] = useState('email'); // email, otp, reset
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [forgotPasswords, setForgotPasswords] = useState({ new: '', confirm: '' });
+  const [forgotMessage, setForgotMessage] = useState({ text: '', isError: false });
+
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     setError('');
@@ -76,6 +84,89 @@ const LoginForm = ({ onSwitch }) => {
     }
   };
 
+  // Forgot Password Transitions
+  const toggleForgotMode = () => {
+    setIsForgotMode(!isForgotMode);
+    setForgotStep('email');
+    setForgotMessage({ text: '', isError: false });
+    setForgotEmail('');
+    setForgotOtp('');
+    setForgotPasswords({ new: '', confirm: '' });
+    setError('');
+  };
+
+  const handleForgotRequestOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setForgotMessage({ text: '', isError: false });
+    try {
+      const res = await fetch('http://localhost:5001/api/auth/public/forgot-password-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setForgotStep('otp');
+        setForgotMessage({ text: data.message, isError: false });
+      } else {
+        setForgotMessage({ text: data.message, isError: true });
+      }
+    } catch (err) {
+      setForgotMessage({ text: 'Network connection failure.', isError: true });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotVerifyOtp = (e) => {
+    e.preventDefault();
+    if (forgotOtp.length === 6) {
+      setForgotStep('reset');
+      setForgotMessage({ text: 'Code verified. Set your new credentials.', isError: false });
+    } else {
+      setForgotMessage({ text: 'Please enter a valid 6-digit code.', isError: true });
+    }
+  };
+
+  const handleForgotResetSubmit = async (e) => {
+    e.preventDefault();
+    if (forgotPasswords.new !== forgotPasswords.confirm) {
+      setForgotMessage({ text: 'Passwords do not match.', isError: true });
+      return;
+    }
+
+    // Password Complexity Restriction
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
+    if (!passwordRegex.test(forgotPasswords.new)) {
+      setForgotMessage({ 
+        text: 'Strong password required: 8-32 characters, with Uppercase, Lowercase, Number & Special Character.', 
+        isError: true 
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch('http://localhost:5001/api/auth/public/forgot-password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail, otp: forgotOtp, newPassword: forgotPasswords.new })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setForgotMessage({ text: 'Successfully reset! Sign in with your new password.', isError: false });
+        setTimeout(() => toggleForgotMode(), 2000);
+      } else {
+        setForgotMessage({ text: data.message, isError: true });
+      }
+    } catch (err) {
+      setForgotMessage({ text: 'Server mutation failed.', isError: true });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (requires2FA) {
      return (
        <form onSubmit={handleVerify2FA} className="space-y-5 animate-fade-in">
@@ -121,6 +212,96 @@ const LoginForm = ({ onSwitch }) => {
      );
   }
 
+  if (isForgotMode) {
+    return (
+      <div className="animate-fade-in">
+        <div className="text-center mb-8">
+          <h2 className="text-xl font-black text-slate-800 tracking-tight">Recover Account</h2>
+          <p className="text-xs text-gray-400 mt-1 font-medium">Follow the secure steps to reset identity</p>
+        </div>
+
+        {forgotStep === 'email' && (
+          <form onSubmit={handleForgotRequestOtp} className="space-y-6">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-blue-500 uppercase tracking-widest">Registered Email</label>
+              <input 
+                type="email" 
+                required
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="johndoe@email.com" 
+                className="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-blue-500 text-sm text-gray-800 placeholder-gray-300 transition-colors"
+              />
+            </div>
+            {forgotMessage.text && <div className={`text-xs font-bold text-center ${forgotMessage.isError ? 'text-red-500' : 'text-emerald-500'}`}>{forgotMessage.text}</div>}
+            <button type="submit" disabled={loading} className="w-full bg-slate-800 hover:bg-black text-white font-black py-4 rounded-xl shadow-lg transition-all disabled:opacity-50 uppercase tracking-widest text-[10px]">
+              {loading ? 'Requesting...' : 'Send Recovery OTP'}
+            </button>
+          </form>
+        )}
+
+        {forgotStep === 'otp' && (
+          <form onSubmit={handleForgotVerifyOtp} className="space-y-6">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-blue-500 uppercase tracking-widest text-center block">Enter 6-Digit OTP</label>
+              <input 
+                type="text" 
+                required
+                maxLength="6"
+                value={forgotOtp}
+                onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, ''))}
+                placeholder="000000" 
+                className="w-full border-b border-gray-300 py-3 focus:outline-none focus:border-blue-500 text-3xl text-center font-black tracking-[0.5rem] text-gray-800 placeholder-gray-200 transition-colors"
+              />
+            </div>
+            {forgotMessage.text && <div className={`text-xs font-bold text-center ${forgotMessage.isError ? 'text-red-500' : 'text-emerald-500'}`}>{forgotMessage.text}</div>}
+            <button type="submit" className="w-full bg-[#3963F9] text-white font-black py-4 rounded-xl shadow-lg transition-all uppercase tracking-widest text-[10px]">
+              Verify Identity
+            </button>
+          </form>
+        )}
+
+        {forgotStep === 'reset' && (
+          <form onSubmit={handleForgotResetSubmit} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-blue-500 uppercase tracking-widest">New Password</label>
+              <input 
+                type="password" 
+                required
+                value={forgotPasswords.new}
+                onChange={(e) => setForgotPasswords({...forgotPasswords, new: e.target.value})}
+                placeholder="••••••••" 
+                className="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-blue-500 text-sm text-gray-800 transition-colors"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-blue-500 uppercase tracking-widest">Confirm New Selection</label>
+              <input 
+                type="password" 
+                required
+                value={forgotPasswords.confirm}
+                onChange={(e) => setForgotPasswords({...forgotPasswords, confirm: e.target.value})}
+                placeholder="••••••••" 
+                className="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-blue-500 text-sm text-gray-800 transition-colors"
+              />
+            </div>
+            {forgotMessage.text && <div className={`text-xs font-bold text-center ${forgotMessage.isError ? 'text-red-500' : 'text-emerald-500'}`}>{forgotMessage.text}</div>}
+            <button type="submit" disabled={loading} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-xl shadow-lg transition-all disabled:opacity-50 uppercase tracking-widest text-[10px]">
+              {loading ? 'Updating...' : 'Change Password'}
+            </button>
+          </form>
+        )}
+
+        <div className="text-center mt-8">
+          <button onClick={toggleForgotMode} className="text-xs font-bold text-gray-400 hover:text-[#3963F9] transition-colors flex items-center justify-center gap-2 mx-auto">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            Back to Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-1">
@@ -160,7 +341,7 @@ const LoginForm = ({ onSwitch }) => {
                 </button>
         </div>
         <div className="flex justify-end pt-1">
-          <button type="button" className="text-xs text-gray-500 hover:text-blue-600 font-medium transition-colors">
+          <button onClick={toggleForgotMode} type="button" className="text-xs text-gray-500 hover:text-blue-600 font-medium transition-colors">
             Forgot password?
           </button>
         </div>

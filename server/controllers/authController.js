@@ -392,3 +392,87 @@ exports.forgotPasswordReset = async (req, res) => {
     res.status(500).json({ message: 'Structural failure during password reset.' });
   }
 };
+
+// Forgot Password Workflow for Public Users (Login Page)
+exports.publicForgotPasswordRequestOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email address is mandatory for recovery.' });
+
+    // Identify if the user exists in any collection
+    let targetUser = await User.findOne({ email });
+    let role = 'patient';
+    if (!targetUser) {
+      targetUser = await Doctor.findOne({ email });
+      role = 'doctor';
+    }
+
+    if (!targetUser) {
+      // Security: Do not reveal if email exists or not, but for this specific UX requirement, we might need to.
+      // However, usually we say "If the account exists, an email was sent".
+      // But based on user request ('understandable and meaningful'), we should probably be explicit for now.
+      return res.status(404).json({ message: 'No account found matching this email address.' });
+    }
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    otps[email] = {
+      otp: otpCode,
+      expiresAt: Date.now() + 10 * 60 * 1000, 
+    };
+
+    const html = `
+      <div style="font-family: sans-serif; padding: 30px; border: 1px solid #f0f0f0; border-radius: 20px; max-width: 500px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #3963F9; font-size: 24px; font-weight: 900;">Medistech</h1>
+        </div>
+        <h2 style="color: #1e293b; text-align: center;">Identity Recovery</h2>
+        <p style="color: #64748b; line-height: 1.6; text-align: center;">Someone (hopefully you) requested a password reset for your account. Please use this secure verification code:</p>
+        <div style="background: #f8fafc; padding: 25px; text-align: center; font-size: 40px; font-weight: 900; letter-spacing: 12px; color: #0f172a; border-radius: 12px; border: 1px dashed #cbd5e1; margin: 20px 0;">
+          ${otpCode}
+        </div>
+        <p style="color: #94a3b8; font-size: 12px; text-align: center;">This code will expire in 10 minutes. If you did not request this, you can safely ignore this email.</p>
+      </div>
+    `;
+
+    await sendEmail(email, 'Medistech Recovery Code', html);
+    res.status(200).json({ message: 'Recovery code dispatched to your inbox.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to transmit recovery code.' });
+  }
+};
+
+exports.publicForgotPasswordReset = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'Email, OTP, and New Password are all required for mutation.' });
+    }
+
+    const record = otps[email];
+    if (!record || record.otp !== otp || Date.now() > record.expiresAt) {
+      return res.status(400).json({ message: 'The verification code provided is invalid or has expired.' });
+    }
+
+    delete otps[email];
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Try to update in both collections sequentially if needed, or check role
+    let updated = await User.findOneAndUpdate({ email }, { password: hashedPassword, lastPasswordChange: new Date() });
+    if (!updated) {
+      updated = await Doctor.findOneAndUpdate({ email }, { password: hashedPassword, lastPasswordChange: new Date() });
+    }
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Failed to locate user during password mutation.' });
+    }
+
+    res.status(200).json({ message: 'Password updated successfully! You can now log in.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Structural failure during password reset operation.' });
+  }
+};
