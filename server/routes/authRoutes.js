@@ -25,4 +25,8 @@ router.put('/preferences', authMiddleware, userController.updatePreferences);
 router.post('/forgot-password-otp', authMiddleware, authController.forgotPasswordRequestOtp);
 router.post('/forgot-password-reset', authMiddleware, authController.forgotPasswordReset);
 
+// Forgot Password Flow (Public / Login Page)
+router.post('/public/forgot-password-otp', authController.publicForgotPasswordRequestOtp);
+router.post('/public/forgot-password-reset', authController.publicForgotPasswordReset);
+
 module.exports = router;

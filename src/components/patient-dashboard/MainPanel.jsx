@@ -227,94 +227,88 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
         ))}
       </div>
 
-      {/* Bottom Section: Health Metric & Upcoming Schedule */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Bottom Section: Health Summary */}
+      <div className="grid grid-cols-1 gap-6">
 
-        {/* Health Metric Block */}
-        <div className="lg:col-span-1 bg-linear-to-br from-[#5265ec] to-[#6366f1] rounded-[2rem] p-6 relative overflow-hidden shadow-[0_20px_40px_rgba(82,101,236,0.3)] text-white flex flex-col justify-between min-h-[240px] group">
-          <div className="relative z-10 flex justify-between items-start">
+        {/* Intuitive Health Status Block */}
+        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative overflow-hidden group">
+          
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 relative z-10">
             <div>
-              <h4 className="font-extrabold text-xl mb-1">Health Metric</h4>
-              <div className="text-sm text-white/70 mb-4">Latest Vitals Recording</div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <h4 className="font-black text-3xl text-slate-800 tracking-tight">Your Health Today</h4>
+              </div>
+              <p className="text-gray-400 font-bold ml-13">Everything looks great! You are within your target health ranges.</p>
             </div>
+
             <button 
               onClick={() => setShowVitalModal(true)}
-              className="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all backdrop-blur-md border border-white/20"
+              className="bg-[#5265ec] hover:bg-[#4254d3] text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[#5265ec]/20 transition-all active:scale-95 flex items-center gap-3"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" /></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" /></svg>
+              Log New Reading
             </button>
           </div>
 
-          <div className="relative w-full h-32 mt-4 flex items-end justify-center z-10">
-            {/* Dynamic Chart simulation */}
-            <svg viewBox="0 0 200 100" className="absolute top-0 w-[120%] h-[120%] stroke-pink-400 stroke-[3px] fill-transparent overflow-visible animate-pulse">
-              <path d="M-10,80 Q30,50 60,90 T140,40 T210,80" />
-              <circle cx="140" cy="40" r="5" fill="white" className="stroke-pink-400 stroke-[3px]" />
-            </svg>
-            
-            <div className="absolute top-1 right-[20%] text-center">
-              <div className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Status: Optimum</div>
-              <div className="text-2xl font-black bg-white text-[#5265ec] px-4 py-1.5 rounded-2xl shadow-xl z-20">
-                {patientData.vitals?.find(v => v.type === 'Blood Pressure')?.value || '120/80'}
-              </div>
-            </div>
+          {/* Simple Traffic Light Vitals Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+            {[
+              { 
+                label: 'Blood Pressure', 
+                value: patientData.vitals?.find(v => v.type === 'Blood Pressure')?.value || '120/80', 
+                status: 'Healthy', 
+                color: 'emerald', 
+                desc: 'Perfect range for your heart.',
+                icon: <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              },
+              { 
+                label: 'Heart Pulse', 
+                value: patientData.vitals?.find(v => v.type === 'Heart Rate')?.value || '72', 
+                status: 'Normal', 
+                color: 'blue', 
+                desc: 'Your heart is beating steadily.',
+                unit: 'BPM',
+                icon: <path d="M8.25 18.75a1.5 1.5 0 01-3 0 1.5 1.5 0 013 0zM18.75 18.75a1.5 1.5 0 01-3 0 1.5 1.5 0 013 0zM12 7.5a1.5 1.5 0 01-3 0 1.5 1.5 0 013 0z" />
+              },
+              { 
+                label: 'Blood Sugar', 
+                value: patientData.vitals?.find(v => v.type === 'Blood Sugar')?.value || '95', 
+                status: 'Stable', 
+                color: 'indigo', 
+                desc: 'Your sugar level is very good.',
+                unit: 'mg/dL',
+                icon: <path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A8.959 8.959 0 013 12c0-.778.099-1.533.284-2.253" />
+              }
+            ].map((vital, i) => (
+              <div key={i} className="bg-slate-50/50 rounded-3xl p-6 border border-slate-100 flex flex-col items-center text-center group/card hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500">
+                <div className={`w-14 h-14 bg-${vital.color}-500/10 rounded-2xl flex items-center justify-center text-${vital.color}-500 mb-6 group-hover/card:scale-110 transition-transform`}>
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{vital.icon}</svg>
+                </div>
+                
+                <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{vital.label}</div>
+                <div className="flex items-baseline gap-1 mb-2">
+                  <span className="text-4xl font-black text-slate-800 tracking-tighter">{vital.value}</span>
+                  {vital.unit && <span className="text-xs font-bold text-slate-400 uppercase">{vital.unit}</span>}
+                </div>
 
-            <div className="flex justify-between w-full text-[10px] font-black text-white/70 mt-auto opacity-70 relative z-10 uppercase tracking-tighter">
-              <span>Sun</span>
-              <span>Mon</span>
-              <span>Tue</span>
-              <span className="text-white opacity-100">Now</span>
-            </div>
+                <div className={`mt-2 flex items-center gap-2 bg-${vital.color}-100 text-${vital.color}-600 px-4 py-1.5 rounded-full`}>
+                  <div className={`w-2 h-2 rounded-full bg-${vital.color}-500 animate-pulse`}></div>
+                  <span className="text-xs font-black uppercase tracking-widest">{vital.status}</span>
+                </div>
+                
+                <p className="mt-4 text-xs font-bold text-gray-400 leading-relaxed px-4 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                  {vital.desc}
+                </p>
+              </div>
+            ))}
           </div>
-          
-          {/* Decorative faint pattern */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(255,255,255,0.1),transparent)] pointer-events-none"></div>
-        </div>
 
-        {/* Schedule Blocks */}
-        <div className="lg:col-span-2 flex flex-col justify-end">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
-
-            <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between group cursor-pointer">
-              <div className="absolute top-0 left-0 w-full h-1 bg-[#5265ec]"></div>
-              <div className="mb-4">
-                <div className="text-xs font-bold text-[#5265ec] bg-[#5265ec]/10 w-max px-3 py-1 rounded-full mb-3">25 Jan</div>
-                <div className="font-bold text-slate-800 group-hover:text-[#5265ec] transition-colors leading-tight">General Checkup</div>
-                <div className="text-xs text-gray-400 font-medium mt-1">Routine health checkup</div>
-              </div>
-              <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span>09:00 AM</span>
-              </div>
-            </div>
-
-            <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between group cursor-pointer">
-              <div className="absolute top-0 left-0 w-full h-1 bg-pink-500"></div>
-              <div className="mb-4">
-                <div className="text-xs font-bold text-pink-500 bg-pink-500/10 w-max px-3 py-1 rounded-full mb-3">28 Jan</div>
-                <div className="font-bold text-slate-800 group-hover:text-pink-500 transition-colors leading-tight">General Medical Review</div>
-                <div className="text-xs text-gray-400 font-medium mt-1">Reviewing monthly health vitals</div>
-              </div>
-              <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span>11:30 AM</span>
-              </div>
-            </div>
-
-            <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between group cursor-pointer">
-              <div className="absolute top-0 left-0 w-full h-1 bg-teal-400"></div>
-              <div className="mb-4">
-                <div className="text-xs font-bold text-teal-500 bg-teal-400/10 w-max px-3 py-1 rounded-full mb-3">30 Jan</div>
-                <div className="font-bold text-slate-800 group-hover:text-teal-400 transition-colors leading-tight">Follow-up Consultation</div>
-                <div className="text-xs text-gray-400 font-medium mt-1">Status check on medication</div>
-              </div>
-              <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span>02:00 PM</span>
-              </div>
-            </div>
-
-          </div>
+          {/* Large Abstract Background Shapes */}
+          <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-50 rounded-full blur-3xl opacity-50 pointer-events-none group-hover:bg-blue-100 transition-colors"></div>
+          <div className="absolute -left-20 -top-20 w-80 h-80 bg-emerald-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
         </div>
       </div>
 
