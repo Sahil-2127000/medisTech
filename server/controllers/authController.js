@@ -18,7 +18,7 @@ exports.sendOtp = async (req, res) => {
     const existingDoctor = await Doctor.findOne({ email });
     
     if (existingPatient || existingDoctor) {
-      return res.status(400).json({ message: 'User already exists with this email across any clinical role' });
+      return res.status(400).json({ message: 'User already exists with this email across any clinical role. Please Sign In' });
     }
 
     if (phone) {

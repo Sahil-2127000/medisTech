@@ -16,6 +16,13 @@ exports.createBlog = async (req, res) => {
     });
 
     await blog.save();
+
+    // Emit new blog event via Socket.io
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('newBlog', blog);
+    }
+
     res.status(201).json({ success: true, blog });
   } catch (error) {
     console.error('Error creating blog:', error);

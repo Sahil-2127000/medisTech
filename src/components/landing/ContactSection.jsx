@@ -56,7 +56,7 @@ const ContactSection = () => {
             </div>
             
             <button type="button" className="w-full bg-slate-900 hover:scale-[1.02] hover:bg-slate-800 text-white rounded-xl px-4 py-3.5 font-medium transition-all shadow-lg shadow-slate-900/20">
-              Request Appointment
+              Contact Us
             </button>
           </form>
         </motion.div>
