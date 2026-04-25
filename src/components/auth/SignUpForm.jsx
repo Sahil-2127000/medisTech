@@ -97,7 +97,7 @@ const SignUpForm = ({ onSwitch }) => {
         sessionStorage.setItem('user', JSON.stringify(data.user)); // Store active user details
 
         if (data.user.role === 'doctor') {
-          navigate('/doctordashboard');
+          navigate('/doctor/dashboard');
         } else {
           navigate('/patientdashboard');
         }

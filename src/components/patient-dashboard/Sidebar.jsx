@@ -27,9 +27,9 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`w-full py-3 px-4 rounded-xl flex items-center gap-3 transition-all group ${activeTab === item.id ? 'bg-[#5265ec] text-white shadow-md shadow-[#5265ec]/30' : 'bg-transparent text-gray-500 hover:bg-gray-100 hover:text-slate-800'}`}
+            className={`w-full py-3 px-4 rounded-xl flex items-center gap-3 transition-all group ${activeTab === item.id ? 'bg-[#3963F9] text-white shadow-lg shadow-[#3963F9]/30' : 'bg-transparent text-gray-500 hover:bg-gray-100 hover:text-slate-800'}`}
           >
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${activeTab === item.id ? 'bg-white/20' : 'bg-white shadow-sm text-gray-400 group-hover:text-[#5265ec]'}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${activeTab === item.id ? 'bg-white/20' : 'bg-white shadow-sm text-gray-400 group-hover:text-[#3963F9]'}`}>
               {item.stroke ? (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{item.icon}</svg>
               ) : (
