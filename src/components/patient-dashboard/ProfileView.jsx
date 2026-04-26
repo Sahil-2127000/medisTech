@@ -189,7 +189,7 @@ const ProfileView = ({ patientData }) => {
            </div>
 
            {isEditing && (
-              <div className="mt-8 pt-6 border-t border-gray-200 flex items-center justify-end gap-3">
+              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-white/10 flex items-center justify-end gap-3">
                  {saveMessage && (
                     <span className={`text-sm font-bold mr-auto ${saveMessage.includes('successfully') ? 'text-green-600' : 'text-red-500'}`}>
                        {saveMessage}
@@ -198,7 +198,7 @@ const ProfileView = ({ patientData }) => {
                  <button 
                     onClick={handleCancel}
                     disabled={isSaving}
-                    className="bg-white border border-gray-300 hover:bg-gray-50 text-slate-700 px-6 py-2.5 rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
+                    className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-slate-700 text-slate-700 dark:text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
                  >
                    Discard Changes
                  </button>

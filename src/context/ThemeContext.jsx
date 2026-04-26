@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(localStorage.getItem('appTheme') || localStorage.getItem('docTheme') || 'light');
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
   useEffect(() => {
     const root = document.documentElement;
@@ -17,9 +17,7 @@ export const ThemeProvider = ({ children }) => {
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(nextTheme);
-    localStorage.setItem('appTheme', nextTheme);
-    // Legacy support removal mapping
-    localStorage.removeItem('docTheme'); 
+    localStorage.setItem('theme', nextTheme);
   };
 
   return (

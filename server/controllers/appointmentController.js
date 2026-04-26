@@ -103,7 +103,7 @@ exports.getAvailableSlots = async (req, res) => {
 // Book explicitly tracking original times
 exports.bookAppointment = async (req, res) => {
   try {
-    const { doctorId, date, time, symptoms, status, patientIdOverride } = req.body;
+    const { doctorId, date, time, patientName, symptoms, status, patientIdOverride } = req.body;
     
     // If a doctor calls this natively (like declaring an emergency), they are the doctor!
     const ultimateDoctorId = (req.user.role === 'doctor') ? req.user.id : doctorId;
@@ -147,8 +147,10 @@ exports.bookAppointment = async (req, res) => {
        const dName = capitalizeNames(populatedAppt.doctorId.fullName);
        
        const subject = "Appointment Request Received - Clinic@Flow";
+       const targetName = populatedAppt.patientName || pName;
+       
        const html = `<h2>Hello ${pName},</h2>
-                    <p>Your appointment request with <strong>Dr. ${dName}</strong> has been received.</p>
+                    <p>Your appointment request for <strong>${targetName}</strong> with <strong>Dr. ${dName}</strong> has been received.</p>
                     <p><strong>Date:</strong> ${populatedAppt.date}<br>
                     <strong>Time:</strong> ${populatedAppt.time}</p>
                     <p>Status: <strong>Pending Approval</strong></p>
@@ -256,6 +258,7 @@ exports.updateStatus = async (req, res) => {
     if (appt.patientId && appt.patientId.email && appt.patientId.emailNotifications !== false) {
        const pName = capitalizeNames(appt.patientId.fullName);
        const dName = capitalizeNames(appt.doctorId.fullName);
+       const targetName = appt.patientName || pName;
        
        let subject = "";
        let html = "";
@@ -263,18 +266,18 @@ exports.updateStatus = async (req, res) => {
        if (status === 'approved') {
           subject = "Appointment Accepted - Clinic@Flow";
           html = `<h2>Hello ${pName},</h2>
-                  <p>Your appointment with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Accepted</strong>.</p>
+                  <p>The appointment for <strong>${targetName}</strong> with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Accepted</strong>.</p>
                   <p>We look forward to seeing you!</p>`;
        } else if (status === 'rejected') {
           subject = "Appointment Update - Clinic@Flow";
           html = `<h2>Hello ${pName},</h2>
-                  <p>We regret to inform you that your appointment with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Cancelled/Rejected</strong>.</p>
+                  <p>We regret to inform you that the appointment for <strong>${targetName}</strong> with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Cancelled/Rejected</strong>.</p>
                   <p>Please log in to the dashboard to schedule a different time.</p>`;
        } else if (status === 'completed') {
           subject = "Consultation Completed - Clinic@Flow";
           html = `<h2>Hello ${pName},</h2>
-                  <p>Your consultation with <strong>Dr. ${dName}</strong> has been marked as <strong>Completed</strong>.</p>
-                  <p>You can view your medical records in the patient dashboard.</p>
+                  <p>The consultation for <strong>${targetName}</strong> with <strong>Dr. ${dName}</strong> has been marked as <strong>Completed</strong>.</p>
+                  <p>You can view the medical records in the patient dashboard.</p>
                   <p>Stay healthy!</p>`;
        }
 
