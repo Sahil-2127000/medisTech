@@ -28,6 +28,16 @@ const PatientDashboard = () => {
   const [showBooking, setShowBooking] = useState(false);
   const [userProfile, setUserProfile] = useState(savedUser);
 
+  // Global Theme Sync logic for absolute persistence natively
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
   // Hook intercepting Native Browser Back Button forcing explicit logout validations
   useEffect(() => {
     if (activeTab !== 'home') return; // Trap locks solely effectively at absolute root
@@ -153,7 +163,7 @@ const PatientDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#EEF2FA] dark:bg-slate-900 p-4 md:p-8 flex items-center justify-center font-sans tracking-tight text-slate-800 dark:text-gray-100 transition-colors duration-300 relative">
+    <div className="min-h-screen bg-[#EEF2FA] dark:bg-black p-4 md:p-8 flex items-center justify-center font-sans tracking-tight text-slate-800 dark:text-gray-100 transition-colors duration-300 relative">
       
       {/* 🚨 THE EMERGENCY NOTIFICATION BROADCAST BANNER 🚨 */}
       {emergencyAlert && (
@@ -169,7 +179,7 @@ const PatientDashboard = () => {
       {showBooking && <BookAppointment onClose={() => { setShowBooking(false); pollAppointments(); }} />}
 
       {/* Main Orchestration Card */}
-      <div className="w-full max-w-[1400px] h-[100vh] md:h-[90vh] bg-white dark:bg-slate-900 md:rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50 dark:border-slate-800 transition-colors duration-300">
+      <div className="w-full max-w-[1400px] h-[100vh] md:h-[90vh] bg-white dark:bg-[#020617] md:rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50 dark:border-white/5 transition-colors duration-300">
         
         {/* Left Combined Panel (Profile + Nav) */}
         <div className="hidden lg:flex flex-col w-[320px] xl:w-[350px] h-full bg-[#fafcff] dark:bg-slate-900/40 shrink-0 relative">

@@ -15,6 +15,7 @@ const SettingsView = ({ patientData }) => {
   const [forgotPasswordData, setForgotPasswordData] = useState({ newPassword: '', confirmPassword: '' });
   const [forgotMessage, setForgotMessage] = useState('');
   const [forgotIsLoading, setForgotIsLoading] = useState(false);
+  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
 
   const handlePasswordChange = (e) => {
     setPasswordData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -202,14 +203,14 @@ const SettingsView = ({ patientData }) => {
   return (
     <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar">
       <div className="mb-8">
-        <h1 className="text-4xl font-extrabold text-[#021024]">Account Settings</h1>
-        <p className="text-gray-400 font-medium mt-1">Manage your preferences and security natively across environments.</p>
+        <h1 className="text-4xl font-extrabold text-[#021024] dark:text-white transition-colors">Account Settings</h1>
+        <p className="text-gray-400 dark:text-gray-500 font-medium mt-1">Manage your preferences and security natively across environments.</p>
       </div>
 
       <div className="space-y-6">
         {/* Security Context */}
-        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-8">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800">
+        <div className="bg-white dark:bg-slate-900/40 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-8 transition-colors">
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
             <svg className="w-6 h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
             Security Core Context
           </h2>
@@ -221,10 +222,10 @@ const SettingsView = ({ patientData }) => {
                 <div className="flex flex-col">
                   <div className="flex justify-between items-center">
                     <div>
-                      <div className="font-bold text-slate-800">Update Password</div>
-                      <div className="text-sm text-gray-400 font-medium mt-1">Update your account password regularly</div>
+                      <div className="font-bold text-slate-800 dark:text-white">Update Password</div>
+                      <div className="text-sm text-gray-400 dark:text-gray-500 font-medium mt-1">Update your account password regularly</div>
                     </div>
-                    <button onClick={attemptUpdateExpand} className="text-[#5265ec] font-semibold hover:underline bg-[#5265ec]/5 px-4 py-2 rounded-xl transition-colors hover:bg-[#5265ec]/10">Update</button>
+                    <button onClick={attemptUpdateExpand} className="text-[#5265ec] font-semibold hover:underline bg-[#5265ec]/5 dark:bg-[#5265ec]/10 px-4 py-2 rounded-xl transition-colors hover:bg-[#5265ec]/10 dark:hover:bg-[#5265ec]/20">Update</button>
                   </div>
                   {saveMessage && !isChangingPassword && (
                     <div className="mt-4 p-3.5 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 animate-fade-in">
@@ -296,31 +297,43 @@ const SettingsView = ({ patientData }) => {
                   )}
                 </div>
               )}
-            </div>
-
-
           </div>
         </div>
+      </div>
 
-        {/* Notifications */}
-        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-8">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800">
-            <svg className="w-6 h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-            Notifications
+        {/* 🌓 Appearance & Theme */}
+        <div className="bg-white dark:bg-slate-900/40 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-8 transition-colors">
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
+            <svg className="w-6 h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+            Appearance & Theme
           </h2>
-          <div className="flex flex-col gap-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="font-bold text-slate-800">Email Notifications</div>
-                <div className="text-sm text-gray-400 font-medium mt-1">Receive alerts via email</div>
+          <div className="flex items-center justify-between p-6 bg-slate-50/50 dark:bg-slate-800/40 rounded-3xl border border-white/60 dark:border-white/5 shadow-inner transition-all">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-900 shadow-sm flex items-center justify-center text-[#5265ec]">
+                {!isDark ? (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                ) : (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                )}
               </div>
-              <div
-                onClick={() => togglePreference('email', emailEnabled)}
-                className={`w-12 h-6 ${emailEnabled ? 'bg-[#5265ec]' : 'bg-gray-200'} rounded-full relative cursor-pointer shadow-inner transition-colors`}
-              >
-                <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-sm transition-all ${emailEnabled ? 'right-0.5' : 'left-0.5'}`}></div>
+              <div>
+                <div className="font-bold text-slate-800 dark:text-white">Midnight Mode</div>
+                <div className="text-sm text-gray-400 dark:text-gray-500 font-medium mt-0.5">Toggle between light and dark aesthetics</div>
               </div>
             </div>
+
+            <button 
+              onClick={() => {
+                const newDark = document.documentElement.classList.toggle('dark');
+                setIsDark(newDark);
+                localStorage.setItem('theme', newDark ? 'dark' : 'light');
+              }}
+              className={`w-16 h-9 rounded-full relative transition-all duration-500 shadow-inner p-1 ${isDark ? 'bg-[#5265ec]' : 'bg-slate-200'}`}
+            >
+              <div className={`w-7 h-7 bg-white rounded-full shadow-lg transform transition-transform duration-500 flex items-center justify-center ${isDark ? 'translate-x-7' : 'translate-x-0'}`}>
+                <div className={`w-4 h-4 rounded-full ${isDark ? 'bg-[#5265ec]' : 'bg-amber-400'} transition-colors duration-500`}></div>
+              </div>
+            </button>
           </div>
         </div>
       </div>

@@ -8,11 +8,16 @@ const BookAppointment = ({ onClose }) => {
   const [isDayOff, setIsDayOff] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
+  const [patientName, setPatientName] = useState('');
   const [symptoms, setSymptoms] = useState('');
   const [loading, setLoading] = useState(false);
 
   // 1. Auto-select the Clinic's singular Doctor transparently
   useEffect(() => {
+    // Fetch user profile to pre-fill patient name if desired, or just leave empty
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+    if (user.fullName) setPatientName(user.fullName);
+
     fetch('http://localhost:5001/api/auth/doctors', { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
@@ -68,6 +73,7 @@ const BookAppointment = ({ onClose }) => {
           doctorId: selectedDoctor,
           date,
           time: selectedSlot,
+          patientName,
           symptoms
         })
       });
@@ -105,9 +111,21 @@ const BookAppointment = ({ onClose }) => {
 
         <form onSubmit={handleBook} className="space-y-6 relative z-10">
           
-          <div className="flex flex-col space-y-1">
-            <label className="block text-sm font-black text-[#5265ec] tracking-widest uppercase mb-3">Select Date (Up to 20 days ahead)</label>
-            <div className="relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col space-y-1">
+              <label className="block text-xs font-black text-[#5265ec] tracking-widest uppercase mb-2">Patient Full Name</label>
+              <input 
+                type="text" 
+                required
+                value={patientName}
+                onChange={e => setPatientName(e.target.value)}
+                placeholder="Who is this visit for?"
+                className="w-full bg-white text-slate-800 font-bold border border-gray-100 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all shadow-sm"
+              />
+            </div>
+
+            <div className="flex flex-col space-y-1">
+              <label className="block text-xs font-black text-[#5265ec] tracking-widest uppercase mb-2">Select Date</label>
               <input 
                 type="date" 
                 min={minDate}

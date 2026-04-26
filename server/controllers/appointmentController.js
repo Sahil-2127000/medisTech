@@ -126,6 +126,7 @@ exports.bookAppointment = async (req, res) => {
 
     const newAppt = new Appointment({
       patientId: patientIdOverride || req.user.id,
+      patientName: patientName || (req.user.role === 'patient' ? req.user.fullName : undefined),
       doctorId: ultimateDoctorId,
       date,
       time,
@@ -203,14 +204,18 @@ exports.getDoctorHistory = async (req, res) => {
      }
 
      // Search logic for populated fields in Mongoose is best done via aggregation or dual-query
-     let patientIds = [];
+     // Search logic for both account holder name and explicit patient name
      if (search) {
        const users = await require('../models/User').find({ 
          fullName: { $regex: search, $options: 'i' },
          role: 'patient'
        }).select('_id');
        patientIds = users.map(u => u._id);
-       query.patientId = { $in: patientIds };
+       
+       query.$or = [
+         { patientId: { $in: patientIds } },
+         { patientName: { $regex: search, $options: 'i' } }
+       ];
      }
 
      const totalCount = await Appointment.countDocuments(query);

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/landing/Navbar';
 import HeroSection from '../components/landing/HeroSection';
 import AboutSection from '../components/landing/AboutSection';
@@ -9,6 +10,15 @@ import ContactSection from '../components/landing/ContactSection';
 import Footer from '../components/landing/Footer';
 
 const Landing = () => {
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+    if (user) {
+      navigate(user.role === 'doctor' ? '/doctor/dashboard' : '/patientdashboard');
+    }
+  }, [navigate]);
+
   return (
     <div id="home" className="min-h-screen bg-slate-50/50 font-sans text-slate-900 flex flex-col items-center overflow-x-hidden relative selection:bg-blue-200">
 

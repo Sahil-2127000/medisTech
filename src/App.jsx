@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, allowedRole }) => {
   
   // Explicit Role Verification Guard
   if (allowedRole && user.role !== allowedRole) {
-     return <Navigate to={user.role === 'doctor' ? '/doctordashboard' : '/patientdashboard'} />;
+     return <Navigate to={user.role === 'doctor' ? '/doctor/dashboard' : '/patientdashboard'} />;
   }
   
   return children;
@@ -32,7 +32,7 @@ function App() {
         } 
       />
       <Route 
-        path="/doctordashboard/*" 
+        path="/doctor/dashboard/*" 
         element={
           <ProtectedRoute allowedRole="doctor">
              <DoctorDashboard />
