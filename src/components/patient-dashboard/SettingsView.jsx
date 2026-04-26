@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 
 const SettingsView = ({ patientData }) => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -15,7 +16,8 @@ const SettingsView = ({ patientData }) => {
   const [forgotPasswordData, setForgotPasswordData] = useState({ newPassword: '', confirmPassword: '' });
   const [forgotMessage, setForgotMessage] = useState('');
   const [forgotIsLoading, setForgotIsLoading] = useState(false);
-  const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+   const { theme, toggleTheme } = useTheme();
+   const isDark = theme === 'dark';
 
   const handlePasswordChange = (e) => {
     setPasswordData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -323,11 +325,7 @@ const SettingsView = ({ patientData }) => {
             </div>
 
             <button 
-              onClick={() => {
-                const newDark = document.documentElement.classList.toggle('dark');
-                setIsDark(newDark);
-                localStorage.setItem('theme', newDark ? 'dark' : 'light');
-              }}
+              onClick={toggleTheme}
               className={`w-16 h-9 rounded-full relative transition-all duration-500 shadow-inner p-1 ${isDark ? 'bg-[#5265ec]' : 'bg-slate-200'}`}
             >
               <div className={`w-7 h-7 bg-white rounded-full shadow-lg transform transition-transform duration-500 flex items-center justify-center ${isDark ? 'translate-x-7' : 'translate-x-0'}`}>

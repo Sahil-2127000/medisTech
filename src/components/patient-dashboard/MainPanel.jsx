@@ -80,19 +80,19 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
       </div>
 
       {/* 🔵 DOCTOR-STYLE WELCOME BANNER (AURA REDESIGN - DARK ONLY) 🔵 */}
-      <div className="relative w-full shrink-0 min-h-[160px] rounded-[3rem] overflow-hidden mb-12 bg-gradient-to-r from-blue-600 via-[#3963F9] to-blue-400 dark:bg-gradient-to-br dark:from-[#052659] dark:via-[#3963F9] dark:to-emerald-400 flex items-center shadow-xl shadow-blue-500/20 dark:shadow-blue-900/40">
+      <div className="relative w-full shrink-0 min-h-[160px] rounded-[3rem] overflow-hidden mb-12 bg-gradient-to-r from-blue-600 via-[#3963F9] to-blue-400 dark:bg-none dark:bg-blue-600/20 dark:backdrop-blur-2xl border border-transparent dark:border-blue-500/40 flex items-center shadow-xl shadow-blue-500/20 dark:shadow-blue-500/10">
         <div className="relative z-10 px-8 py-10 md:px-14 flex flex-col justify-center w-full">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight drop-shadow-sm">
             Welcome, {patientData.name}
           </h2>
-          <p className="text-blue-100 font-medium text-base md:text-lg drop-shadow-sm opacity-90">
+          <p className="text-blue-100 dark:text-blue-300/80 font-medium text-base md:text-lg drop-shadow-sm opacity-90">
             Have a nice and healthy day!
           </p>
         </div>
 
         {/* Geometric Accents (Sync with Doctor Portal) */}
-        <div className="absolute right-0 top-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[20px] -mr-20 -mt-20 pointer-events-none"></div>
-        <div className="absolute right-[15%] bottom-[-50%] w-[300px] h-[300px] bg-white/10 rounded-full blur-[40px] pointer-events-none"></div>
+        <div className="absolute right-0 top-0 w-[400px] h-[400px] bg-white/5 dark:bg-blue-500/10 rounded-full blur-[20px] -mr-20 -mt-20 pointer-events-none"></div>
+        <div className="absolute right-[15%] bottom-[-50%] w-[300px] h-[300px] bg-white/10 dark:bg-emerald-500/5 rounded-full blur-[40px] pointer-events-none"></div>
       </div>
 
       {/* 📊 Vital Capture Modal */}
@@ -161,7 +161,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
               <motion.div
                 whileHover={{ y: -8, scale: 1.02 }}
                 onClick={() => onTabChange('calendar')}
-                className="bg-gradient-to-br from-[#4776E6] to-[#8E54E9] dark:from-[#1e1b4b] dark:to-[#4338ca] rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(71,118,230,0.3)] dark:shadow-blue-500/10 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
+                className="bg-gradient-to-br from-[#4776E6] to-[#8E54E9] dark:from-indigo-500/10 dark:to-indigo-500/5 dark:backdrop-blur-xl rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(71,118,230,0.3)] dark:shadow-indigo-500/10 border border-transparent dark:border-indigo-500/20 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
               >
                 {/* 3D "Broad Thread" Ribbon */}
                 <div className="absolute top-10 left-0 right-0 py-3.5 bg-white/20 backdrop-blur-md border-y border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.12)] scale-110 flex items-center justify-center z-10">
@@ -172,7 +172,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
 
                 {/* Main Content (Below Thread) */}
                 <div className="mt-28 relative z-20">
-                  <div className="text-6xl font-black text-white tracking-tighter leading-none drop-shadow-2xl">
+                  <div className="text-6xl font-black text-white dark:text-indigo-300 tracking-tighter leading-none drop-shadow-2xl">
                     {completedCount}
                   </div>
                 </div>
@@ -188,7 +188,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
           <motion.div
             whileHover={{ y: -8, scale: 1.02 }}
             onClick={() => onTabChange('docs')}
-            className="bg-gradient-to-br from-[#11998e] to-[#38ef7d] dark:from-[#064e3b] dark:to-[#059669] rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(17,153,142,0.25)] dark:shadow-emerald-500/10 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
+            className="bg-gradient-to-br from-[#11998e] to-[#38ef7d] dark:from-emerald-500/10 dark:to-emerald-500/5 dark:backdrop-blur-xl rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(17,153,142,0.25)] dark:shadow-emerald-500/10 border border-transparent dark:border-emerald-500/20 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
           >
             {/* 3D "Broad Thread" Ribbon */}
             <div className="absolute top-10 left-0 right-0 py-3.5 bg-white/20 backdrop-blur-md border-y border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.12)] scale-110 flex items-center justify-center z-10">
@@ -199,7 +199,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
 
             {/* Main Content (Below Thread) */}
             <div className="mt-28 relative z-20">
-              <div className="text-6xl font-black text-white tracking-tighter leading-none drop-shadow-2xl">
+              <div className="text-6xl font-black text-white dark:text-emerald-300 tracking-tighter leading-none drop-shadow-2xl">
                 {patientData.prescriptionsCount || 0}
               </div>
             </div>
@@ -228,7 +228,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
               <motion.div
                 whileHover={{ y: -8, scale: 1.02 }}
                 onClick={() => onTabChange('calendar')}
-                className="bg-gradient-to-br from-[#0f172a] to-[#1e40af] dark:from-indigo-700 dark:to-[#1e3a8a] rounded-[2.5rem] p-10 shadow-[0_20px_60px_rgba(15,23,42,0.45)] dark:shadow-[0_20px_60px_rgba(67,56,202,0.4)] flex flex-col justify-between cursor-pointer group h-[240px] transition-all relative overflow-hidden border border-white/10 dark:border-white/20"
+                className="bg-gradient-to-br from-[#0f172a] to-[#1e40af] dark:bg-none dark:bg-indigo-600/10 dark:backdrop-blur-xl rounded-[2.5rem] p-10 shadow-[0_20px_60px_rgba(15,23,42,0.45)] dark:shadow-indigo-500/10 flex flex-col justify-between cursor-pointer group h-[240px] transition-all relative overflow-hidden border border-white/10 dark:border-indigo-500/40"
               >
                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-500 opacity-20 rounded-full blur-3xl group-hover:opacity-40 transition-opacity"></div>
 

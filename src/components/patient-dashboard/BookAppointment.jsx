@@ -96,36 +96,36 @@ const BookAppointment = ({ onClose }) => {
   };
 
   return (
-    <div className="absolute inset-0 bg-[#021024]/40 z-50 flex justify-center items-center p-4 animate-fade-in backdrop-blur-sm">
-      <div className="bg-white rounded-[2.5rem] w-full max-w-2xl shadow-2xl p-8 relative overflow-hidden">
+    <div className="absolute inset-0 bg-[#021024]/40 dark:bg-black/80 z-50 flex justify-center items-center p-4 animate-fade-in backdrop-blur-sm">
+      <div className="bg-white dark:bg-slate-900/95 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2.5rem] w-full max-w-2xl shadow-2xl p-8 relative overflow-hidden">
         
         {/* Decorative Top Blur */}
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#5265ec] rounded-full opacity-10 blur-3xl pointer-events-none"></div>
 
-        <button onClick={onClose} className="absolute top-6 right-6 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 hover:bg-red-50 rounded-full p-2">
+        <button onClick={onClose} className="absolute top-6 right-6 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full p-2">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
 
-        <h2 className="text-3xl font-extrabold text-slate-800 mb-2">Book Native Slot</h2>
-        <p className="text-sm font-semibold text-gray-400 mb-8">Securely parsing mathematical doctor availability arrays directly from MongoDB.</p>
+        <h2 className="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Book Native Slot</h2>
+        <p className="text-sm font-semibold text-gray-400 dark:text-slate-500 mb-8">Securely parsing mathematical doctor availability arrays directly from MongoDB.</p>
 
         <form onSubmit={handleBook} className="space-y-6 relative z-10">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col space-y-1">
-              <label className="block text-xs font-black text-[#5265ec] tracking-widest uppercase mb-2">Patient Full Name</label>
+              <label className="block text-xs font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-2">Patient Full Name</label>
               <input 
                 type="text" 
                 required
                 value={patientName}
                 onChange={e => setPatientName(e.target.value)}
                 placeholder="Who is this visit for?"
-                className="w-full bg-white text-slate-800 font-bold border border-gray-100 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all shadow-sm"
+                className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold border border-gray-100 dark:border-white/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all shadow-sm"
               />
             </div>
 
             <div className="flex flex-col space-y-1">
-              <label className="block text-xs font-black text-[#5265ec] tracking-widest uppercase mb-2">Select Date</label>
+              <label className="block text-xs font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-2">Select Date</label>
               <input 
                 type="date" 
                 min={minDate}
@@ -140,16 +140,16 @@ const BookAppointment = ({ onClose }) => {
                     setSelectedSlot('');
                   }
                 }}
-                className="w-full bg-white text-slate-800 font-bold border border-gray-100 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all shadow-sm cursor-pointer hover:border-blue-200"
+                className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold border border-gray-100 dark:border-white/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all shadow-sm cursor-pointer hover:border-blue-200"
               />
             </div>
           </div>
 
           <div className="flex flex-col space-y-1">
-             <label className="text-xs font-bold uppercase tracking-widest text-[#5265ec]">Calculated Bookable Slots</label>
-             <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 min-h-[100px] flex flex-wrap gap-3">
+             <label className="text-xs font-bold uppercase tracking-widest text-[#5265ec] dark:text-blue-400">Calculated Bookable Slots</label>
+             <div className="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100 dark:border-white/5 rounded-2xl p-4 min-h-[100px] flex flex-wrap gap-3">
                {!date ? (
-                  <div className="w-full flex items-center justify-center text-sm font-bold text-gray-400">Select Date to generate array globally</div>
+                  <div className="w-full flex items-center justify-center text-sm font-bold text-gray-400 dark:text-slate-500">Select Date to generate array globally</div>
                ) : loading ? (
                   <div className="w-full flex items-center justify-center text-sm font-bold text-[#5265ec] animate-pulse">Calculating Native Splits...</div>
                ) : isDayOff ? (
@@ -163,7 +163,7 @@ const BookAppointment = ({ onClose }) => {
                       key={i} 
                       disabled={!slot.isAvailable}
                       onClick={() => setSelectedSlot(slot.time)}
-                      className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-transparent ${selectedSlot === slot.time ? 'bg-[#5265ec] text-white shadow-md shadow-blue-500/30' : 'bg-white text-slate-600 border border-gray-200 hover:border-[#5265ec] hover:text-[#5265ec]'}`}
+                      className={`px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-slate-900/50 disabled:text-gray-400 disabled:border-transparent ${selectedSlot === slot.time ? 'bg-[#5265ec] text-white shadow-md shadow-blue-500/30' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-gray-200 dark:border-white/10 hover:border-[#5265ec] dark:hover:border-blue-400 hover:text-[#5265ec] dark:hover:text-blue-400'}`}
                     >
                       {slot.time}
                     </button>
@@ -173,12 +173,12 @@ const BookAppointment = ({ onClose }) => {
           </div>
 
           <div className="flex flex-col space-y-1">
-             <label className="text-xs font-bold uppercase tracking-widest text-[#5265ec]">Symptoms & Notes</label>
+             <label className="text-xs font-bold uppercase tracking-widest text-[#5265ec] dark:text-blue-400">Symptoms & Notes</label>
              <textarea 
                value={symptoms}
                onChange={e => setSymptoms(e.target.value)}
                placeholder="Describe your reasoning..."
-               className="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-[#5265ec] rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-colors resize-none h-20"
+               className="w-full bg-gray-50 dark:bg-slate-800 border border-transparent dark:border-white/5 focus:bg-white dark:focus:bg-slate-700 focus:border-[#5265ec] dark:focus:border-blue-400 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 dark:text-white outline-none transition-colors resize-none h-20"
              />
           </div>
 
