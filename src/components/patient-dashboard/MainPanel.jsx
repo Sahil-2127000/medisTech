@@ -64,10 +64,10 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
     <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto overflow-x-hidden no-scrollbar">
 
       {/* Header row */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-extrabold text-[#021024]">Dashboard</h1>
-          <p className="text-gray-400 font-medium mt-1">Thursday, 28 Jan 2026</p>
+          <h1 className="text-5xl font-black text-[#021024] dark:text-white tracking-tighter leading-none mb-2 transition-colors">Dashboard</h1>
+          <p className="text-slate-400 dark:text-slate-500 font-bold text-sm tracking-tight">{new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })}</p>
         </div>
 
         <div className="flex items-center gap-6">
@@ -79,8 +79,8 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
         </div>
       </div>
 
-      {/* 🔵 DOCTOR-STYLE WELCOME BANNER (SYNCED) 🔵 */}
-      <div className="relative w-full shrink-0 min-h-[150px] rounded-[2.5rem] overflow-hidden mb-12 bg-gradient-to-r from-blue-600 via-[#3963F9] to-blue-400 flex items-center shadow-xl shadow-blue-500/20">
+      {/* 🔵 DOCTOR-STYLE WELCOME BANNER (AURA REDESIGN - DARK ONLY) 🔵 */}
+      <div className="relative w-full shrink-0 min-h-[160px] rounded-[3rem] overflow-hidden mb-12 bg-gradient-to-r from-blue-600 via-[#3963F9] to-blue-400 dark:bg-gradient-to-br dark:from-[#052659] dark:via-[#3963F9] dark:to-emerald-400 flex items-center shadow-xl shadow-blue-500/20 dark:shadow-blue-900/40">
         <div className="relative z-10 px-8 py-10 md:px-14 flex flex-col justify-center w-full">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight drop-shadow-sm">
             Welcome, {patientData.name}
@@ -153,19 +153,19 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
 
         {/* Left Side: Two Compact Cards (50% of row) */}
         <div className="lg:col-span-2 grid grid-cols-2 gap-6">
-          {/* Card 1: Completed Visits (Vibrant Blue 3D) */}
+          {/* Card 1: Completed Visits (Vibrant Indigo-Violet 3D) */}
           {(() => {
             const completedCount = [...(patientData.history || []), ...(patientData.upcoming || [])]
               .filter(app => app.status === 'completed').length;
             return (
-              <motion.div 
+              <motion.div
                 whileHover={{ y: -8, scale: 1.02 }}
                 onClick={() => onTabChange('calendar')}
-                className="bg-gradient-to-br from-[#4776E6] to-[#8E54E9] rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(71,118,230,0.3)] flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
+                className="bg-gradient-to-br from-[#4776E6] to-[#8E54E9] dark:from-[#1e1b4b] dark:to-[#4338ca] rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(71,118,230,0.3)] dark:shadow-blue-500/10 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
               >
                 {/* 3D "Broad Thread" Ribbon */}
-                <div className="absolute top-10 left-0 right-0 py-6 bg-white/20 backdrop-blur-md border-y border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.12)] transform -skew-x-12 scale-110 flex items-center justify-center z-10">
-                  <div className="transform skew-x-12 text-lg font-black text-white uppercase tracking-tighter scale-y-150 drop-shadow-md">
+                <div className="absolute top-10 left-0 right-0 py-3.5 bg-white/20 backdrop-blur-md border-y border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.12)] scale-110 flex items-center justify-center z-10">
+                  <div className="text-lg font-medium text-white uppercase tracking-tight scale-y-[1.4] drop-shadow-md">
                     Completed Visits
                   </div>
                 </div>
@@ -185,14 +185,14 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
           })()}
 
           {/* Card 2: Prescriptions (Emerald 3D) */}
-          <motion.div 
+          <motion.div
             whileHover={{ y: -8, scale: 1.02 }}
             onClick={() => onTabChange('docs')}
-            className="bg-gradient-to-br from-[#11998e] to-[#38ef7d] rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(17,153,142,0.25)] flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
+            className="bg-gradient-to-br from-[#11998e] to-[#38ef7d] dark:from-[#064e3b] dark:to-[#059669] rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(17,153,142,0.25)] dark:shadow-emerald-500/10 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
           >
             {/* 3D "Broad Thread" Ribbon */}
-            <div className="absolute top-10 left-0 right-0 py-6 bg-white/20 backdrop-blur-md border-y border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.12)] transform -skew-x-12 scale-110 flex items-center justify-center z-10">
-              <div className="transform skew-x-12 text-lg font-black text-white uppercase tracking-tighter scale-y-150 drop-shadow-md">
+            <div className="absolute top-10 left-0 right-0 py-3.5 bg-white/20 backdrop-blur-md border-y border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.12)] scale-110 flex items-center justify-center z-10">
+              <div className="text-lg font-medium text-white uppercase tracking-tight scale-y-[1.4] drop-shadow-md">
                 Prescriptions
               </div>
             </div>
@@ -226,11 +226,10 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
 
             return (
               <motion.div
-                whileHover={{ y: -8, scale: 1.01 }}
+                whileHover={{ y: -8, scale: 1.02 }}
                 onClick={() => onTabChange('calendar')}
-                className="bg-gradient-to-br from-[#0f172a] to-[#1e40af] rounded-[2.5rem] p-10 shadow-[0_20px_60px_rgba(15,23,42,0.45)] flex flex-col justify-between cursor-pointer group h-[240px] transition-all relative overflow-hidden"
+                className="bg-gradient-to-br from-[#0f172a] to-[#1e40af] dark:from-indigo-700 dark:to-[#1e3a8a] rounded-[2.5rem] p-10 shadow-[0_20px_60px_rgba(15,23,42,0.45)] dark:shadow-[0_20px_60px_rgba(67,56,202,0.4)] flex flex-col justify-between cursor-pointer group h-[240px] transition-all relative overflow-hidden border border-white/10 dark:border-white/20"
               >
-                {/* Dynamic Glow */}
                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-500 opacity-20 rounded-full blur-3xl group-hover:opacity-40 transition-opacity"></div>
 
                 <div className="flex items-center justify-between mb-4 relative z-10">
@@ -247,8 +246,32 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
                   </div>
                 </div>
 
+                {/* 🌌 OPTION 3: MINIMALIST DOTTED WAVE + RUNNING ORB 🌌 */}
+                <div className="relative h-16 w-full overflow-hidden flex items-center justify-center pointer-events-none my-2">
+                  <svg className="w-full h-full" viewBox="0 0 1000 100" preserveAspectRatio="none">
+                    <path
+                      id="wavePath"
+                      d="M20,20 C150,80 400,100 600,50 C800,0 950,20 980,40"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeDasharray="1,12"
+                      strokeLinecap="round"
+                      className="opacity-20 dark:opacity-40"
+                    />
+                    <motion.circle
+                      r="4"
+                      fill="white"
+                      className="drop-shadow-[0_0_12px_rgba(255,255,255,1)]"
+                      style={{ offsetPath: "path('M20,20 C150,80 400,100 600,50 C800,0 950,20 980,40')" }}
+                      animate={{ offsetDistance: ["0%", "100%"] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                    />
+                  </svg>
+                </div>
+
                 {dynamicLatest ? (
-                  <div className="flex items-center gap-12 pt-6 border-t border-white/5 relative z-10">
+                  <div className="flex items-center gap-12 pt-2 relative z-10">
                     <div className="flex items-center gap-4 text-slate-200 font-black text-lg uppercase tracking-wider">
                       <svg className="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-18 0h18" /></svg>
                       {dynamicLatest.date}
@@ -268,9 +291,9 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
       </div>
 
       {/* 🌡️ UNIFIED HEALTH METRICS ROW (3-COLUMN EQUAL GRID) 🌡️ */}
-      <div className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.03)] mb-12">
+      <div className="bg-white dark:bg-slate-900/60 rounded-[3rem] p-10 border border-slate-100 dark:border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-black/20 mb-12 transition-all">
         <div className="flex justify-between items-center mb-10">
-          <h4 className="font-black text-2xl text-slate-800 tracking-tight">Your Health Metrics</h4>
+          <h4 className="font-black text-2xl text-slate-800 dark:text-white tracking-tight">Your Health Metrics</h4>
           <button
             onClick={() => setShowVitalModal(true)}
             className="bg-[#3963F9] hover:bg-[#3252d4] text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2"
@@ -307,21 +330,21 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
               icon: <path d="M12 3v18m9-9H3" />
             }
           ].map((stat, idx) => (
-            <div key={idx} className="flex flex-col gap-5 p-8 rounded-[2.5rem] border border-slate-50 bg-slate-50/40 group hover:bg-white hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500">
+            <div key={idx} className="flex flex-col gap-5 p-8 rounded-[2.5rem] border border-slate-50 dark:border-white/5 bg-slate-50/40 dark:bg-slate-800/40 group hover:bg-white dark:hover:bg-slate-800 hover:shadow-2xl hover:shadow-slate-200/50 dark:hover:shadow-black transition-all duration-500">
               <div className="flex justify-between items-start">
                 <div className={`w-14 h-14 bg-${stat.color}-500/10 text-${stat.color}-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">{stat.icon}</svg>
                 </div>
-                <div className={`px-4 py-1.5 rounded-full bg-${stat.color}-50 text-${stat.color}-600 text-[10px] font-black uppercase tracking-widest border border-${stat.color}-100`}>
+                <div className={`px-4 py-1.5 rounded-full bg-${stat.color}-50 dark:bg-${stat.color}-500/10 text-${stat.color}-600 dark:text-${stat.color}-400 text-[10px] font-black uppercase tracking-widest border border-${stat.color}-100 dark:border-${stat.color}-500/20`}>
                   {stat.status}
                 </div>
               </div>
               <div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black text-slate-800 tracking-tighter">{stat.value}</span>
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{stat.unit}</span>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-4xl font-black text-slate-800 dark:text-white tracking-tighter leading-none">{stat.value}</span>
+                  <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{stat.unit}</span>
                 </div>
-                <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-3">{stat.label}</div>
+                <div className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-2">{stat.label}</div>
               </div>
             </div>
           ))}

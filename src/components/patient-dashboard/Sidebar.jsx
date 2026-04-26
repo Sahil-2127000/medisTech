@@ -27,16 +27,16 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`w-full py-3 px-4 rounded-xl flex items-center gap-3 transition-all group ${activeTab === item.id ? 'bg-[#3963F9] text-white shadow-lg shadow-[#3963F9]/30' : 'bg-transparent text-gray-500 hover:bg-gray-100 hover:text-slate-800'}`}
+            className={`w-full py-3 px-4 rounded-xl flex items-center gap-3 transition-all group ${activeTab === item.id ? 'bg-[#3963F9] text-white shadow-lg shadow-[#3963F9]/30' : 'bg-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-white'}`}
           >
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${activeTab === item.id ? 'bg-white/20' : 'bg-white shadow-sm text-gray-400 group-hover:text-[#3963F9]'}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${activeTab === item.id ? 'bg-white/20' : 'bg-white dark:bg-slate-800 shadow-sm text-gray-400 dark:text-slate-500 group-hover:text-[#3963F9]'}`}>
               {item.stroke ? (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{item.icon}</svg>
               ) : (
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">{item.icon}</svg>
               )}
             </div>
-            <span className="font-semibold text-[13px] whitespace-nowrap">{item.label}</span>
+            <span className="font-bold text-[13px] whitespace-nowrap">{item.label}</span>
           </button>
         ))}
       </div>
@@ -44,36 +44,36 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       {/* Logout Indicator */}
       <button
         onClick={() => setShowLogoutModal(true)}
-        className="w-full py-3 px-4 rounded-xl flex items-center gap-3 transition-all text-red-400 hover:bg-red-50 hover:text-red-600 mt-auto group shrink-0"
+        className="w-full py-3 px-4 rounded-xl flex items-center gap-3 transition-all text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 mt-auto group shrink-0"
       >
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white shadow-sm text-red-300 group-hover:text-red-500 transition-colors">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white dark:bg-slate-800 shadow-sm text-red-300 group-hover:text-red-500 transition-colors">
           <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
         </div>
-        <span className="font-semibold text-[13px] whitespace-nowrap">Sign Out Securely</span>
+        <span className="font-bold text-[13px] whitespace-nowrap">Sign Out Securely</span>
       </button>
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-          <div className="bg-white/95 backdrop-blur-xl border border-white rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.3)] w-full max-w-sm overflow-hidden animate-bounce-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-white dark:border-white/10 rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.3)] w-full max-w-sm overflow-hidden animate-bounce-in">
             <div className="h-2 w-full bg-gradient-to-r from-red-400 to-rose-600"></div>
             
             <div className="p-8 text-center">
-              <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-red-500 shadow-inner">
+              <div className="w-16 h-16 bg-red-50 dark:bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-red-500 shadow-inner">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
               </div>
               
-              <h3 className="text-2xl font-black text-slate-800 tracking-tight mb-2">Sign Out?</h3>
-              <p className="text-gray-500 font-medium text-sm mb-8 leading-relaxed">
+              <h3 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight mb-2">Sign Out?</h3>
+              <p className="text-gray-500 dark:text-gray-400 font-medium text-sm mb-8 leading-relaxed">
                 Are you sure you want to terminate your secure session? You'll need to re-authenticate to access your records.
               </p>
               
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setShowLogoutModal(false)}
-                  className="py-3.5 px-6 rounded-2xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-all active:scale-95"
+                  className="py-3.5 px-6 rounded-2xl font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-all active:scale-95"
                 >
                   No, Stay
                 </button>

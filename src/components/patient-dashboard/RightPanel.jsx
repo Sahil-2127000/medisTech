@@ -15,12 +15,12 @@ const RightPanel = ({ patientData }) => {
       <div className="flex flex-col items-center mb-4">
         <div className="relative w-24 h-24 mb-3">
           {/* Decorative floating rings */}
-          <div className="absolute inset-0 border-[3px] border-blue-100 rounded-full scale-125"></div>
+          <div className="absolute inset-0 border-[3px] border-blue-100 dark:border-slate-800 rounded-full scale-125"></div>
           <div className="absolute inset-0 border-[2px] border-[#5265ec] rounded-full scale-110 border-dashed animate-spin-slow"></div>
           <img src={patientData.avatar} alt="Patient Avatar" className="w-full h-full rounded-full object-cover shadow-lg relative z-10" />
         </div>
-        <h2 className="text-xl font-bold sm-text-center">{patientData.name}</h2>
-        <span className="text-gray-400 text-xs font-bold mt-1 uppercase tracking-widest text-clinic-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">ID: {patientData.patientUid || '----'}</span>
+        <h2 className="text-xl font-bold sm-text-center dark:text-white">{patientData.name}</h2>
+        <span className="text-gray-400 dark:text-blue-400 text-xs font-bold mt-1 uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-500/20">ID: {patientData.patientUid || '----'}</span>
       </div>
 
     </div>
