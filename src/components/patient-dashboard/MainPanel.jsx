@@ -80,7 +80,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
       </div>
 
       {/* 🔵 DOCTOR-STYLE WELCOME BANNER (AURA REDESIGN - DARK ONLY) 🔵 */}
-      <div className="relative w-full shrink-0 min-h-[160px] rounded-[3rem] overflow-hidden mb-12 bg-gradient-to-r from-blue-600 via-[#3963F9] to-blue-400 dark:bg-none dark:bg-blue-600/20 dark:backdrop-blur-2xl border border-transparent dark:border-blue-500/40 flex items-center shadow-xl shadow-blue-500/20 dark:shadow-blue-500/10">
+      <div className="relative w-full shrink-0 min-h-[160px] rounded-[3rem] overflow-hidden mb-12 bg-linear-to-r from-blue-600 via-[#3963F9] to-blue-400 dark:bg-none dark:bg-blue-600/20 dark:backdrop-blur-2xl border border-transparent dark:border-blue-500/40 flex items-center shadow-xl shadow-blue-500/20 dark:shadow-blue-500/10">
         <div className="relative z-10 px-8 py-10 md:px-14 flex flex-col justify-center w-full">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight drop-shadow-sm">
             Welcome, {patientData.name}
@@ -92,12 +92,12 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
 
         {/* Geometric Accents (Sync with Doctor Portal) */}
         <div className="absolute right-0 top-0 w-[400px] h-[400px] bg-white/5 dark:bg-blue-500/10 rounded-full blur-[20px] -mr-20 -mt-20 pointer-events-none"></div>
-        <div className="absolute right-[15%] bottom-[-50%] w-[300px] h-[300px] bg-white/10 dark:bg-emerald-500/5 rounded-full blur-[40px] pointer-events-none"></div>
+        <div className="absolute right-[15%] bottom-[-50%] w-[300px] h-[300px] bg-white/10 dark:bg-emerald-500/5 rounded-full blur-2xl pointer-events-none"></div>
       </div>
 
       {/* 📊 Vital Capture Modal */}
       {showVitalModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-xl animate-fade-in">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-xl animate-fade-in">
           <div className="bg-white rounded-[3rem] p-10 w-full max-w-md shadow-2xl relative animate-slide-up border border-slate-100">
             <button
               onClick={() => setShowVitalModal(false)}
@@ -161,7 +161,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
               <motion.div
                 whileHover={{ y: -8, scale: 1.02 }}
                 onClick={() => onTabChange('calendar')}
-                className="bg-gradient-to-br from-[#4776E6] to-[#8E54E9] dark:from-indigo-500/10 dark:to-indigo-500/5 dark:backdrop-blur-xl rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(71,118,230,0.3)] dark:shadow-indigo-500/10 border border-transparent dark:border-indigo-500/20 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
+                className="bg-linear-to-br from-[#4776E6] to-[#8E54E9] dark:from-indigo-500/10 dark:to-indigo-500/5 dark:backdrop-blur-xl rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(71,118,230,0.3)] dark:shadow-indigo-500/10 border border-transparent dark:border-indigo-500/20 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
               >
                 {/* 3D "Broad Thread" Ribbon */}
                 <div className="absolute top-10 left-0 right-0 py-3.5 bg-white/20 backdrop-blur-md border-y border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.12)] scale-110 flex items-center justify-center z-10">
@@ -179,7 +179,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
 
                 {/* Background Decor */}
                 <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
-                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+                <div className="absolute top-0 left-0 w-full h-full bg-linear-to-t from-black/10 to-transparent pointer-events-none"></div>
               </motion.div>
             );
           })()}
@@ -188,7 +188,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
           <motion.div
             whileHover={{ y: -8, scale: 1.02 }}
             onClick={() => onTabChange('docs')}
-            className="bg-gradient-to-br from-[#11998e] to-[#38ef7d] dark:from-emerald-500/10 dark:to-emerald-500/5 dark:backdrop-blur-xl rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(17,153,142,0.25)] dark:shadow-emerald-500/10 border border-transparent dark:border-emerald-500/20 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
+            className="bg-linear-to-br from-[#11998e] to-[#38ef7d] dark:from-emerald-500/10 dark:to-emerald-500/5 dark:backdrop-blur-xl rounded-[2.5rem] p-0 shadow-[0_20px_60px_rgba(17,153,142,0.25)] dark:shadow-emerald-500/10 border border-transparent dark:border-emerald-500/20 flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden h-[240px]"
           >
             {/* 3D "Broad Thread" Ribbon */}
             <div className="absolute top-10 left-0 right-0 py-3.5 bg-white/20 backdrop-blur-md border-y border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.12)] scale-110 flex items-center justify-center z-10">
@@ -206,7 +206,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
 
             {/* Background Decor */}
             <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-linear-to-t from-black/10 to-transparent pointer-events-none"></div>
           </motion.div>
         </div>
 
@@ -228,7 +228,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
               <motion.div
                 whileHover={{ y: -8, scale: 1.02 }}
                 onClick={() => onTabChange('calendar')}
-                className="bg-gradient-to-br from-[#0f172a] to-[#1e40af] dark:bg-none dark:bg-indigo-600/10 dark:backdrop-blur-xl rounded-[2.5rem] p-10 shadow-[0_20px_60px_rgba(15,23,42,0.45)] dark:shadow-indigo-500/10 flex flex-col justify-between cursor-pointer group h-[240px] transition-all relative overflow-hidden border border-white/10 dark:border-indigo-500/40"
+                className="bg-linear-to-br from-[#0f172a] to-[#1e40af] dark:bg-none dark:bg-indigo-600/10 dark:backdrop-blur-xl rounded-[2.5rem] p-10 shadow-[0_20px_60px_rgba(15,23,42,0.45)] dark:shadow-indigo-500/10 flex flex-col justify-between cursor-pointer group h-[240px] transition-all relative overflow-hidden border border-white/10 dark:border-indigo-500/40"
               >
                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-500 opacity-20 rounded-full blur-3xl group-hover:opacity-40 transition-opacity"></div>
 

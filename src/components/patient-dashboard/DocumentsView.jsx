@@ -42,7 +42,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 dark:bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-blue-100 dark:group-hover:bg-blue-500/10 transition-colors"></div>
               
-              <div className="w-24 h-24 rounded-[2rem] overflow-hidden mb-6 shadow-lg ring-4 ring-blue-50 group-hover:scale-110 transition-transform relative z-10">
+              <div className="w-24 h-24 rounded-4xl overflow-hidden mb-6 shadow-lg ring-4 ring-blue-50 group-hover:scale-110 transition-transform relative z-10">
                 <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
               </div>
               
@@ -100,7 +100,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
       <div className="flex-1">
         <div className="space-y-6">
           {currentPrescriptions.length === 0 ? (
-            <div className="bg-white rounded-[2rem] p-16 flex flex-col items-center justify-center text-center border border-[#5265ec]/10">
+            <div className="bg-white rounded-4xl p-16 flex flex-col items-center justify-center text-center border border-[#5265ec]/10">
               <div className="w-20 h-20 bg-blue-50 text-[#5265ec]/20 rounded-3xl flex items-center justify-center mb-6">
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               </div>
@@ -119,7 +119,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                 
                 <div className="flex items-center gap-7 relative z-10">
                   {/* High-Contrast Date Badge */}
-                  <div className="w-20 h-20 rounded-[1.75rem] bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center text-white shadow-xl group-hover:from-[#5265ec] group-hover:to-[#3963F9] transition-all duration-500 shrink-0">
+                  <div className="w-20 h-20 rounded-[1.75rem] bg-linear-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center text-white shadow-xl group-hover:from-[#5265ec] group-hover:to-[#3963F9] transition-all duration-500 shrink-0">
                     <span className="text-[10px] font-black uppercase tracking-[0.15em] opacity-60 mb-0.5">{new Date(px.createdAt).toLocaleString('default', { month: 'short' })}</span>
                     <span className="text-3xl font-black">{new Date(px.createdAt).getDate()}</span>
                   </div>
@@ -163,7 +163,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
       {/* 3. INTERACTION & VISUAL DESIGN (Glass Overlay) */}
       {activePrescription && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 animate-fade-in bg-slate-950/40"
+          className="fixed inset-0 z-100 flex items-center justify-center p-4 md:p-8 animate-fade-in bg-slate-950/40"
           style={{ backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)' }}
           onClick={() => setActivePrescription(null)}
         >
@@ -233,7 +233,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                   const pattern = `(${isM ? '1' : '0'}-${isA ? '1' : '0'}-${isN ? '1' : '0'})`;
                   
                    return (
-                    <div key={i} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md rounded-[1.5rem] border border-[#5265ec]/30 dark:border-white/10 p-5 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div key={i} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md rounded-3xl border border-[#5265ec]/30 dark:border-white/10 p-5 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm hover:shadow-md transition-shadow">
                       <div className="flex flex-col flex-1 items-center md:items-start text-center md:text-left">
                         <div className="flex items-center gap-3 mb-1.5 flex-wrap justify-center md:justify-start">
                            <span className="text-xl font-black text-slate-800 dark:text-white">{med.name} {med.dosage}</span>
@@ -273,7 +273,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
               </div>
 
               {/* Bottom Instructions */}
-              <div className="mt-8 p-6 rounded-[2rem] bg-[#5265ec] text-white flex items-center justify-between shadow-2xl shadow-[#5265ec]/40 overflow-hidden relative">
+              <div className="mt-8 p-6 rounded-4xl bg-[#5265ec] text-white flex items-center justify-between shadow-2xl shadow-[#5265ec]/40 overflow-hidden relative">
                  <div className="absolute inset-0 bg-linear-to-r from-white/0 to-white/10"></div>
                  <div className="relative z-10">
                     <h4 className="font-black text-lg mb-1">Medicinal Guidance</h4>

@@ -50,7 +50,7 @@ const SettingsView = ({ patientData }) => {
       } else {
         setSaveMessage(data.message || 'Please enter the old password correctly');
       }
-    } catch (e) {
+    } catch {
       setSaveMessage('Server error. Verification failed.');
     } finally {
       setIsVerifying(false);
@@ -95,7 +95,7 @@ const SettingsView = ({ patientData }) => {
       } else {
         setSaveMessage(data.message || 'Failed connecting to secure bridge.');
       }
-    } catch (e) {
+    } catch{
       setSaveMessage('Server physically unavailable.');
     } finally {
       setIsSaving(false);
@@ -127,7 +127,7 @@ const SettingsView = ({ patientData }) => {
         const data = await res.json();
         setForgotMessage(data.message || 'Failed to send verification code.');
       }
-    } catch (e) {
+    } catch {
       setForgotMessage('Network failure reaching secure bridge.');
     } finally {
       setForgotIsLoading(false);
@@ -174,15 +174,12 @@ const SettingsView = ({ patientData }) => {
       } else {
         setForgotMessage(data.message || 'Verification rejected.');
       }
-    } catch (e) {
+    } catch {
       setForgotMessage('Server unreachable during mutation.');
     } finally {
       setForgotIsLoading(false);
     }
   };
-
-
-
 
   const [emailEnabled, setEmailEnabled] = useState(patientData?.emailNotifications !== false);
 
@@ -197,7 +194,7 @@ const SettingsView = ({ patientData }) => {
         credentials: 'include',
         body: JSON.stringify({ emailNotifications: newVal })
       });
-    } catch (e) {
+    } catch {
       console.error('Failed to sync preference natively.');
     }
   };
@@ -211,7 +208,7 @@ const SettingsView = ({ patientData }) => {
 
       <div className="space-y-6">
         {/* Security Context */}
-        <div className="bg-white dark:bg-slate-900/40 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-8 transition-colors">
+        <div className="bg-white dark:bg-slate-900/40 rounded-4xl border border-gray-100 dark:border-white/5 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-8 transition-colors">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
             <svg className="w-6 h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
             Security Core Context
@@ -304,7 +301,7 @@ const SettingsView = ({ patientData }) => {
       </div>
 
         {/* 🌓 Appearance & Theme */}
-        <div className="bg-white dark:bg-slate-900/40 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-8 transition-colors">
+        <div className="bg-white dark:bg-slate-900/40 rounded-4xl border border-gray-100 dark:border-white/5 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-8 transition-colors">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
             <svg className="w-6 h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
             Appearance & Theme
@@ -341,7 +338,7 @@ const SettingsView = ({ patientData }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-xl animate-fade-in">
           <div className="bg-white/80 backdrop-blur-2xl border border-white rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.2)] w-full max-w-lg overflow-hidden relative animate-bounce-in">
             {/* Header Decoration */}
-            <div className="h-2 w-full bg-gradient-to-r from-[#5265ec] to-teal-400"></div>
+            <div className="h-2 w-full bg-linear-to-r from-[#5265ec] to-teal-400"></div>
 
             <div className="p-8 md:p-12">
               <div className="flex justify-between items-center mb-8">

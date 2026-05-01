@@ -89,7 +89,7 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={onBookClick}
-                    className="bg-linear-to-r from-[#5265ec] to-[#6366f1] text-white px-8 py-4 rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-2xl shadow-[#5265ec]/40 transition-all flex items-center gap-3 border border-white/20"
+                    className="bg-linear-to-r from-[#5265ec] to-[#6366f1] text-white px-8 py-4 rounded-4xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-[#5265ec]/40 transition-all flex items-center gap-3 border border-white/20"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
                     Book Appointment
@@ -121,7 +121,7 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                         >
                             {/* Group Header */}
                             <div className="flex items-center gap-4 mb-6 ml-2">
-                                <div className="w-10 h-1 bg-gradient-to-r from-[#5265ec] to-transparent rounded-full"></div>
+                                <div className="w-10 h-1 bg-linear-to-r from-[#5265ec] to-transparent rounded-full"></div>
                                 <h2 className="text-xl font-black text-slate-800 dark:text-white tracking-tight">
                                     Appointments for <span className="text-[#5265ec] dark:text-blue-400">{name === "Primary Account" ? "Me" : name}</span>
                                 </h2>
@@ -138,7 +138,7 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                                         <motion.div 
                                             key={app._id || appIdx}
                                             whileHover={{ x: 10, scale: 1.01 }}
-                                            className={`${styles.card} border rounded-[2rem] p-4 md:p-6 transition-all flex flex-col md:flex-row md:items-center gap-6 group cursor-pointer relative overflow-hidden`}
+                                            className={`${styles.card} border rounded-4xl p-4 md:p-6 transition-all flex flex-col md:flex-row md:items-center gap-6 group cursor-pointer relative overflow-hidden`}
                                         >
                                             {/* Status Accent Bar */}
                                             <div className={`absolute left-0 top-0 bottom-0 w-3 ${app.status === 'approved' ? 'bg-emerald-500' : app.status === 'pending' ? 'bg-amber-500' : app.status === 'completed' ? 'bg-blue-500' : 'bg-red-500'}`}></div>

@@ -94,9 +94,9 @@ const DoctorProfile = ({ email }) => {
 
  <form onSubmit={handleSave} className="flex flex-col md:flex-row gap-12">
  {/* Avatar Settings Column */}
- <div className="flex flex-col items-center flex-shrink-0 w-64">
+ <div className="flex flex-col items-center shrink-0 w-64">
  <div className="relative group cursor-pointer mb-6">
- <div className="w-48 h-48 rounded-[2rem] border-4 border-slate-100 overflow-hidden shadow-lg transition-all group-hover:scale-[1.02]">
+ <div className="w-48 h-48 rounded-4xl border-4 border-slate-100 overflow-hidden shadow-lg transition-all group-hover:scale-[1.02]">
  <img src={profile.photo || `https://placehold.co/400x400/5265ec/ffffff.png?text=${profile.firstName?.charAt(0) || 'D'}`} alt="Current Avatar" className="w-full h-full object-cover" />
  {isEditing && (
  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

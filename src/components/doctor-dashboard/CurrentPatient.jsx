@@ -62,7 +62,7 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) 
  return (
  <div className="w-full flex flex-col md:flex-row gap-6 bg-transparent transition-colors duration-300">
  {/* Left Part: Next Patient */}
-    <div className="flex-1 p-6 bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] flex flex-col relative transition-colors h-[340px] overflow-y-auto no-scrollbar shadow-xl shadow-clinic-600/20 overflow-hidden ">
+    <div className="flex-1 p-6 bg-white border border-gray-100 rounded-3xl shadow-xl flex flex-col relative transition-colors h-[340px] overflow-y-auto no-scrollbar shadow-clinic-600/20 overflow-hidden ">
       
  <h3 className="text-lg font-bold transition-colors mb-4 text-slate-700 shrink-0">Next Upcoming Patient</h3>
  {nextPatient ? (
@@ -92,7 +92,7 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange }) 
  </div>
 
  {/* Right Part: Active Consultation */}
- <div className="flex-1 p-6 bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] flex flex-col items-center justify-start relative transition-colors h-[340px] overflow-y-auto no-scrollbar shadow-xl shadow-clinic-600/20 overflow-hidden">
+ <div className="flex-1 p-6 bg-white border border-gray-100 rounded-3xl flex flex-col items-center justify-start relative transition-colors h-[340px] overflow-y-auto no-scrollbar shadow-xl shadow-clinic-600/20 overflow-hidden">
  <div className="flex justify-between items-center w-full mb-4 shrink-0 ">
  <h3 className="text-xl font-bold transition-colors text-slate-700">Active Consultation</h3>
  {activePatient && <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)]"></div>}

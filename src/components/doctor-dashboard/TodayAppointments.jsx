@@ -10,7 +10,7 @@ const TodayAppointments = ({ appointments }) => {
     .sort((a, b) => a.time.localeCompare(b.time));
 
  return (
- <div className="bg-white border border-gray-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] p-6 mb-10 w-full transition-colors duration-300 h-[340px] flex flex-col shadow-xl shadow-clinic-600/20 relative overflow-hidden">
+ <div className="bg-white border border-gray-100 rounded-3xl p-6 mb-10 w-full transition-colors duration-300 h-[340px] flex flex-col shadow-xl shadow-clinic-600/20 relative overflow-hidden">
 
     <div className="absolute -top-20 -left-30 w-68  h-50 bg-blue-300 rounded-full opacity-20 blur-2xl pointer-events-none z-0"></div>
 

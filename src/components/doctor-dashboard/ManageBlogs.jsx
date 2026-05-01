@@ -56,7 +56,7 @@ const ManageBlogs = () => {
             } else {
                 setStatusText(data.message || 'Error occurred while publishing the blog.');
             }
-        } catch (error) {
+        } catch {
             setStatusText('Network or server error.');
         } finally {
             setIsLoading(false);

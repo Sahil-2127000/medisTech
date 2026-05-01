@@ -62,7 +62,7 @@ const PatientHistoryView = ({ historyData, onBack }) => {
         })
       });
       setUploadModal(null);
-    } catch (err) {
+    } catch {
       alert("Failed to upload document.");
     } finally {
       setIsUploading(false);
@@ -83,7 +83,7 @@ const PatientHistoryView = ({ historyData, onBack }) => {
   <button onClick={onBack}
   className="bg-white text-slate-800 px-6 py-2.5 rounded-xl font-bold transition-all shadow-sm border border-gray-100 hover:bg-gray-50 flex items-center gap-2 hover:-translate-x-1"
   >
-  <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
   Back to Dashboard
   </button>
   </div>
@@ -112,7 +112,7 @@ const PatientHistoryView = ({ historyData, onBack }) => {
   return (
   <div key={app.id || 'hist_' + appIdx} className="bg-white rounded-3xl p-5 border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_15px_40px_rgba(82,101,236,0.08)] flex justify-between items-center group">
   <div className="flex items-center gap-4">
-  <div className="w-14 h-14 rounded-[1.25rem] bg-gradient-to-tr from-blue-100 to-indigo-50 flex items-center justify-center font-black text-xl text-clinic-600 shadow-inner overflow-hidden relative">
+  <div className="w-14 h-14 rounded-[1.25rem] bg-linear-to-tr from-blue-100 to-indigo-50 flex items-center justify-center font-black text-xl text-clinic-600 shadow-inner overflow-hidden relative">
   {displayChar}
   </div>
   <div>

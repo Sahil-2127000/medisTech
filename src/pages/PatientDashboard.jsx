@@ -171,7 +171,7 @@ const PatientDashboard = () => {
       {showBooking && <BookAppointment onClose={() => { setShowBooking(false); pollAppointments(); }} />}
 
       {/* Main Orchestration Card */}
-      <div className="w-full max-w-[1400px] h-[100vh] md:h-[90vh] bg-white dark:bg-slate-900 md:rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50 dark:border-white/5 transition-colors duration-300">
+      <div className="w-full max-w-[1400px] h-screen md:h-[90vh] bg-white dark:bg-slate-900 md:rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50 dark:border-white/5 transition-colors duration-300">
         
         {/* Left Combined Panel (Profile + Nav) */}
         <div className="hidden lg:flex flex-col w-[320px] xl:w-[350px] h-full bg-[#fafcff] dark:bg-slate-900/40 shrink-0 relative">
@@ -179,9 +179,9 @@ const PatientDashboard = () => {
           <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
           
           {/* 💎 PREMIUM GRADIENT DIVIDER (Quantum Etched) 💎 */}
-          <div className="absolute right-0 top-0 bottom-0 w-[1px] bg-[#5265ec]/5"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-px bg-[#5265ec]/5"></div>
           <div className="absolute right-0 top-[15%] bottom-[15%] w-[1.5px] bg-linear-to-b from-transparent via-[#5265ec]/40 to-transparent blur-[0.4px]"></div>
-          <div className="absolute right-[-1px] top-[40%] bottom-[40%] w-[3px] bg-[#5265ec]/10 blur-xl rounded-full animate-pulse"></div>
+          <div className="absolute -right-px top-[40%] bottom-[40%] w-[3px] bg-[#5265ec]/10 blur-xl rounded-full animate-pulse"></div>
           <div className="absolute right-0 top-[45%] bottom-[45%] w-[2px] bg-[#5265ec] rounded-full shadow-[0_0_15px_rgba(82,101,236,0.6)]"></div>
         </div>
         

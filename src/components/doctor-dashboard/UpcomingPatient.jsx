@@ -9,7 +9,7 @@ const UpcomingPatient = ({ appointments, onStatusChange, renderPatientCard }) =>
     .sort((a, b) => a.time.localeCompare(b.time))[0];
 
   return (
-    <div className="flex-1 bg-white rounded-[2rem] p-8 shadow-xl shadow-blue-500/5 border border-gray-50 flex flex-col h-full">
+    <div className="flex-1 bg-white rounded-4xl p-8 shadow-xl shadow-blue-500/5 border border-gray-50 flex flex-col h-full">
       <h3 className="text-xl font-extrabold transition-colors mb-3 text-slate-800">Next Upcoming Patient</h3>
       <div className="flex-1 flex flex-col justify-center">
         {nextPatient ? (

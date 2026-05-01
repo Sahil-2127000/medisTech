@@ -80,7 +80,7 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
   const doctorName = doctorProfile?.firstName ? `Dr. ${doctorProfile.firstName} ${doctorProfile.lastName || ''}` : "Doctor";
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-50 flex overflow-hidden animate-fade-in font-sans">
+    <div className="fixed inset-0 z-100 bg-slate-50 flex overflow-hidden animate-fade-in font-sans">
 
       {/* LEFT PANEL: Builder Form (60%) */}
       <div className="w-[60%] flex flex-col h-full bg-white shadow-2xl relative overflow-y-auto border-r border-gray-100">
@@ -186,16 +186,16 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
 
 
       {/* RIGHT PANEL: Live PDF Preview (40%) */}
-      <div className="w-[40%] bg-slate-100 h-full p-8 flex items-center justify-center overflow-y-auto w-full" >       
+      <div className="w-[40%] bg-slate-100 h-full p-8 flex items-center justify-center overflow-y-auto" >       
 
         {/* Printable A4 Paper Container Concept */}
-        <div id="prescription-preview" className="w-[100%] max-w-[600px] bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-sm min-h-[850px] relative flex flex-col justify-start mx-auto print-view-paper">
+        <div id="prescription-preview" className="w-full max-w-[600px] bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-sm min-h-[850px] relative flex flex-col justify-start mx-auto print-view-paper">
 
           {/* Graphic Horizontal Watermark */}
           <div className="absolute top-[55%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-full flex flex-col items-center pointer-events-none select-none z-0 opacity-5">
              <div className="text-[120px] font-black text-[#0d9488] tracking-tighter relative">
                 MedicsTech
-                <div className="absolute -bottom-4 left-0 w-full h-2 bg-gradient-to-r from-transparent via-[#0d9488] to-transparent"></div>
+                <div className="absolute -bottom-4 left-0 w-full h-2 bg-linear-to-r from-transparent via-[#0d9488] to-transparent"></div>
              </div>
              <div className="flex gap-10 mt-8">
                 {[1,2,3,4,5,6].map(i => (
@@ -220,7 +220,7 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
 
           {/* Patient Info Grid */}
           <div className="px-10 relative z-10 w-full shrink-0 -mt-8">
-             <div className="bg-white rounded-[2rem] p-8 shadow-xl shadow-black/5 grid grid-cols-2 gap-y-6 text-[13px] border border-gray-100/50 backdrop-blur-sm">
+             <div className="bg-white rounded-4xl p-8 shadow-xl shadow-black/5 grid grid-cols-2 gap-y-6 text-[13px] border border-gray-100/50 backdrop-blur-sm">
                 <div className="flex gap-2 items-end">
                    <span className="text-gray-400 font-bold whitespace-nowrap">Patient :</span>
                    <span className="flex-1 border-b border-gray-100 font-black text-slate-800 pb-0.5">{patientName}</span>

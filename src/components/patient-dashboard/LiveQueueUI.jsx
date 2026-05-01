@@ -56,7 +56,7 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
     <div className="w-full flex flex-col gap-8 animate-fade-in pb-12">
       
       {/* 1. Live Tracker Banner */}
-      <div className="w-full shadow-2xl shadow-blue-500/20 bg-gradient-to-br from-blue-600 via-[#3963F9] to-indigo-700 rounded-[2.5rem] overflow-hidden p-8 relative">
+      <div className="w-full shadow-2xl shadow-blue-500/20 bg-linear-to-br from-blue-600 via-[#3963F9] to-indigo-700 rounded-[2.5rem] overflow-hidden p-8 relative">
         <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
         
         <div className="flex flex-col md:flex-row items-center justify-between text-white relative z-10">

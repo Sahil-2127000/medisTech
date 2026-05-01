@@ -99,7 +99,7 @@ const DoctorDashboard = () => {
                     photo: data.photo || ''
                 });
             }
-        } catch (err) {
+        } catch{
             console.error("Binding profile structure natively failed.");
         }
     };
@@ -301,7 +301,7 @@ const DoctorDashboard = () => {
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-linear-to-tr from-purple-100/20 via-pink-50/20 to-transparent rounded-full blur-[120px] pointer-events-none z-0"></div>
 
             {/* Master Flex Canvas matching exactly the Patient perspective UI bounds */}
-            <div className="w-full max-w-[1500px] h-[100vh] md:h-[90vh] md:min-h-[800px] bg-white/80 backdrop-blur-2xl md:rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.06)] flex overflow-hidden border-0 md:border border-white/60 transition-colors duration-300 z-10 relative">
+            <div className="w-full max-w-[1500px] h-screen md:h-[90vh] md:min-h-[800px] bg-white/80 backdrop-blur-2xl md:rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.06)] flex overflow-hidden border-0 md:border border-white/60 transition-colors duration-300 z-10 relative">
                 {/* Left Explicit Profile & Navigation Tab Controller */}
                 <DoctorSidebar activeTab={activeTab} setActiveTab={(t) => { setActiveTab(t); setShowHistoryView(false); }} profile={profile} />
 
@@ -328,7 +328,7 @@ const DoctorDashboard = () => {
                                             </div>
 
                                             {/* Smooth Infinite Animated Welcome Banner */}
-                                            <div className="relative w-full shrink-0 min-h-[150px] rounded-3xl overflow-hidden mb-8 bg-gradient-to-r from-blue-600 via-[#3963F9] to-blue-400 animate-gradient-xy flex items-center shadow-xl shadow-clinic-600/20">
+                                            <div className="relative w-full shrink-0 min-h-[150px] rounded-3xl overflow-hidden mb-8 bg-linear-to-r from-blue-600 via-[#3963F9] to-blue-400 animate-gradient-xy flex items-center shadow-xl shadow-clinic-600/20">
 
                                                 <div className="relative z-10 px-8 py-8 md:px-12 flex flex-col justify-center w-full ">
                                                     <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight drop-shadow-sm">Welcome , Dr. {profile?.firstName + ' ' + profile?.lastName || 'Doctor'}</h2>
@@ -337,7 +337,7 @@ const DoctorDashboard = () => {
 
                                                 {/* Soft Beautiful Geometric Overlay Accents Mapping the Background */}
                                                 <div className="absolute right-0 top-0 w-[400px] h-[400px] bg-white/5 rounded-full blur-[20px] -mr-20 -mt-20 pointer-events-none"></div>
-                                                <div className="absolute right-[15%] bottom-[-50%] w-[300px] h-[300px] bg-white/10 rounded-full blur-[40px] pointer-events-none"></div>
+                                                <div className="absolute right-[15%] bottom-[-50%] w-[300px] h-[300px] bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
                                             </div>
 
                                             <StatCards appointments={appointments} historicalTotal={historyAppointments.length}
@@ -348,7 +348,7 @@ const DoctorDashboard = () => {
                                                 <div className="flex-1 w-full ">
                                                     <CurrentPatient appointments={appointments} onStatusChange={handleStatusChange} onFinishConsultation={handleFinishConsultation} />
                                                 </div>
-                                                <div className="w-full lg:w-[400px] flex-shrink-0">
+                                                <div className="w-full lg:w-[400px] shrink-0">
                                                     <TodayAppointments appointments={appointments} />
                                                 </div>
                                             </div>

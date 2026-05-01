@@ -50,7 +50,7 @@ const ProfileView = ({ patientData }) => {
       } else {
         setSaveMessage('Failed to update profile.');
       }
-    } catch (e) {
+    } catch{
       setSaveMessage('Network connection failed.');
     } finally {
       setIsSaving(false);

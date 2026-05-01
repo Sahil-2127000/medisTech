@@ -112,7 +112,7 @@ const LoginForm = ({ onSwitch }) => {
       } else {
         setForgotMessage({ text: data.message, isError: true });
       }
-    } catch (err) {
+    } catch {
       setForgotMessage({ text: 'Network connection failure.', isError: true });
     } finally {
       setLoading(false);
@@ -160,7 +160,7 @@ const LoginForm = ({ onSwitch }) => {
       } else {
         setForgotMessage({ text: data.message, isError: true });
       }
-    } catch (err) {
+    } catch {
       setForgotMessage({ text: 'Server mutation failed.', isError: true });
     } finally {
       setLoading(false);

@@ -16,7 +16,7 @@ const RightPanel = ({ patientData }) => {
         <div className="relative w-24 h-24 mb-3">
           {/* Decorative floating rings */}
           <div className="absolute inset-0 border-[3px] border-blue-100 dark:border-slate-800 rounded-full scale-125"></div>
-          <div className="absolute inset-0 border-[2px] border-[#5265ec] rounded-full scale-110 border-dashed animate-spin-slow"></div>
+          <div className="absolute inset-0 border-2 border-[#5265ec] rounded-full scale-110 border-dashed animate-spin-slow"></div>
           <img src={patientData.avatar} alt="Patient Avatar" className="w-full h-full rounded-full object-cover shadow-lg relative z-10" />
         </div>
         <h2 className="text-xl font-bold sm-text-center dark:text-white">{patientData.name}</h2>

@@ -78,7 +78,7 @@ const AvailabilityConfig = () => {
         body: JSON.stringify({ weeklyConfig, slotDuration, bufferTime, blackoutDates })
       });
       if (response.ok) alert('Availability Successfully Saved!');
-    } catch (err) {
+    } catch {
       alert("Failed to connect to database.");
     } finally {
       setSaving(false);
@@ -109,7 +109,7 @@ const AvailabilityConfig = () => {
             <button 
               onClick={handleSave}
               disabled={saving}
-              className={`bg-white text-clinic-600 px-10 py-5 rounded-[2rem] font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95 ${saving ? 'opacity-50' : 'hover:bg-blue-50 hover:shadow-2xl'}`}
+              className={`bg-white text-clinic-600 px-10 py-5 rounded-4xl font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95 ${saving ? 'opacity-50' : 'hover:bg-blue-50 hover:shadow-2xl'}`}
             >
               {saving ? 'Syncing...' : 'Publish Shifts'}
             </button>
@@ -141,7 +141,7 @@ const AvailabilityConfig = () => {
             </div>
 
             {weeklyConfig.map((dayConfig, dIndex) => (
-              <div key={dayConfig.day} className={`group bg-blue-20 backdrop-blur-xl border-1 border-gray-100 rounded-[2.5rem] p-4 transition-all duration-300 ${dayConfig.isOff ? 'border-gray-100/50 opacity-60 grayscale' : 'border-gray-300 shadow-md shadow-gray-400 hover:scale-[1.01] hover:bg-blue-50 hover:shadow-blue-500/10'}`}>
+              <div key={dayConfig.day} className={`group bg-blue-20 backdrop-blur-xl border border-gray-100 rounded-[2.5rem] p-4 transition-all duration-300 ${dayConfig.isOff ? 'border-gray-100/50 opacity-60 grayscale' : 'border-gray-300 shadow-md shadow-gray-400 hover:scale-[1.01] hover:bg-blue-50 hover:shadow-blue-500/10'}`}>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   
                   {/* Day Toggle Area */}
@@ -228,7 +228,7 @@ const AvailabilityConfig = () => {
 
                 <div className="space-y-3 max-h-[400px] overflow-y-auto no-scrollbar pr-1">
                    {blackoutDates.map((date, i) => (
-                      <div key={i} className="group flex justify-between items-center bg-slate-50 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-rose-200 px-5 py-4 rounded-[1.5rem] transition-all duration-300">
+                      <div key={i} className="group flex justify-between items-center bg-slate-50 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-rose-200 px-5 py-4 rounded-3xl transition-all duration-300">
                          <div className="flex flex-col">
                             <span className="text-xs font-black text-slate-800 tracking-tight">{date}</span>
                             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Medical Exception</span>

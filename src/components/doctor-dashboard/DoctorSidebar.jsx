@@ -25,7 +25,7 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile }) => {
             {/* Doctor Profile Section at Top */}
             <div className="flex flex-col items-center mt-4 mb-10 pb-8 border-b border-gray-100 transition-colors">
                 <div className="relative w-24 h-24 mb-4">
-                    <div className="absolute inset-0 border-[2px] border-clinic-600 rounded-full scale-110 border-dashed animate-spin-slow"></div>
+                    <div className="absolute inset-0 border-2 border-clinic-600 rounded-full scale-110 border-dashed animate-spin-slow"></div>
                     <img src={profile?.photo || `https://placehold.co/150x150/5483B3/ffffff.png?text=${encodeURIComponent((profile?.firstName || 'Dr')[0])}`} alt="Doctor Avatar" className="w-full h-full rounded-full object-cover shadow-sm relative z-10" />
                 </div>
                 <h2 className="text-xl font-bold text-slate-800 text-center transition-colors">Dr. {profile?.firstName || 'Name'} {profile?.lastName || ''}</h2>
@@ -40,7 +40,7 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile }) => {
                         className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all font-semibold ${activeTab === item.id ? (item.id === 'emergency' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-clinic-600 text-white shadow-lg shadow-blue-500/30') : (item.id === 'emergency' ? 'text-red-500 hover:bg-red-50 ' : 'text-gray-500 hover:bg-slate-50/80 hover:text-clinic-600 ')
                             }`}
                     >
-                        <svg className="w-5 h-5 flex-shrink-0" fill={activeTab === item.id ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{item.icon}</svg>
+                        <svg className="w-5 h-5 shrink-0" fill={activeTab === item.id ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{item.icon}</svg>
                         {item.label}
                     </button>
                 ))}
@@ -51,7 +51,7 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile }) => {
             <button onClick={handleLogout}
                 className="flex items-center gap-4 px-4 py-3.5 rounded-2xl text-red-500 font-semibold hover:bg-red-50 transition-colors"
             >
-                <svg className="w-5 h-5 rotate-180 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                <svg className="w-5 h-5 rotate-180 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                 Log Out
             </button>
 

@@ -48,8 +48,8 @@ const ContactSection = ({ contactInfo = {} }) => {
   };
 
   return (
-    <section id="contact" className="w-full max-w-7xl mx-auto px-8 md:px-16 py-24">
-      <div className="bg-blue-500 rounded-[3rem] overflow-hidden shadow-2xl relative flex flex-col md:flex-row">
+    <section id="contact" className="w-full max-w-7xl mx-auto px-8 md:px-16 min-h-screen flex flex-col items-center justify-center py-12">
+      <div className="w-full bg-blue-500 rounded-[3rem] overflow-hidden shadow-2xl relative flex flex-col md:flex-row">
         
         {/* Background Decorative Shapes */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
