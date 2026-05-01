@@ -1,14 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 
-const ContactSection = () => {
+const ContactSection = ({ contactInfo = {} }) => {
+  const { address = '', phone = '', email = '' } = contactInfo;
   const panelVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { 
       opacity: 1, 
       y: 0, 
       transition: { duration: 1, ease: "easeOut" } 
+    }
+  };
+
+  const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState({ type: '', text: '' });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus({ type: '', text: '' });
+
+    try {
+      const response = await fetch('http://localhost:5001/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        setStatus({ type: 'success', text: 'Your message has been sent successfully! We will contact you soon.' });
+        setFormData({ name: '', phone: '', email: '', message: '' });
+      } else {
+        setStatus({ type: 'error', text: data.message || 'Failed to send message.' });
+      }
+    } catch (err) {
+      setStatus({ type: 'error', text: 'Network error. Please try again later.' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,30 +68,36 @@ const ContactSection = () => {
             We are here to help you feel your best. Reach out to schedule a consultation.
           </p>
           
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-              <input type="text" placeholder="John Doe" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+              <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="John Doe" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
-                <input type="tel" placeholder="+91 000000000" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required placeholder="+91 000000000" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                <input type="email" placeholder="john@gmail.com" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="john@gmail.com" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
               </div>
             </div>
             
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Message / Best Time to Call</label>
-              <textarea placeholder="How can we help you?" rows="3" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors resize-none"></textarea>
+              <textarea name="message" value={formData.message} onChange={handleChange} required placeholder="How can we help you?" rows="3" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors resize-none"></textarea>
             </div>
             
-            <button type="button" className="w-full bg-slate-900 hover:scale-[1.02] hover:bg-slate-800 text-white rounded-xl px-4 py-3.5 font-medium transition-all shadow-lg shadow-slate-900/20">
-              Contact Us
+            {status.text && (
+              <div className={`text-sm font-medium p-3 rounded-lg ${status.type === 'success' ? 'bg-green-100 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                {status.text}
+              </div>
+            )}
+
+            <button type="submit" disabled={loading} className="w-full bg-slate-900 hover:scale-[1.02] hover:bg-slate-800 text-white rounded-xl px-4 py-3.5 font-medium transition-all shadow-lg shadow-slate-900/20 disabled:opacity-70 disabled:hover:scale-100">
+              {loading ? 'Sending...' : 'Contact Us'}
             </button>
           </form>
         </motion.div>
@@ -77,7 +118,7 @@ const ContactSection = () => {
               <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center shrink-0">📍</div>
               <div>
                 <p className="text-blue-100 text-md font-medium">Clinic Address</p>
-                <p className="text-lg">123, Sarabha Nagar,<br/>Ludhiana, Punjab, 141001</p>
+                <p className="text-lg whitespace-pre-wrap">{address}</p>
               </div>
             </div>
             
@@ -89,7 +130,7 @@ const ContactSection = () => {
               </div>
               <div>
                 <p className="text-blue-100 text-md font-medium">Phone Number</p>
-                <p className="text-lg">+91 987654321</p>
+                <p className="text-lg">{phone}</p>
               </div>
             </div>
             
@@ -103,7 +144,7 @@ const ContactSection = () => {
               </div>
               <div>
                 <p className="text-blue-100 text-md font-medium">Email Address</p>
-                <p className="text-lg">mvsharmaclinic@gmail.com</p>
+                <p className="text-lg">{email}</p>
               </div>
             </div>
             

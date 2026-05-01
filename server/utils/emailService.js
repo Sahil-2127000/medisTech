@@ -17,7 +17,7 @@ const sendEmail = async (to, subject, html) => {
   }
   const transporter = createTransporter();
   await transporter.sendMail({
-    from: `"Clinic@Flow System" <${process.env.SMTP_USER}>`,
+    from: `"MedisTech" <${process.env.SMTP_USER}>`,
     to,
     subject,
     html,

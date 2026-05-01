@@ -146,7 +146,7 @@ exports.bookAppointment = async (req, res) => {
        const pName = capitalizeNames(populatedAppt.patientId.fullName);
        const dName = capitalizeNames(populatedAppt.doctorId.fullName);
        
-       const subject = "Appointment Request Received - Clinic@Flow";
+       const subject = "Appointment Request Received - MedisTech";
        const targetName = populatedAppt.patientName || pName;
        
        const html = `<h2>Hello ${pName},</h2>
@@ -264,17 +264,17 @@ exports.updateStatus = async (req, res) => {
        let html = "";
        
        if (status === 'approved') {
-          subject = "Appointment Accepted - Clinic@Flow";
+          subject = "Appointment Accepted - MedisTech";
           html = `<h2>Hello ${pName},</h2>
                   <p>The appointment for <strong>${targetName}</strong> with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Accepted</strong>.</p>
                   <p>We look forward to seeing you!</p>`;
        } else if (status === 'rejected') {
-          subject = "Appointment Update - Clinic@Flow";
+          subject = "Appointment Update - MedisTech";
           html = `<h2>Hello ${pName},</h2>
                   <p>We regret to inform you that the appointment for <strong>${targetName}</strong> with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Cancelled/Rejected</strong>.</p>
                   <p>Please log in to the dashboard to schedule a different time.</p>`;
        } else if (status === 'completed') {
-          subject = "Consultation Completed - Clinic@Flow";
+          subject = "Consultation Completed - MedisTech";
           html = `<h2>Hello ${pName},</h2>
                   <p>The consultation for <strong>${targetName}</strong> with <strong>Dr. ${dName}</strong> has been marked as <strong>Completed</strong>.</p>
                   <p>You can view the medical records in the patient dashboard.</p>

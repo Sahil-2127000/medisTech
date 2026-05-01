@@ -1,6 +1,7 @@
 import React from 'react';
 
-const Footer = () => {
+const Footer = ({ contactInfo = {} }) => {
+  const { address = '', phone = '', email = '' } = contactInfo;
   return (
     <footer className="w-full bg-white pt-20 pb-8 mt-12 border-t border-slate-100 relative z-10">
       <div className="max-w-7xl mx-auto px-8 md:px-16 grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
@@ -46,7 +47,7 @@ const Footer = () => {
           <ul className="space-y-4 text-sm text-slate-500">
             <li className="flex items-start gap-3">
               <span className="text-blue-600 text-base mt-0.5">📍</span>
-              <span>123, Sarabha Nagar,<br/>Ludhiana, Punjab, 141001</span>
+              <span className="whitespace-pre-wrap">{address}</span>
             </li>
             <li className="flex items-center gap-3">
               <span className="text-blue-600 flex items-center justify-center">
@@ -54,7 +55,7 @@ const Footer = () => {
                   <path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1zM19 12h2a9 9 0 00-9-9v2c3.87 0 7 3.13 7 7zm-4 0h2c0-2.76-2.24-5-5-5v2c1.66 0 3 1.34 3 3z"/>
                 </svg>
               </span>
-              <span className="font-medium text-slate-700">+91 987654321</span>
+              <span className="font-medium text-slate-700">{phone}</span>
             </li>
             <li className="flex items-center gap-3">
               <span className="flex items-center justify-center overflow-hidden">
@@ -64,7 +65,7 @@ const Footer = () => {
                   className="w-4 h-4 lg:w-5 lg:h-5 object-contain drop-shadow-sm"
                 />
               </span>
-              <span>mvsharmaclinic@gmail.com</span>
+              <span>{email}</span>
             </li>
             <li className="flex items-start gap-3 pt-2">
               <span className="text-blue-600 text-base mt-0.5">🕒</span>

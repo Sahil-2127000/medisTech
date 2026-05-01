@@ -12,12 +12,40 @@ import Footer from '../components/landing/Footer';
 const Landing = () => {
   const navigate = useNavigate();
 
+  const [contactInfo, setContactInfo] = React.useState({
+    address: 'Loading...',
+    phone: 'Loading...',
+    email: 'Loading...'
+  });
+
   React.useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem('user') || 'null');
     if (user) {
       navigate(user.role === 'doctor' ? '/doctor/dashboard' : '/patientdashboard');
     }
   }, [navigate]);
+
+  React.useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const res = await fetch('http://localhost:5001/api/auth/doctors');
+        if (res.ok) {
+          const doctors = await res.json();
+          if (doctors && doctors.length > 0) {
+            const doc = doctors[0];
+            setContactInfo({
+              address: doc.clinicAddress || '',
+              phone: doc.phone || '',
+              email: doc.email || ''
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch doctor info", err);
+      }
+    };
+    fetchContactInfo();
+  }, []);
 
   return (
     <div id="home" className="min-h-screen bg-slate-50/50 font-sans text-slate-900 flex flex-col items-center overflow-x-hidden relative selection:bg-blue-200">
@@ -36,8 +64,8 @@ const Landing = () => {
       <ServicesSection />
       <BlogSection />
       <FaqSection />
-      <ContactSection />
-      <Footer />
+      <ContactSection contactInfo={contactInfo} />
+      <Footer contactInfo={contactInfo} />
 
     </div>
   );

@@ -10,6 +10,7 @@ const prescriptionRoutes = require('./routes/prescriptionRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const documentRoutes = require('./routes/documentRoutes');
 const vitalRoutes = require('./routes/vitalRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 const path = require('path');
 
 // Initialize app & connect to Database
@@ -36,10 +37,11 @@ app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/vitals', vitalRoutes);
+app.use('/api/contact', contactRoutes);
 
 // General health check route
 app.get('/', (req, res) => {
-  res.send('Clinic@Flow Backend API is running!');
+  res.send('MedisTech Backend API is running!');
 });
 
 // Start listening
@@ -66,3 +68,4 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 });
+// Trigger restart

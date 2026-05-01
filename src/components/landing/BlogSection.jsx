@@ -35,40 +35,7 @@ const BlogSection = () => {
     };
   }, []);
 
-  const staticPosts = [
-    {
-      title: "5 Simple Daily Habits to Boost Your Immune System Naturally",
-      image: "https://assets.clevelandclinic.org/transform/LargeFeatureImage/de3bda53-59e5-4342-a45c-e64c72c1207d/foods-with-vitamins-1182014891",
-      category: "Wellness",
-      date: "Oct 15, 2025"
-    },
-    {
-      title: "Understanding Your Blood Pressure: What the Numbers Actually Mean",
-      image: "https://static.toiimg.com/thumb/msid-123432364,width-1280,height-720,resizemode-4/123432364.jpg",
-      category: "Health Tips",
-      date: "Nov 12, 2025"
-    },
-    {
-      title: "Why You Shouldn't Skip Your Annual Medical Check-up",
-      image: "https://cdn.openviowebsites.com/source/sites/5835a1c0-9e3c-4d5e-b068-5c4d69b63968/images/26a01d7d-6cbd-422a-bfe5-dc7ddaa0be2c_preventive-health-checkup.png",
-      category: "Preventive Care",
-      date: "Dec 05, 2025"
-    },
-    {
-      title: "How Sleep Affects Your Long-term Health and Wellness",
-      image: "https://mcpress.mayoclinic.org/uploads/2024/01/SleepandLongevityxGettyImages-1356524708-1120x640.jpg",
-      category: "Wellness",
-      date: "Feb 22, 2026"
-    },
-    {
-      title: "Mental Health Awareness: Simple Strategies for Stress Management",
-      image: "https://www.sc.edu/study/colleges_schools/nursing/images/stressawareness_banner825.jpg",
-      category: "Mental Health",
-      date: "March 10, 2026"
-    }
-  ];
-
-  const allPosts = [...dbPosts, ...staticPosts];
+  const allPosts = dbPosts;
 
   const nextSlide = () => {
     const visibleItems = window.innerWidth < 768 ? 1 : 3;
@@ -112,7 +79,7 @@ const BlogSection = () => {
         {/* Navigation Arrows */}
         <button
           onClick={prevSlide}
-          className="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white border border-slate-100 shadow-lg rounded-full flex items-center justify-center text-slate-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300 opacity-0 group-hover/slider:opacity-100"
+          className="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white border border-slate-100 shadow-lg rounded-full flex items-center justify-center text-slate-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300 opacity-100"
           aria-label="Previous slide"
         >
           <span className="text-xl">←</span>
@@ -120,7 +87,7 @@ const BlogSection = () => {
 
         <button
           onClick={nextSlide}
-          className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white border border-slate-100 shadow-lg rounded-full flex items-center justify-center text-slate-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300 opacity-0 group-hover/slider:opacity-100"
+          className="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white border border-slate-100 shadow-lg rounded-full flex items-center justify-center text-slate-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300 opacity-100"
           aria-label="Next slide"
         >
           <span className="text-xl">→</span>

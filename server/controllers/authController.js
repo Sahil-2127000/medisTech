@@ -18,7 +18,7 @@ exports.sendOtp = async (req, res) => {
     const existingDoctor = await Doctor.findOne({ email });
     
     if (existingPatient || existingDoctor) {
-      return res.status(400).json({ message: 'User already exists with this email across any clinical role. Please Sign In' });
+      return res.status(400).json({ message: 'User already exists with this email. Please Sign In' });
     }
 
     if (phone) {
@@ -31,7 +31,7 @@ exports.sendOtp = async (req, res) => {
     }
   } catch (error) {
     console.error('Database Error:', error);
-    return res.status(500).json({ message: 'Failed to verify email against database ecosystem' });
+    return res.status(500).json({ message: 'Failed to verify email' });
   }
 
   // Generate a random 6-digit OTP
@@ -203,12 +203,12 @@ exports.register = async (req, res) => {
     });
 
     res.status(201).json({
-      message: 'Registered successfully mapped to physical split collections',
+      message: 'Registered successfully',
       user: { id: newlyCreatedEntity._id, fullName: newlyCreatedEntity.fullName, email: newlyCreatedEntity.email, role: actualRole }
     });
   } catch (error) {
     console.error('Registration Error:', error);
-    res.status(500).json({ message: 'Registration failed due to server error routing split DBs' });
+    res.status(500).json({ message: 'Registration failed due to server error' });
   }
 };
 
@@ -224,7 +224,7 @@ exports.login = async (req, res) => {
     }
 
     if (!targetUser) {
-      return res.status(401).json({ message: 'Invalid email structurally absent from all nodes' });
+      return res.status(401).json({ message: 'Invalid email' });
     }
 
     // Cryptographic comparative hash match check
@@ -268,12 +268,12 @@ exports.login = async (req, res) => {
     });
 
     res.status(200).json({
-      message: 'Login dynamically routed and successful',
+      message: 'Login successful',
       user: { id: targetUser._id, fullName: targetUser.fullName, email: targetUser.email, role: targetUser.role }
     });
   } catch (error) {
     console.error('Login Error:', error);
-    res.status(500).json({ message: 'Login natively crashed hunting distinct bases' });
+    res.status(500).json({ message: 'Login crashed: ' + error.message });
   }
 };
 
@@ -281,7 +281,7 @@ exports.verifyLogin2FA = async (req, res) => {
    const { userId, role, otp } = req.body;
    try {
      let targetUser = role === 'doctor' ? await Doctor.findById(userId) : await User.findById(userId);
-     if (!targetUser) return res.status(404).json({ message: 'User not found natively' });
+     if (!targetUser) return res.status(404).json({ message: 'User not found' });
 
      if (targetUser.twoFactorOTP !== otp) {
         return res.status(400).json({ message: 'Invalid OTP' });
@@ -314,7 +314,7 @@ exports.verifyLogin2FA = async (req, res) => {
        user: { id: targetUser._id, fullName: targetUser.fullName, email: targetUser.email, role: targetUser.role }
      });
    } catch (err) {
-     res.status(500).json({ message: 'Failed to verify 2FA login sequence' });
+     res.status(500).json({ message: 'Failed to verify 2FA login' });
    }
 };
 
