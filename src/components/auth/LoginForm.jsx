@@ -339,7 +339,6 @@ const LoginForm = ({ onSwitch }) => {
         type="submit" 
         disabled={loading}
         className="w-full bg-[#3963F9] hover:bg-blue-700 text-white font-medium py-3 rounded-xl mt-4 transition-all shadow-lg shadow-blue-500/30 hover:cursor-pointer disabled:opacity-50"
-        className="w-full bg-[#3963F9] hover:bg-blue-700 text-white font-medium py-3 rounded-xl mt-4 transition-all shadow-lg shadow-blue-500/30 hover:cursor-pointer disabled:opacity-50"
       >
         {loading ? 'Processing...' : 'Sign In'}
       </button>
@@ -348,19 +347,11 @@ const LoginForm = ({ onSwitch }) => {
         <span className="text-sm text-gray-500 font-medium">
           Don't have an account?{' '}
         </span>
-      <div className="text-center pt-4">
-        <span className="text-sm text-gray-500 font-medium">
-          Don't have an account?{' '}
-        </span>
         <button 
           type="button"
           onClick={onSwitch}
           className="text-sm text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors"
-    
-          className="text-sm text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors"
-    
         >
-          Create an account
           Create an account
         </button>
       </div>
