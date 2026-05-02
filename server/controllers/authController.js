@@ -375,16 +375,33 @@ exports.forgotPasswordReset = async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired OTP.' });
     }
 
-    delete otps[userEmail];
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    let targetUser;
+    if (req.user.role === 'doctor') {
+      targetUser = await Doctor.findById(req.user.id);
+    } else {
+      targetUser = await User.findById(req.user.id);
+    }
+
+    if (!targetUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Security: Prevent reusing the same password
+    const isSamePassword = await bcrypt.compare(newPassword, targetUser.password);
+    if (isSamePassword) {
+      return res.status(400).json({ message: 'New password cannot be the same as the old password' });
+    }
 
     if (req.user.role === 'doctor') {
       await Doctor.findByIdAndUpdate(req.user.id, { password: hashedPassword, lastPasswordChange: new Date() });
     } else {
       await User.findByIdAndUpdate(req.user.id, { password: hashedPassword, lastPasswordChange: new Date() });
     }
+
+    delete otps[userEmail];
 
     res.status(200).json({ message: 'Password reset successfully!' });
   } catch (err) {
@@ -435,10 +452,10 @@ exports.publicForgotPasswordRequestOtp = async (req, res) => {
     `;
 
     await sendEmail(email, 'Medistech Recovery Code', html);
-    res.status(200).json({ message: 'Recovery code dispatched to your inbox.' });
+    res.status(200).json({ message: 'Recovery code sent to inbox.' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Failed to transmit recovery code.' });
+    res.status(500).json({ message: 'Failed to send recovery code.' });
   }
 };
 
@@ -455,20 +472,33 @@ exports.publicForgotPasswordReset = async (req, res) => {
       return res.status(400).json({ message: 'The verification code provided is invalid or has expired.' });
     }
 
-    delete otps[email];
+    // Identify the user explicitly to check previous password
+    let targetUser = await User.findOne({ email });
+    if (!targetUser) {
+      targetUser = await Doctor.findOne({ email });
+    }
+
+    if (!targetUser) {
+      return res.status(404).json({ message: 'Failed to locate user during password mutation.' });
+    }
+
+    // Security check: Prevent reusing the old password
+    const isSamePassword = await bcrypt.compare(newPassword, targetUser.password);
+    if (isSamePassword) {
+      return res.status(400).json({ message: 'New password cannot be the same as the old password' });
+    }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // Try to update in both collections sequentially if needed, or check role
-    let updated = await User.findOneAndUpdate({ email }, { password: hashedPassword, lastPasswordChange: new Date() });
-    if (!updated) {
-      updated = await Doctor.findOneAndUpdate({ email }, { password: hashedPassword, lastPasswordChange: new Date() });
+    // Update the identified user
+    if (targetUser.role === 'doctor') {
+      await Doctor.findByIdAndUpdate(targetUser._id, { password: hashedPassword, lastPasswordChange: new Date() });
+    } else {
+      await User.findByIdAndUpdate(targetUser._id, { password: hashedPassword, lastPasswordChange: new Date() });
     }
 
-    if (!updated) {
-      return res.status(404).json({ message: 'Failed to locate user during password mutation.' });
-    }
+    delete otps[email];
 
     res.status(200).json({ message: 'Password updated successfully! You can now log in.' });
   } catch (err) {
