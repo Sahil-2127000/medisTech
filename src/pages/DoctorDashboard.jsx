@@ -96,7 +96,9 @@ const DoctorDashboard = () => {
                     firstName: data.fullName?.split(' ')[0] || '',
                     lastName: data.fullName?.split(' ').slice(1).join(' ') || '',
                     specialization: data.specialization || '',
-                    photo: data.photo || ''
+                    photo: data.photo || '',
+                    phone: data.phone || '',
+                    clinicAddress: data.clinicAddress || ''
                 });
             }
         } catch{
@@ -238,7 +240,7 @@ const DoctorDashboard = () => {
                 name: med.name,
                 dosage: med.dosage,
                 frequency: `${(med.timing || []).join(' - ')} (${med.food || 'After Food'})`,
-                duration: med.duration || "As Directed"
+                duration: med.alternativeDays ? `${med.duration || "As Directed"} (Alt. Days)` : (med.duration || "As Directed")
             }));
 
             await fetch('http://localhost:5001/api/prescriptions/issue', {
@@ -248,7 +250,7 @@ const DoctorDashboard = () => {
                 body: JSON.stringify({
                     appointmentId: id,
                     patientId: patientId, // Removed hardcoded fallback
-                    diagnosis: "General evaluation completed.",
+                    diagnosis: prescriptionData.diagnosis || "General evaluation completed.",
                     medicines: formattedMedicines,
                     pdfBase64: prescriptionData.pdfBase64,
                     clinicalNotes: "Issued securely via Advanced Prescription Builder natively."
@@ -370,6 +372,7 @@ const DoctorDashboard = () => {
                                                         onStatusChange={handleStatusChange} 
                                                         onSkip={handleSkipAppointment}
                                                         onFinishConsultation={handleFinishConsultation} 
+                                                        doctorProfile={profile}
                                                     />
                                                 </div>
                                                 <div className="w-full lg:w-[400px] shrink-0">

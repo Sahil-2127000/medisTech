@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PrescriptionBuilder from './PrescriptionBuilder';
 
 
-const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, onSkip }) => {
+const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, onSkip, doctorProfile }) => {
  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
  const [medicine, setMedicine] = useState('');
  const [timing, setTiming] = useState('');
@@ -18,7 +18,7 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
  .filter(app => app.date === todayFormatted && app.status === 'approved')
  .sort((a, b) => a.time.localeCompare(b.time))[0];
 
-  const handlePrescriptionSave = (medicinesArray, pdfBase64) => {
+  const handlePrescriptionSave = (medicinesArray, pdfBase64, diagnosis) => {
     if (!activePatient) return;
     // Explicitly update status to completed to clear it from in_progress
     onStatusChange(activePatient.id, 'completed');
@@ -29,42 +29,43 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
     onFinishConsultation(activePatient.id, correctPatientId, {
       medicines: medicinesArray,
       pdfBase64: pdfBase64,
-      date: todayFormatted
+      date: todayFormatted,
+      diagnosis: diagnosis
     });
 
  setShowPrescriptionModal(false);
  };
 
- const renderPatientCard = (patient) => {
- if (!patient) return null;
- const displayName = patient.name || (patient.patient && patient.patient.name) || "Walk-In";
- const displayChar = typeof displayName === 'string' && displayName.length > 0 ? displayName.charAt(0).toUpperCase() : "W";
+  const renderPatientCard = (patient) => {
+  if (!patient) return null;
+  const displayName = patient.name || (patient.patient && patient.patient.name) || "Walk-In";
+  const displayChar = typeof displayName === 'string' && displayName.length > 0 ? displayName.charAt(0).toUpperCase() : "W";
 
- return (
- <div className=" rounded-3xl p-5 shadow-xl shadow-blue-500/5 flex flex-col items-center text-center border border-gray-50 relative overflow-hidden transition-colors duration-300 w-full mb-4 shrink-0 px-8 ">
- <div className="absolute w-24 h-24 bg-blue-500 rounded-full opacity-10 -right-5 -top-5 blur-xl "></div>
- <h2 className="text-xl font-black text-slate-800 mb-1 transition-colors">{displayName}</h2>
- <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">ID: {patient.patientUid || "---"}</div>
- <div className="text-xs font-bold text-clinic-600 bg-blue-50 px-3 py-1 rounded-full inline-block tracking-wider transition-colors">
- {patient.age || "--"} yrs • {patient.gender || "Unknown"}
- </div>
- <div className="w-full mt-4 bg-slate-50 rounded-2xl p-3 flex justify-between items-center text-left transition-colors">
- <div>
- <div className="text-[10px] uppercase font-bold text-gray-400 tracking-wider transition-colors">Scheduled Time</div>
- <div className="font-bold text-slate-700 transition-colors">{patient.time}</div>
- </div>
- <svg className="w-6 h-6 text-clinic-600/40 " fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
- </div>
- </div>
- );
- };
+  return (
+  <div className=" rounded-3xl p-4 shadow-xl shadow-blue-500/5 flex flex-col items-center text-center border border-gray-50 relative overflow-hidden transition-colors duration-300 w-full mb-2 shrink-0 px-6 ">
+  <div className="absolute w-24 h-24 bg-blue-500 rounded-full opacity-10 -right-5 -top-5 blur-xl "></div>
+  <h2 className="text-xl font-black text-slate-800 mb-1 transition-colors">{displayName}</h2>
+  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">ID: {patient.patientUid || "---"}</div>
+  <div className="text-xs font-bold text-clinic-600 bg-blue-50 px-3 py-1 rounded-full inline-block tracking-wider transition-colors">
+  {patient.age || "--"} yrs • {patient.gender || "Unknown"}
+  </div>
+  <div className="w-full mt-2 bg-slate-50 rounded-2xl p-3 flex justify-between items-center text-left transition-colors">
+  <div>
+  <div className="text-[10px] uppercase font-bold text-gray-400 tracking-wider transition-colors">Scheduled Time</div>
+  <div className="font-bold text-slate-700 transition-colors">{patient.time}</div>
+  </div>
+  <svg className="w-6 h-6 text-clinic-600/40 " fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+  </div>
+  </div>
+  );
+  };
 
  return (
  <div className="w-full flex flex-col md:flex-row gap-6 bg-transparent transition-colors duration-300">
  {/* Left Part: Next Patient */}
-    <div className="flex-1 p-6 bg-white border border-gray-100 rounded-3xl shadow-xl flex flex-col relative transition-colors h-[340px] overflow-y-auto no-scrollbar shadow-clinic-600/20 overflow-hidden ">
+    <div className="flex-1 p-6 bg-white border border-gray-100 rounded-3xl shadow-xl flex flex-col relative transition-colors h-[340px] shadow-clinic-600/20 overflow-hidden ">
       
- <h3 className="text-lg font-bold transition-colors mb-4 text-slate-700 shrink-0">Next Upcoming Patient</h3>
+ <h3 className="text-lg font-bold transition-colors mb-3 text-slate-700 shrink-0">Next Upcoming Patient</h3>
  {nextPatient ? (
  <>
  {renderPatientCard(nextPatient)}
@@ -92,9 +93,9 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
  </div>
 
  {/* Right Part: Active Consultation */}
- <div className="flex-1 p-6 bg-white border border-gray-100 rounded-3xl flex flex-col items-center justify-start relative transition-colors h-[340px] overflow-y-auto no-scrollbar shadow-xl shadow-clinic-600/20 overflow-hidden">
- <div className="flex justify-between items-center w-full mb-4 shrink-0 ">
- <h3 className="text-xl font-bold transition-colors text-slate-700">Active Consultation</h3>
+ <div className="flex-1 p-6 bg-white border border-gray-100 rounded-3xl flex flex-col items-center justify-start relative transition-colors h-[340px] shadow-xl shadow-clinic-600/20 overflow-hidden">
+ <div className="flex justify-between items-center w-full mb-3 shrink-0 ">
+ <h3 className="text-lg font-bold transition-colors text-slate-700">Active Consultation</h3>
  {activePatient && <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.6)]"></div>}
  </div>
 
@@ -134,6 +135,7 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
  activePatient={activePatient}
  onCancel={() => setShowPrescriptionModal(false)}
  onSave={handlePrescriptionSave}
+ doctorProfile={doctorProfile}
  />
  )}
 

@@ -20,6 +20,15 @@ const AlertBell = ({ appointments, onStatusChange }) => {
  }, []);
 
  return (
+ <>
+ {/* Full Screen Blur Overlay when Open */}
+ {isOpen && (
+ <div 
+ className="fixed inset-0 bg-slate-900/10 backdrop-blur-sm z-40 animate-fade-in"
+ onClick={() => setIsOpen(false)}
+ />
+ )}
+
  <div className="relative z-50" ref={dropdownRef}>
  {/* Icon Trigger Bubble */}
  <button onClick={() => setIsOpen(!isOpen)}
@@ -82,6 +91,7 @@ const AlertBell = ({ appointments, onStatusChange }) => {
  </div>
  )}
  </div>
+ </>
  );
 };
 
