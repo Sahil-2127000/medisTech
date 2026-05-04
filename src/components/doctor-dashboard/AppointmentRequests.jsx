@@ -8,7 +8,7 @@ const AppointmentRequests = ({
   searchQuery, 
   setSearchQuery, 
   statusFilter, 
-  setStatusFilter 
+  setStatusFilter
 }) => {
   const [activeSubTab, setActiveSubTab] = useState('requests');
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -20,7 +20,7 @@ const AppointmentRequests = ({
       setSearchQuery(debouncedSearch);
     }, 500);
     return () => clearTimeout(timer);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, statusFilter]);
 
   const handleStatusFilterChange = (status) => {
     setStatusFilter(status);
@@ -172,13 +172,13 @@ const AppointmentRequests = ({
               )}
             </div>
 
-            <div className="flex items-center gap-3 self-end md:self-auto overflow-x-auto no-scrollbar pb-2 md:pb-0">
-               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">Filter Status:</span>
+            <div className="flex items-center gap-1 self-end md:self-auto overflow-x-auto no-scrollbar pb-2 md:pb-0">
+               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">Filter:</span>
                {['', 'approved', 'completed', 'rejected', 'pending'].map(st => (
                  <button 
                    key={st}
                    onClick={() => handleStatusFilterChange(st)}
-                   className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${statusFilter === st ? 'bg-clinic-600 text-white shadow-lg shadow-blue-500/20' : 'bg-white text-slate-400 border border-gray-100 hover:text-slate-600 hover:border-slate-200'}`}
+                   className={`px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${statusFilter === st ? 'bg-clinic-600 text-white shadow-lg shadow-blue-500/20' : 'bg-white text-slate-400 border border-gray-100 hover:text-slate-600 hover:border-slate-200'}`}
                  >
                    {st === '' ? 'All Record' : st}
                  </button>

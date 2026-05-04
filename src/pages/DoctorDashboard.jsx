@@ -50,6 +50,7 @@ const DoctorDashboard = () => {
     const historyPageRef = useRef(1);
     const historySearchRef = useRef('');
     const historyStatusRef = useRef('');
+    const historySortRef = useRef('latest');
 
     useEffect(() => {
         historyPageRef.current = historyPageInfo.currentPage;
@@ -62,6 +63,7 @@ const DoctorDashboard = () => {
     useEffect(() => {
         historyStatusRef.current = historyStatus;
     }, [historyStatus]);
+    
     const [profile, setProfile] = useState({});
     const [showHistoryView, setShowHistoryView] = useState(false); // New Interactive Gateway
     const [showOfflineBooking, setShowOfflineBooking] = useState(false);
@@ -176,13 +178,7 @@ const DoctorDashboard = () => {
 
     const loadDoctorHistory = async (page = 1, search = '', status = '') => {
         try {
-            const queryParams = new URLSearchParams({
-                page: page.toString(),
-                limit: '10',
-                search: search,
-                status: status
-            });
-            const res = await fetch(`http://localhost:5001/api/appointments/doctor/history?${queryParams}`, { credentials: 'include' });
+            const res = await fetch(`http://localhost:5001/api/appointments/doctor/history?page=${page}&search=${search}&status=${status}`, { credentials: 'include' });
             if (res.ok) {
                 const result = await res.json();
                 const mapped = result.data.map(app => ({

@@ -223,6 +223,8 @@ exports.getDoctorHistory = async (req, res) => {
      const totalCount = await Appointment.countDocuments(query);
      const totalPages = Math.ceil(totalCount / limit);
 
+     
+
      const history = await Appointment.find(query)
                                       .populate('patientId', 'fullName age gender patientUid')
                                       .sort({ date: -1, time: -1 })
