@@ -1,5 +1,8 @@
 const Appointment = require('../models/Appointment');
 const Availability = require('../models/Availability');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const { sendEmail } = require('../utils/emailService');
 
 const capitalizeNames = (name) => {
@@ -485,4 +488,124 @@ exports.skipAppointment = async (req, res) => {
   }
 };
 
+// Offline Booking explicitly for doctors to register walk-ins natively
+exports.offlineBook = async (req, res) => {
+  try {
+    const { fullName, email, age, gender, phone, date, time, symptoms } = req.body;
+    const doctorId = req.user.id;
+
+    if (!fullName || !email || !date || !time) {
+      return res.status(400).json({ message: 'Missing critical patient or schedule data.' });
+    }
+
+    // Attempt to locate existing patient by email or phone
+    let patient = await User.findOne({ email });
+    if (!patient && phone) {
+      patient = await User.findOne({ phone });
+    }
+
+    let isNewPatient = false;
+    let generatedPassword = null;
+
+    if (!patient) {
+      // Create new patient
+      isNewPatient = true;
+      generatedPassword = crypto.randomBytes(4).toString('hex'); // 8 characters
+      
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(generatedPassword, salt);
+
+      // Generate Unique Patient UID strictly natively
+      let patientUid;
+      let isUnique = false;
+      while (!isUnique) {
+        const digits = Math.floor(100000 + Math.random() * 900000);
+        patientUid = `P${digits}`;
+        const existingUid = await User.findOne({ patientUid });
+        if (!existingUid) isUnique = true;
+      }
+
+      patient = new User({ 
+        fullName, 
+        email, 
+        password: hashedPassword, 
+        role: 'patient', 
+        age, 
+        gender, 
+        phone, 
+        patientUid 
+      });
+      await patient.save();
+    }
+
+    // Validate if slot is already booked (double check)
+    const existingAppt = await Appointment.findOne({ doctorId, date, time, status: { $in: ['pending', 'approved', 'in_progress'] } });
+    if (existingAppt) {
+      return res.status(400).json({ message: 'Slot already booked. Please refresh and select another.' });
+    }
+
+    // Calculate Token Number
+    const result = await getSlotsList(doctorId, date);
+    if (result.error) return res.status(400).json({ message: result.error });
+    let tokenNumber = result.slots.indexOf(time) + 1;
+    if (tokenNumber === 0) {
+      const activeApptsCount = await Appointment.countDocuments({ doctorId, date, status: { $in: ['pending', 'approved', 'in_progress'] } });
+      tokenNumber = activeApptsCount + 1;
+    }
+
+    // Create the Appointment explicitly bypassing 'pending' state since the doctor directly books it
+    const newAppointment = new Appointment({
+      patientId: patient._id,
+      doctorId,
+      date,
+      time,
+      originalTime: time,
+      symptoms,
+      status: 'approved',
+      tokenNumber,
+      estimatedWaitTime: 15
+    });
+
+    await newAppointment.save();
+
+    // Trigger Socket.io update natively
+    const io = req.app.get('socketio');
+    if (io) {
+      io.emit('queueUpdated', { doctorId });
+    }
+
+    // Send Email to Patient
+    if (patient.email && patient.emailNotifications !== false) {
+      const pName = capitalizeNames(patient.fullName);
+      let html = `<h2>Hello ${pName},</h2>
+                  <p>Your offline appointment has been successfully scheduled!</p>
+                  <p><strong>Date:</strong> ${date}<br>
+                  <strong>Time:</strong> ${time}<br>
+                  <strong>Token Number:</strong> ${tokenNumber}</p>`;
+
+      if (isNewPatient) {
+        html += `<div style="margin-top: 20px; padding: 15px; border-radius: 8px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <h3 style="color: #3b82f6; margin-top: 0;">Your Account Details</h3>
+                    <p>We have created an account for you so you can track your queue live!</p>
+                    <p><strong>Email:</strong> ${patient.email}<br>
+                    <strong>Password:</strong> <span style="font-family: monospace; font-weight: bold; font-size: 16px; background: #e2e8f0; padding: 4px 8px; border-radius: 4px;">${generatedPassword}</span></p>
+                    <p><em>Please login and change your password as soon as possible.</em></p>
+                 </div>`;
+      }
+      
+      html += `<p>Thank you for choosing our clinic.</p>`;
+      
+      sendEmail(patient.email, "Appointment Scheduled - Clinic@Flow", html).catch(e => console.error("Email fail:", e));
+    }
+
+    res.status(201).json({ 
+      message: isNewPatient ? 'Patient registered and appointment booked!' : 'Appointment booked for existing patient.', 
+      appointment: newAppointment 
+    });
+
+  } catch (error) {
+    console.error('Offline Booking Error:', error);
+    res.status(500).json({ message: 'Server error processing offline booking.' });
+  }
+};
 
