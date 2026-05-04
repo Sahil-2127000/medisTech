@@ -105,25 +105,39 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
           <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
 
-        <h2 className="text-3xl font-extrabold text-slate-800 mb-2">Offline Booking</h2>
-        <p className="text-sm font-semibold text-gray-400 mb-8">Register walk-in patients and secure their slots directly into the physical grid.</p>
+        <h2 className="text-3xl font-extrabold text-slate-800 mb-2">Walk-in Patient Registration </h2>
+        <p className="text-sm font-semibold text-gray-400 mb-8">Register walk-in patients</p>
 
         <form onSubmit={handleBook} className="space-y-6 relative z-10">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col space-y-1">
               <label className="block text-[10px] font-black text-clinic-600 tracking-widest uppercase">Patient Full Name</label>
-              <input type="text" name="fullName" required value={formData.fullName} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="John Doe" />
+              <input type="text" name="fullName" required value={formData.fullName} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="Patient name" />
             </div>
 
             <div className="flex flex-col space-y-1">
               <label className="block text-[10px] font-black text-clinic-600 tracking-widest uppercase">Email Address</label>
-              <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="patient@mail.com" />
+              <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="patient@gmail.com" />
             </div>
 
             <div className="flex flex-col space-y-1">
               <label className="block text-[10px] font-black text-clinic-600 tracking-widest uppercase">Phone Number</label>
-              <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="+1234567890" />
+              <div className="flex items-center w-full bg-slate-50 border border-gray-100 rounded-xl focus-within:border-clinic-400 focus-within:ring-2 focus-within:ring-clinic-200 transition-all overflow-hidden">
+                <span className="pl-4 pr-3 py-3 text-sm font-bold text-gray-500 bg-gray-100/50 border-r border-gray-100 select-none">+91</span>
+                <input 
+                  type="tel" 
+                  name="phone" 
+                  maxLength="10"
+                  value={formData.phone ? formData.phone.replace('+91 ', '').replace('+91', '') : ''} 
+                  onChange={(e) => {
+                    const numericVal = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setFormData({ ...formData, phone: numericVal ? `+91 ${numericVal}` : '' });
+                  }} 
+                  className="w-full bg-transparent px-4 py-3 text-sm font-bold focus:outline-none" 
+                  placeholder="1234567890" 
+                />
+              </div>
             </div>
 
             <div className="flex gap-4">
