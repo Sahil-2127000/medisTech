@@ -10,6 +10,7 @@ const { Option } = Select;
 const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile }) => {
   const [medicines, setMedicines] = useState([]);
   const [diagnosis, setDiagnosis] = useState('General evaluation completed.');
+  const [clinicalNotes, setClinicalNotes] = useState('');
   const [form] = Form.useForm();
 
   const handleAddMedicine = (values) => {
@@ -36,28 +37,15 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
   };
 
   const handleFinalSubmit = async () => {
-
-    if (medicines.length === 0) {
-      message.warning("Please add at least one medicine before finalizing the prescription.");
-      return;
-    }
-
     if (!diagnosis || diagnosis.trim() === '') {
       message.warning("Please enter the prescription diagnosis before saving.");
       return;
     }
 
-    // Optimization: We no longer save the heavy PDF Base64 string to the database.
-    // Instead, we just pass the medicine data.
-    onSave && onSave(medicines, "", diagnosis);
+    onSave && onSave(medicines, "", diagnosis, clinicalNotes);
   };
 
   const handlePrintPrescription = () => {
-    if (medicines.length === 0) {
-      message.warning("Please add medicine before printing.");
-      return;
-    }
-
     const element = document.getElementById('prescription-preview');
     if (!element) return;
 
@@ -168,15 +156,27 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
                 </Form.Item>
               </div>
 
-              <div className="mt-6 border-t border-gray-100 pt-4 w-full">
-                <div className="text-sm font-semibold text-slate-700 mb-2">Prescription Diagnosis</div>
-                <Input.TextArea
-                  rows={2}
-                  value={diagnosis}
-                  onChange={(e) => setDiagnosis(e.target.value)}
-                  placeholder="Enter overall patient diagnosis..."
-                  className="rounded-xl p-3 border-gray-200"
-                />
+              <div className="mt-6 border-t border-gray-100 pt-4 w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm font-semibold text-slate-700 mb-2">Prescription Diagnosis</div>
+                  <Input.TextArea
+                    rows={3}
+                    value={diagnosis}
+                    onChange={(e) => setDiagnosis(e.target.value)}
+                    placeholder="Enter overall patient diagnosis..."
+                    className="rounded-xl p-3 border-gray-200"
+                  />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-slate-700 mb-2">Clinical Notes / Remarks</div>
+                  <Input.TextArea
+                    rows={3}
+                    value={clinicalNotes}
+                    onChange={(e) => setClinicalNotes(e.target.value)}
+                    placeholder="Extra clinical advice, dietary notes, etc."
+                    className="rounded-xl p-3 border-gray-200"
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end mt-6">
@@ -276,9 +276,13 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
                 <span className="text-gray-400 font-semibold">Age/Gender :</span>
                 <span className="flex-1 border-b border-gray-100 font-semibold text-slate-800 pb-0.5">{patientAge} yrs • {activePatient?.gender || '---'}</span>
               </div>
-              <div className="flex gap-2 items-end col-span-2">
+              <div className="flex gap-2 items-end">
                 <span className="text-gray-400 font-semibold whitespace-nowrap">Diagnosis :</span>
                 <span className="flex-1 border-b border-gray-100 font-medium text-slate-800 pb-0.5 italic text-xs">{diagnosis}</span>
+              </div>
+              <div className="flex gap-2 items-end ml-4">
+                <span className="text-gray-400 font-semibold whitespace-nowrap">Notes :</span>
+                <span className="flex-1 border-b border-gray-100 font-medium text-slate-800 pb-0.5 italic text-xs">{clinicalNotes || "No extra notes."}</span>
               </div>
             </div>
           </div>
@@ -301,7 +305,8 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
 
             {medicines.length === 0 ? (
               <div className="mt-10 px-8 py-16 border-2 border-dashed border-gray-100 rounded-[2.5rem] text-center text-gray-300 w-full bg-slate-50/20">
-                Medicinal records will appear here.<br />Use the builder to add guidance.
+                <h4 className="text-xl font-bold text-gray-400 mb-2 uppercase tracking-widest">No medicine prescribed</h4>
+                <p className="text-sm">Refer to clinical notes for further instructions.</p>
               </div>
             ) : (
               <div className="flex flex-col">

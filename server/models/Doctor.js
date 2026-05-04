@@ -30,7 +30,8 @@ const DoctorSchema = new mongoose.Schema({
   is2FAEnabled: { type: Boolean, default: false },
   twoFactorPhone: { type: String, default: '' },
   twoFactorOTP: { type: String, default: '' },
-  twoFactorOTPExpires: { type: Date }
+  twoFactorOTPExpires: { type: Date },
+  isEmergencyActive: { type: Boolean, default: false }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Doctor', DoctorSchema);

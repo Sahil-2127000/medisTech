@@ -18,7 +18,7 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
  .filter(app => app.date === todayFormatted && app.status === 'approved')
  .sort((a, b) => a.time.localeCompare(b.time))[0];
 
-  const handlePrescriptionSave = (medicinesArray, pdfBase64, diagnosis) => {
+  const handlePrescriptionSave = (medicinesArray, pdfBase64, diagnosis, clinicalNotes) => {
     if (!activePatient) return;
     // Explicitly update status to completed to clear it from in_progress
     onStatusChange(activePatient.id, 'completed');
@@ -30,7 +30,8 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
       medicines: medicinesArray,
       pdfBase64: pdfBase64,
       date: todayFormatted,
-      diagnosis: diagnosis
+      diagnosis: diagnosis,
+      clinicalNotes: clinicalNotes || "No extra clinical notes provided."
     });
 
  setShowPrescriptionModal(false);

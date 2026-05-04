@@ -1,6 +1,7 @@
 const Appointment = require('../models/Appointment');
 const Availability = require('../models/Availability');
 const User = require('../models/User');
+const Doctor = require('../models/Doctor');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { sendEmail } = require('../utils/emailService');
@@ -299,17 +300,77 @@ exports.updateStatus = async (req, res) => {
 };
 
 // The complex Emergency Resolve MongoDB Array Mutation!
-exports.resolveEmergencyShift = async (req, res) => {
+exports.resolveAndBookEmergency = async (req, res) => {
   try {
-    const { elapsedMinutes, date } = req.body; // e.g., 45, '2026-01-28'
+    const { elapsedMinutes, date, fullName, email, age, gender, phone, symptoms } = req.body;
+    const doctorId = req.user.id;
 
+    // 1. Find or create the patient
+    let patient = await User.findOne({ email });
+    if (!patient && phone) {
+      patient = await User.findOne({ phone });
+    }
+
+    let isNewPatient = false;
+    let generatedPassword = null;
+
+    if (!patient) {
+      isNewPatient = true;
+      generatedPassword = crypto.randomBytes(4).toString('hex'); // 8 characters
+      
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(generatedPassword, salt);
+
+      let patientUid;
+      let isUnique = false;
+      while (!isUnique) {
+        const digits = Math.floor(100000 + Math.random() * 900000);
+        patientUid = `P${digits}`;
+        const existingUid = await User.findOne({ patientUid });
+        if (!existingUid) isUnique = true;
+      }
+
+      patient = new User({ 
+        fullName, 
+        email, 
+        password: hashedPassword, 
+        role: 'patient', 
+        age, 
+        gender, 
+        phone, 
+        patientUid 
+      });
+      await patient.save();
+    }
+
+    // 2. Create the completed Emergency Appointment natively
+    const now = new Date();
+    const currentTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    
+    // We get the next token number
+    const activeApptsCount = await Appointment.countDocuments({ doctorId, date });
+    const tokenNumber = activeApptsCount + 1;
+
+    const newAppointment = new Appointment({
+      patientId: patient._id,
+      doctorId,
+      date,
+      time: currentTimeStr,
+      originalTime: currentTimeStr,
+      symptoms: `[TRIAGE] ${symptoms}`,
+      status: 'completed',
+      tokenNumber,
+      estimatedWaitTime: 0
+    });
+    await newAppointment.save();
+
+    // 3. Shift upcoming appointments
     const upcoming = await Appointment.find({ 
-      doctorId: req.user.id, 
+      doctorId, 
       date, 
       status: { $in: ['pending', 'approved'] } 
     });
 
-    // Execute heavy mathematics updating MongoDB perfectly capturing structural delays
     const bulkOps = upcoming.map(appt => {
        const [h, m] = appt.time.split(':').map(Number);
        const d = new Date();
@@ -322,7 +383,7 @@ exports.resolveEmergencyShift = async (req, res) => {
            filter: { _id: appt._id },
            update: { 
              $set: { time: shifted },
-             $inc: { emergencyDelayedMinutes: Number(elapsedMinutes) } // Notifies patient massively!
+             $inc: { emergencyDelayedMinutes: Number(elapsedMinutes) }
            }
          }
        };
@@ -331,17 +392,55 @@ exports.resolveEmergencyShift = async (req, res) => {
     if (bulkOps.length > 0) {
       await Appointment.bulkWrite(bulkOps);
     }
-    
-    // Clear any emergency block natively
-    await Appointment.updateMany(
-      { doctorId: req.user.id, date, status: 'emergency_active' },
-      { $set: { status: 'completed' } }
-    );
 
-    res.status(200).json({ message: 'Grid dynamically shifted automatically natively.' });
+    // Reset Doctor emergency status
+    await Doctor.findByIdAndUpdate(doctorId, { isEmergencyActive: false });
+
+    // 4. Send Email to Patient
+    if (patient.email && patient.emailNotifications !== false) {
+      const pName = capitalizeNames(patient.fullName);
+      let html = `<h2>Hello ${pName},</h2>
+                  <p>Your emergency consultation has been logged successfully.</p>`;
+
+      if (isNewPatient) {
+        html += `<div style="margin-top: 20px; padding: 15px; border-radius: 8px; background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <h3 style="color: #3b82f6; margin-top: 0;">Your New Patient Account</h3>
+                    <p>We've created a dashboard for you to track your history and prescriptions.</p>
+                    <p><strong>Email:</strong> ${patient.email}<br>
+                    <strong>Password:</strong> <span style="font-family: monospace; font-weight: bold; font-size: 16px; background: #e2e8f0; padding: 4px 8px; border-radius: 4px;">${generatedPassword}</span></p>
+                 </div>`;
+      }
+      sendEmail(patient.email, "Emergency Consultation - Clinic@Flow", html).catch(e => console.error("Email fail:", e));
+    }
+
+    // Trigger Socket.io to refresh the patient dashboard banners and timings
+    const io = req.app.get('socketio');
+    if (io) {
+      io.emit('queueUpdated', { doctorId });
+    }
+
+    const savedAppointment = await Appointment.findById(newAppointment._id).populate('patientId');
+
+    res.status(200).json({ message: 'Emergency recorded and queue dynamically shifted natively.', appointment: savedAppointment });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Emergency math generation failed natively.' });
+    console.error('Emergency Math Error:', error);
+    res.status(500).json({ message: 'Emergency generation failed natively.' });
+  }
+};
+
+// Start Emergency protocol natively updating DB status
+exports.startEmergency = async (req, res) => {
+  try {
+    const doctorId = req.user.id;
+    await Doctor.findByIdAndUpdate(doctorId, { isEmergencyActive: true });
+    
+    // Broadcast via Socket.io
+    const io = req.app.get('socketio');
+    if (io) io.emit('queueUpdated', { doctorId });
+
+    res.status(200).json({ message: 'Emergency protocol started.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to start emergency protocol.' });
   }
 };
 
@@ -350,6 +449,10 @@ exports.getQueueStatus = async (req, res) => {
   try {
     const { doctorId, date } = req.query;
     if (!doctorId || !date) return res.status(400).json({ message: 'Params required.' });
+
+    // Check if Doctor has an active emergency
+    const doc = await Doctor.findById(doctorId).select('isEmergencyActive');
+    const isEmergencyActive = doc ? doc.isEmergencyActive : false;
 
     // Find the token currently 'in_progress'
     const active = await Appointment.findOne({ doctorId, date, status: 'in_progress' }).sort({ tokenNumber: 1 });
@@ -399,7 +502,8 @@ exports.getQueueStatus = async (req, res) => {
       patientToken,
       estimatedWaitMinutes: waitTime,
       estimatedTimeFormatted,
-      activeAppointmentId: active ? active._id : null
+      activeAppointmentId: active ? active._id : null,
+      isEmergencyActive
     });
   } catch (error) {
     res.status(500).json({ message: 'Queue data failed' });

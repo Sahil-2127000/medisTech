@@ -7,11 +7,12 @@ import CurrentPatient from '../components/doctor-dashboard/CurrentPatient';
 import AppointmentRequests from '../components/doctor-dashboard/AppointmentRequests';
 import DoctorProfile from '../components/doctor-dashboard/DoctorProfile';
 import AvailabilityConfig from '../components/doctor-dashboard/AvailabilityConfig';
-import EmergencyCase from '../components/doctor-dashboard/EmergencyCase';
 import PatientHistoryView from '../components/doctor-dashboard/PatientHistoryView';
 import AlertBell from '../components/doctor-dashboard/AlertBell';
 import ManageBlogs from '../components/doctor-dashboard/ManageBlogs';
 import OfflineBookingModal from '../components/doctor-dashboard/OfflineBookingModal';
+import EmergencyResolutionModal from '../components/doctor-dashboard/EmergencyResolutionModal';
+import PrescriptionBuilder from '../components/doctor-dashboard/PrescriptionBuilder';
 import { useSocket } from '../context/SocketContext';
 
 // Helper mock seeder if localStorage is uniquely empty
@@ -64,7 +65,45 @@ const DoctorDashboard = () => {
     const [profile, setProfile] = useState({});
     const [showHistoryView, setShowHistoryView] = useState(false); // New Interactive Gateway
     const [showOfflineBooking, setShowOfflineBooking] = useState(false);
+    const [showEmergencyPrescription, setShowEmergencyPrescription] = useState(false);
+    const [emergencyApptForPrescription, setEmergencyApptForPrescription] = useState(null);
     const activeUserEmail = "doctor@clinic.com"; // Conceptually grabbed from auth state
+
+    // Emergency State Global
+    const [isEmergencyActive, setIsEmergencyActive] = useState(false);
+    const [emergencyElapsed, setEmergencyElapsed] = useState(0);
+    const [showEmergencyModal, setShowEmergencyModal] = useState(false);
+    const [finalEmergencyMinutes, setFinalEmergencyMinutes] = useState(0);
+
+    useEffect(() => {
+        let interval;
+        const checkEmergency = () => {
+            const start = localStorage.getItem('emergency_start_time');
+            if (start) {
+                setIsEmergencyActive(true);
+                setEmergencyElapsed(Math.floor((Date.now() - parseInt(start, 10)) / 1000));
+            } else {
+                setIsEmergencyActive(false);
+                setEmergencyElapsed(0);
+            }
+        };
+        checkEmergency();
+        window.addEventListener("emergencyStateToggled", checkEmergency);
+        
+        if (isEmergencyActive) {
+            interval = setInterval(checkEmergency, 1000);
+        }
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener("emergencyStateToggled", checkEmergency);
+        };
+    }, [isEmergencyActive]);
+
+    const formatEmergencyTime = (secs) => {
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    };
 
     // Intercept pure Native Window Back Buttons actively stopping dashboard leaks completely
     useEffect(() => {
@@ -95,6 +134,7 @@ const DoctorDashboard = () => {
             if (res.ok) {
                 const data = await res.json();
                 setProfile({
+                    id: data._id,
                     firstName: data.fullName?.split(' ')[0] || '',
                     lastName: data.fullName?.split(' ').slice(1).join(' ') || '',
                     specialization: data.specialization || '',
@@ -267,49 +307,33 @@ const DoctorDashboard = () => {
     // ==========================================
     // EMERGENCY OVERRIDE AUTOMATED ENGINE
     // ==========================================
-    const handleDeclareEmergency = async (patientData) => {
-        const timestamp = Date.now();
-        localStorage.setItem('emergency_start_time', timestamp);
-        // Broadcast state universally locally for blazing fast UI bounce
-        window.dispatchEvent(new Event("emergencyStateToggled"));
-
-        try {
-            // Create Database mapping
-            await fetch('http://localhost:5001/api/appointments/book', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({
-                    // Backend middleware dynamically injects doctorId natively if caller is Doctor
-                    patientIdOverride: null, // Removed hardcoded fallback for unregistered emergencies
-                    date: `${String(new Date().getDate()).padStart(2, '0')}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${new Date().getFullYear()}`,
-                    symptoms: `[EMERGENCY] ${patientData.reason}`,
-                    status: "emergency_active"
-                })
-            });
-            loadDoctorAppointments();
-        } catch (err) { }
-    };
-
-    const handleResolveEmergency = async () => {
-        const startTimeStr = localStorage.getItem('emergency_start_time');
-        localStorage.removeItem('emergency_start_time');
-        if (startTimeStr) {
-            const startTime = parseInt(startTimeStr, 10);
-            const elapsedMinutes = Math.floor((Date.now() - startTime) / 60000); const today = new Date();
-            const todayDateStr = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-            try {
-                // Push massive algorithm calculation down directly into MongoDB layer securely natively!
-                await fetch('http://localhost:5001/api/appointments/emergency-resolve', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ elapsedMinutes, date: todayDateStr })
-                });
-                window.dispatchEvent(new Event("emergencyStateToggled"));
-                loadDoctorAppointments();
-            } catch (err) {
-                console.error(err);
+    const handleToggleEmergency = async () => {
+        if (!isEmergencyActive) {
+            // Start Emergency
+            const confirmStart = window.confirm("Are you sure you want to pause the queue and start an emergency case?");
+            if (confirmStart) {
+                try {
+                    const res = await fetch('http://localhost:5001/api/appointments/emergency-start', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include'
+                    });
+                    if (res.ok) {
+                        localStorage.setItem('emergency_start_time', Date.now());
+                        window.dispatchEvent(new Event("emergencyStateToggled"));
+                    }
+                } catch (err) {
+                    console.error("Emergency start failed", err);
+                }
+            }
+        } else {
+            // Resolve Emergency
+            const startTimeStr = localStorage.getItem('emergency_start_time');
+            if (startTimeStr) {
+                const startTime = parseInt(startTimeStr, 10);
+                const elapsedMins = Math.max(1, Math.floor((Date.now() - startTime) / 60000));
+                setFinalEmergencyMinutes(elapsedMins);
+                setShowEmergencyModal(true);
             }
         }
     };
@@ -332,9 +356,6 @@ const DoctorDashboard = () => {
                 {activeTab === 'profile' && <DoctorProfile email={activeUserEmail} />}
                 {activeTab === 'availability' && <AvailabilityConfig />}
                 {activeTab === 'blogs' && <ManageBlogs />}
-                {activeTab === 'emergency' && (
-                    <EmergencyCase onDeclareEmergency={handleDeclareEmergency} onResolveEmergency={handleResolveEmergency} />
-                )}
 
                 {(activeTab === 'dashboard' || activeTab === 'appointments') && (
                     <>
@@ -348,6 +369,13 @@ const DoctorDashboard = () => {
                                             <div className="flex justify-between items-center mb-8 w-full">
                                                 <h1 className="text-4xl font-extrabold text-[#021024] transition-colors">Doctor Dashboard</h1>
                                                 <div className="flex items-center gap-4">
+                                                    <button 
+                                                        onClick={handleToggleEmergency}
+                                                        className={`px-4 py-2 rounded-xl font-bold text-sm shadow-md transition-all flex items-center gap-2 ${isEmergencyActive ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/30 animate-pulse' : 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30'}`}
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                                        {isEmergencyActive ? `Stop Emergency (${formatEmergencyTime(emergencyElapsed)})` : 'Emergency Case'}
+                                                    </button>
                                                     <button 
                                                         onClick={() => setShowOfflineBooking(true)}
                                                         className="bg-clinic-600 hover:bg-clinic-800 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-md shadow-clinic-600/30 transition-all flex items-center gap-2"
@@ -421,6 +449,68 @@ const DoctorDashboard = () => {
                 <OfflineBookingModal 
                     onClose={() => setShowOfflineBooking(false)} 
                     onSuccess={loadDoctorAppointments} 
+                />
+            )}
+
+            {showEmergencyModal && (
+                <EmergencyResolutionModal
+                    onClose={() => setShowEmergencyModal(false)}
+                    onSuccess={(newAppt, shouldIssuePrescription) => {
+                        localStorage.removeItem('emergency_start_time');
+                        window.dispatchEvent(new Event("emergencyStateToggled"));
+                        loadDoctorAppointments();
+                        if (shouldIssuePrescription && newAppt) {
+                            // Map backend appointment to the format PrescriptionBuilder expects
+                            const formattedAppt = {
+                                id: newAppt._id,
+                                patientId: newAppt.patientId?._id || newAppt.patientId,
+                                name: newAppt.patientId?.fullName || "Walk-In",
+                                age: newAppt.patientId?.age || "--",
+                                gender: newAppt.patientId?.gender || "Unknown",
+                                patientUid: newAppt.patientId?.patientUid || "---",
+                                time: newAppt.time
+                            };
+                            setEmergencyApptForPrescription(formattedAppt);
+                            setShowEmergencyPrescription(true);
+                        }
+                    }}
+                    elapsedMinutes={finalEmergencyMinutes}
+                />
+            )}
+
+            {showEmergencyPrescription && emergencyApptForPrescription && (
+                <PrescriptionBuilder 
+                    activePatient={emergencyApptForPrescription}
+                    onCancel={() => setShowEmergencyPrescription(false)}
+                    onSave={async (medicinesArray, pdfBase64, diagnosis, clinicalNotes) => {
+                        try {
+                            const formattedMedicines = (medicinesArray || []).map(med => ({
+                                name: med.name,
+                                dosage: med.dosage,
+                                frequency: `${(med.timing || []).join(' - ')} (${med.food || 'After Food'})`,
+                                duration: med.alternativeDays ? `${med.duration || "As Directed"} (Alt. Days)` : (med.duration || "As Directed")
+                            }));
+
+                            await fetch('http://localhost:5001/api/prescriptions/issue', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    appointmentId: emergencyApptForPrescription.id,
+                                    patientId: emergencyApptForPrescription.patientId,
+                                    diagnosis: diagnosis || "Emergency evaluation completed.",
+                                    medicines: formattedMedicines,
+                                    pdfBase64: pdfBase64,
+                                    clinicalNotes: clinicalNotes || "Issued after emergency resolution."
+                                })
+                            });
+                            setShowEmergencyPrescription(false);
+                            loadDoctorAppointments();
+                        } catch (err) {
+                            console.error("Emergency prescription fail:", err);
+                        }
+                    }}
+                    doctorProfile={profile}
                 />
             )}
         </div>

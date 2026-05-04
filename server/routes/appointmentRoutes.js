@@ -14,7 +14,8 @@ router.get('/doctor/history', authMiddleware, appointmentController.getDoctorHis
 router.post('/offline-book', authMiddleware, appointmentController.offlineBook);
 router.put('/:id/status', authMiddleware, appointmentController.updateStatus);
 router.put('/:id/skip', authMiddleware, appointmentController.skipAppointment);
-router.post('/emergency-resolve', authMiddleware, appointmentController.resolveEmergencyShift);
+router.post('/emergency-resolve-and-book', authMiddleware, appointmentController.resolveAndBookEmergency);
+router.post('/emergency-start', authMiddleware, appointmentController.startEmergency);
 
 router.get('/queue-status', authMiddleware, appointmentController.getQueueStatus);
 

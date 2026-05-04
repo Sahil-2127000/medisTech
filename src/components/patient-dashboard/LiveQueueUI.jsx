@@ -50,11 +50,24 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
 
   if (loading) return <div className="p-10 text-center"><Spin size="large" tip="Loading Live Queue..." /></div>;
 
-  const { currentlyServing, patientToken, estimatedWaitMinutes, estimatedTimeFormatted } = queueData || {};
+  const { currentlyServing, patientToken, estimatedWaitMinutes, estimatedTimeFormatted, isEmergencyActive } = queueData || {};
 
   return (
     <div className="w-full flex flex-col gap-8 animate-fade-in pb-12">
       
+      {/* 0. Emergency Alert Banner */}
+      {isEmergencyActive && (
+        <div className="w-full bg-red-600 text-white p-6 rounded-[2.5rem] mb-2 flex items-center gap-6 animate-pulse shadow-xl shadow-red-500/20 border border-red-500/30">
+           <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
+              <SyncOutlined spin className="text-3xl" />
+           </div>
+           <div>
+              <div className="text-xl font-black uppercase tracking-widest">Emergency in Progress</div>
+              <div className="text-xs font-bold opacity-80 uppercase tracking-tight">The doctor is attending a critical patient. Queue is temporarily paused.</div>
+           </div>
+        </div>
+      )}
+
       {/* 1. Live Tracker Banner */}
       <div className="w-full shadow-2xl shadow-blue-500/20 bg-linear-to-br from-blue-600 via-[#3963F9] to-indigo-700 rounded-[2.5rem] overflow-hidden p-8 relative">
         <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
