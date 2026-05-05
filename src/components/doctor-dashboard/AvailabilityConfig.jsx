@@ -89,7 +89,7 @@ const AvailabilityConfig = () => {
     return (
       <div className="flex-1 flex flex-col justify-center items-center h-full bg-slate-50/30">
         <div className="w-16 h-16 border-4 border-blue-100 border-t-clinic-600 rounded-full animate-spin mb-4"></div>
-        <div className="text-clinic-600 font-black text-xs uppercase tracking-[0.3em] animate-pulse">Syncing Matrix...</div>
+        <div className="text-clinic-600 font-black text-xs uppercase tracking-[0.3em] animate-pulse">Updating...</div>
       </div>
     );
   }
@@ -103,8 +103,8 @@ const AvailabilityConfig = () => {
           <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
-              <h2 className="text-4xl font-black text-white mb-2 tracking-tight">Availability Matrix</h2>
-              <p className="text-blue-50 font-bold opacity-80 text-sm max-w-lg leading-relaxed">Customize your clinical shifts, slot timings, and blackout dates with real-time database synchronization.</p>
+              <h2 className="text-4xl font-black text-white mb-2 tracking-tight">Availability Timings</h2>
+              <p className="text-blue-50 font-bold opacity-80 text-sm max-w-lg leading-relaxed">Customize your clinical shifts, slot timings, and blackout dates.</p>
             </div>
             <button 
               onClick={handleSave}

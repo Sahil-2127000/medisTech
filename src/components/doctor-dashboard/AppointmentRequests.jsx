@@ -31,8 +31,28 @@ const AppointmentRequests = ({
     onFetchHistory(newPage, searchQuery, statusFilter);
   };
 
+  const parseApptDate = (dateStr) => {
+    if (!dateStr) return new Date(0);
+    if (dateStr.includes('-') && dateStr.split('-')[0].length === 4) {
+      return new Date(dateStr);
+    } else if (dateStr.includes('-') && dateStr.split('-')[2].length === 4) {
+      const [d, m, y] = dateStr.split('-');
+      return new Date(`${y}-${m}-${d}`);
+    }
+    return new Date(dateStr);
+  };
+
   const pendingRequests = appointments.filter(app => app.status === 'pending');
-  const otherHistory = appointments.filter(app => app.status !== 'pending');
+  const otherHistory = appointments.filter(app => app.status !== 'pending').sort((a, b) => {
+      const dateA = parseApptDate(a.date);
+      const dateB = parseApptDate(b.date);
+      if (dateA.getTime() === dateB.getTime()) {
+        const timeA = a.time || "";
+        const timeB = b.time || "";
+        return timeB.localeCompare(timeA); // Descending time
+      }
+      return dateB - dateA; // Descending date
+  });
 
   const renderPagination = () => {
     const { currentPage, totalPages } = pageInfo;

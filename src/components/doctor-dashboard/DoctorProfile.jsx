@@ -78,8 +78,8 @@ const DoctorProfile = ({ email }) => {
     };
 
     return (
-        <div className="flex-1 overflow-y-auto no-scrollbar py-12 px-8 flex justify-center bg-transparent transition-colors duration-300">
-            <div className="w-full max-w-4xl bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] p-10 relative transition-colors duration-300">
+        <div className="flex-1 overflow-y-auto no-scrollbar py-6 md:py-12 px-4 md:px-8 flex justify-center bg-transparent transition-colors duration-300">
+            <div className="w-full max-w-4xl bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] p-6 md:p-10 relative transition-colors duration-300">
                 <div className="flex justify-between items-center mb-10 pb-6 border-b border-gray-50 transition-colors">
                     <div>
                         <h2 className="text-3xl font-extrabold text-[#021024] mb-1 transition-colors">Profile</h2>
@@ -92,9 +92,9 @@ const DoctorProfile = ({ email }) => {
                     </button>
                 </div>
 
-                <form onSubmit={handleSave} className="flex flex-col md:flex-row gap-12">
+                <form onSubmit={handleSave} className="flex flex-col md:flex-row gap-8 md:gap-12">
                     {/* Avatar Settings Column */}
-                    <div className="flex flex-col items-center shrink-0 w-64">
+                    <div className="flex flex-col items-center shrink-0 w-full md:w-64">
                         <div className="relative group cursor-pointer mb-6">
                             <div className="w-48 h-48 rounded-4xl border-4 border-slate-100 overflow-hidden shadow-lg transition-all group-hover:scale-[1.02]">
                                 <img src={profile.photo || `https://placehold.co/400x400/5265ec/ffffff.png?text=${profile.firstName?.charAt(0) || 'D'}`} alt="Current Avatar" className="w-full h-full object-cover" />

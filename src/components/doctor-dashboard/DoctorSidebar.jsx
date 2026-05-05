@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const DoctorSidebar = ({ activeTab, setActiveTab, profile }) => {
+const DoctorSidebar = ({ activeTab, setActiveTab, profile, isOpen, onClose }) => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -20,7 +20,21 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile }) => {
     ];
 
     return (
-        <div className="w-[280px] h-full hidden lg:flex flex-col bg-white/50 backdrop-blur-xl border-r border-slate-100 p-6 shadow-[10px_0_30px_rgba(0,0,0,0.01)] z-10 transition-colors duration-300">
+        <>
+            {isOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+                    onClick={onClose}
+                ></div>
+            )}
+            <div className={`fixed lg:static inset-y-0 left-0 w-[280px] h-full flex flex-col bg-white/95 lg:bg-white/50 backdrop-blur-xl border-r border-slate-100 p-6 shadow-2xl lg:shadow-[10px_0_30px_rgba(0,0,0,0.01)] z-50 lg:z-10 transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+                
+                <button 
+                    onClick={onClose}
+                    className="lg:hidden absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             {/* Doctor Profile Section at Top */}
             <div className="flex flex-col items-center mt-4 mb-10 pb-8 border-b border-gray-100 transition-colors">
                 <div className="relative w-24 h-24 mb-4">
@@ -55,6 +69,7 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile }) => {
             </button>
 
         </div>
+        </>
     );
 };
 

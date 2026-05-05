@@ -1,29 +1,46 @@
 import React, { useMemo } from 'react';
 
 const PatientHistoryView = ({ historyData, onBack }) => {
+  // Helper to parse dates uniformly
+  const parseApptDate = (dateStr) => {
+    if (!dateStr) return new Date(0);
+    if (dateStr.includes('-') && dateStr.split('-')[0].length === 4) {
+      return new Date(dateStr);
+    } else if (dateStr.includes('-') && dateStr.split('-')[2].length === 4) {
+      const [d, m, y] = dateStr.split('-');
+      return new Date(`${y}-${m}-${d}`);
+    }
+    return new Date(dateStr);
+  };
+
+  const sortedHistoryData = useMemo(() => {
+    if (!historyData) return [];
+    return [...historyData].sort((a, b) => {
+      const dateA = parseApptDate(a.date);
+      const dateB = parseApptDate(b.date);
+      if (dateA.getTime() === dateB.getTime()) {
+        const timeA = a.time || "";
+        const timeB = b.time || "";
+        return timeB.localeCompare(timeA); // Descending time
+      }
+      return dateB - dateA; // Descending date
+    });
+  }, [historyData]);
+
   // 1. Group records dynamically by robust Month/Year chronological string boundaries
   const groupedHistory = useMemo(() => {
-    if (!historyData || historyData.length === 0) return {};
-    return historyData.reduce((acc, appt) => {
+    if (!sortedHistoryData || sortedHistoryData.length === 0) return {};
+    return sortedHistoryData.reduce((acc, appt) => {
       // Standardize date mapping fallback assuming native YYYY-MM-DD or DD-MM-YYYY structures
-      let dateObj;
-      if (appt.date.includes('-') && appt.date.split('-')[0].length === 4) {
-        // YYYY-MM-DD
-        dateObj = new Date(appt.date);
-      } else if (appt.date.includes('-') && appt.date.split('-')[2].length === 4) {
-        // DD-MM-YYYY (Convert securely)
-        const [d, m, y] = appt.date.split('-');
-        dateObj = new Date(`${y}-${m}-${d}`);
-      } else {
-        dateObj = new Date(appt.date);
-      }
+      const dateObj = parseApptDate(appt.date);
+      
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       const monthYearStr = isNaN(dateObj.getTime()) ? "Unknown Date" : `${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
       if (!acc[monthYearStr]) acc[monthYearStr] = [];
       acc[monthYearStr].push(appt);
       return acc;
     }, {});
-  }, [historyData]);
+  }, [sortedHistoryData]);
 
   const groupKeys = Object.keys(groupedHistory);
 
@@ -110,29 +127,31 @@ const PatientHistoryView = ({ historyData, onBack }) => {
                 const displayName = app.name || "Walk-In Entity";
                 const displayChar = displayName.charAt(0).toUpperCase();
                 return (
-                  <div key={app.id || 'hist_' + appIdx} className="bg-white rounded-3xl p-5 border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_15px_40px_rgba(82,101,236,0.08)] flex justify-between items-center group">
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-[1.25rem] bg-linear-to-tr from-blue-100 to-indigo-50 flex items-center justify-center font-black text-xl text-clinic-600 shadow-inner overflow-hidden relative">
+                  <div key={app.id || 'hist_' + appIdx} className="bg-white rounded-3xl p-4 md:p-5 border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_15px_40px_rgba(82,101,236,0.08)] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group">
+                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                      <div className="w-14 h-14 shrink-0 rounded-[1.25rem] bg-linear-to-tr from-blue-100 to-indigo-50 flex items-center justify-center font-black text-xl text-clinic-600 shadow-inner overflow-hidden relative">
                         {displayChar}
                       </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-slate-800 ">{displayName}</h3>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-bold text-slate-800 truncate">{displayName}</h3>
                         <div className="text-xs font-semibold text-gray-400 flex items-center gap-2 mt-0.5">
-                          <span className="bg-gray-100 px-2 rounded-md">{app.age || '--'} yrs</span>
-                          <span className="bg-gray-100 px-2 rounded-md">{app.gender || 'Unknown'}</span>
+                          <span className="bg-gray-100 px-2 py-0.5 rounded-md whitespace-nowrap">{app.age || '--'} yrs</span>
+                          <span className="bg-gray-100 px-2 py-0.5 rounded-md whitespace-nowrap">{app.gender || 'Unknown'}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex  flex-col items-end justify-between h-full gap-2">
-                      <div className="text-right">
-                        <div className="font-bold text-clinic-600 mb-1">{app.date} • {app.time}</div>
-                        {app.status === 'completed' && <span className="inline-block bg-gray-100 text-gray-500 font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded-lg">Completed</span>}
-                        {app.status === 'approved' && <span className="inline-block bg-green-100 text-green-600 font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded-lg">Approved</span>}
-                        {app.status === 'pending' && <span className="inline-block bg-yellow-100 text-yellow-600 font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded-lg shadow-sm">Pending</span>}
-                        {app.status === 'rejected' && <span className="inline-block bg-red-100 text-red-500 font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded-lg">Rejected</span>}
+                    <div className="flex flex-col sm:items-end justify-between h-full gap-3 w-full sm:w-auto pt-3 sm:pt-0 border-t border-gray-50 sm:border-0 mt-2 sm:mt-0">
+                      <div className="text-left sm:text-right flex flex-row sm:flex-col justify-between items-center sm:items-end w-full sm:w-auto">
+                        <div className="font-bold text-clinic-600 mb-0 sm:mb-1">{app.date} <span className="hidden sm:inline">•</span> <span className="sm:hidden text-gray-300">|</span> {app.time}</div>
+                        <div>
+                            {app.status === 'completed' && <span className="inline-block bg-gray-100 text-gray-500 font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded-lg">Completed</span>}
+                            {app.status === 'approved' && <span className="inline-block bg-green-100 text-green-600 font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded-lg">Approved</span>}
+                            {app.status === 'pending' && <span className="inline-block bg-yellow-100 text-yellow-600 font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded-lg shadow-sm">Pending</span>}
+                            {app.status === 'rejected' && <span className="inline-block bg-red-100 text-red-500 font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded-lg">Rejected</span>}
+                        </div>
                       </div>
-                      <button onClick={() => setUploadModal(app)} className="text-xs bg-blue-50 text-[#5265ec] font-bold px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1 group-hover:-translate-x-1 duration-200">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                      <button onClick={() => setUploadModal(app)} className="w-full sm:w-auto text-xs justify-center bg-blue-50 text-[#5265ec] font-bold px-3 py-2 rounded-xl hover:bg-blue-100 transition-colors flex items-center gap-1 group-hover:-translate-x-1 duration-200">
+                        <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                         Upload Doc
                       </button>
                     </div>

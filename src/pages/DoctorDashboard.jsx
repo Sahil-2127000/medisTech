@@ -67,6 +67,7 @@ const DoctorDashboard = () => {
     const [profile, setProfile] = useState({});
     const [showHistoryView, setShowHistoryView] = useState(false); // New Interactive Gateway
     const [showOfflineBooking, setShowOfflineBooking] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showEmergencyPrescription, setShowEmergencyPrescription] = useState(false);
     const [emergencyApptForPrescription, setEmergencyApptForPrescription] = useState(null);
     const activeUserEmail = "doctor@clinic.com"; // Conceptually grabbed from auth state
@@ -344,9 +345,32 @@ const DoctorDashboard = () => {
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-linear-to-tr from-purple-100/20 via-pink-50/20 to-transparent rounded-full blur-[120px] pointer-events-none z-0"></div>
 
             {/* Master Flex Canvas matching exactly the Patient perspective UI bounds */}
-            <div className="w-full max-w-[1500px] h-screen md:h-[90vh] md:min-h-[800px] bg-white/80 backdrop-blur-2xl md:rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.06)] flex overflow-hidden border-0 md:border border-white/60 transition-colors duration-300 z-10 relative">
+            <div className="w-full max-w-[1500px] h-screen md:h-[90vh] md:min-h-[800px] bg-white/80 backdrop-blur-2xl md:rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.06)] flex flex-col md:flex-row overflow-hidden border-0 md:border border-white/60 transition-colors duration-300 z-10 relative">
+                
+                {/* GLOBAL MOBILE HEADER */}
+                <div className="md:hidden flex flex-row items-center justify-between w-full bg-white/95 backdrop-blur-md border-b border-gray-100 px-6 py-4 z-30 shrink-0 shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className="p-2 -ml-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 transition-colors"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        </button>
+                        <h1 className="text-xl font-extrabold text-[#021024]">MedisTech</h1>
+                    </div>
+                </div>
                 {/* Left Explicit Profile & Navigation Tab Controller */}
-                <DoctorSidebar activeTab={activeTab} setActiveTab={(t) => { setActiveTab(t); setShowHistoryView(false); }} profile={profile} />
+                <DoctorSidebar 
+                    activeTab={activeTab} 
+                    setActiveTab={(t) => { 
+                        setActiveTab(t); 
+                        setShowHistoryView(false); 
+                        setIsMobileMenuOpen(false); 
+                    }} 
+                    profile={profile} 
+                    isOpen={isMobileMenuOpen}
+                    onClose={() => setIsMobileMenuOpen(false)}
+                />
 
                 {/* Dynamic Center Orchestrator */}
                 {activeTab === 'profile' && <DoctorProfile email={activeUserEmail} />}
@@ -362,24 +386,29 @@ const DoctorDashboard = () => {
                                 <>
                                     {activeTab === 'dashboard' && (
                                         <>
-                                            <div className="flex justify-between items-center mb-8 w-full">
-                                                <h1 className="text-4xl font-extrabold text-[#021024] transition-colors">Doctor Dashboard</h1>
+                                            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-8 w-full">
                                                 <div className="flex items-center gap-4">
+                                                    <h1 className="hidden md:block text-2xl md:text-4xl font-extrabold text-[#021024] transition-colors whitespace-nowrap">Doctor Dashboard</h1>
+                                                </div>
+                                                <div className="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar pb-2 lg:pb-0 w-full lg:w-auto">
                                                     <button 
                                                         onClick={handleToggleEmergency}
-                                                        className={`px-4 py-2 rounded-xl font-bold text-sm shadow-md transition-all flex items-center gap-2 ${isEmergencyActive ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/30 animate-pulse' : 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30'}`}
+                                                        className={`shrink-0 px-3 md:px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-md transition-all flex items-center gap-1.5 md:gap-2 ${isEmergencyActive ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/30 animate-pulse' : 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30'}`}
                                                     >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                                                        {isEmergencyActive ? `Stop Emergency (${formatEmergencyTime(emergencyElapsed)})` : 'Emergency Case'}
+                                                        <svg className="w-4 h-4 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                                        {isEmergencyActive ? `Stop (${formatEmergencyTime(emergencyElapsed)})` : 'Emergency Case'}
                                                     </button>
                                                     <button 
                                                         onClick={() => setShowOfflineBooking(true)}
-                                                        className="bg-clinic-600 hover:bg-clinic-800 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-md shadow-clinic-600/30 transition-all flex items-center gap-2"
+                                                        className="shrink-0 bg-clinic-600 hover:bg-clinic-800 text-white px-3 md:px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-md shadow-clinic-600/30 transition-all flex items-center gap-1.5 md:gap-2"
                                                     >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                                        Make Appointment
+                                                        <svg className="w-4 h-4 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                                        <span className="hidden sm:inline">Make Appointment</span>
+                                                        <span className="sm:hidden">Book</span>
                                                     </button>
-                                                    <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                                                    <div className="shrink-0">
+                                                        <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                                                    </div>
                                                 </div>
                                             </div>
 
