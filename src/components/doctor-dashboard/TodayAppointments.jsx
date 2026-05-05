@@ -9,6 +9,15 @@ const TodayAppointments = ({ appointments }) => {
     .filter(app => app.date === todayFormatted)
     .sort((a, b) => a.time.localeCompare(b.time));
 
+  const formatTime12Hour = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(':');
+    const h = parseInt(hour, 10);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const formattedHour = h % 12 || 12;
+    return `${formattedHour}:${minute} ${ampm}`;
+  };
+
  return (
  <div className="bg-white border border-gray-100 rounded-3xl p-6 mb-10 w-full transition-colors duration-300 h-[340px] flex flex-col shadow-xl shadow-clinic-600/20 relative overflow-hidden">
 
@@ -34,14 +43,14 @@ const TodayAppointments = ({ appointments }) => {
  </div>
  <div>
  <div className="font-bold text-slate-800 transition-colors">{displayName}</div>
- <div className="text-xs text-clinic-600/80 font-bold uppercase tracking-wider transition-colors">{app.time}</div>
+ <div className="text-xs text-clinic-600/80 font-bold uppercase tracking-wider transition-colors">{formatTime12Hour(app.time)}</div>
  </div>
  </div>
 
                 <div className="flex flex-col items-end">
                   <div className="font-bold text-clinic-600 flex items-center gap-1 transition-colors">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {app.time}
+                    {formatTime12Hour(app.time)}
                   </div>
                   <div className="mt-1">
                     {app.status === 'in_progress' && <span className="bg-blue-100 text-blue-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors shadow-sm animate-pulse">In Progress</span>}

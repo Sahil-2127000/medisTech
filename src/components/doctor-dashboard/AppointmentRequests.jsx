@@ -42,6 +42,15 @@ const AppointmentRequests = ({
     return new Date(dateStr);
   };
 
+  const formatTime12Hour = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(':');
+    const h = parseInt(hour, 10);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const formattedHour = h % 12 || 12;
+    return `${formattedHour}:${minute} ${ampm}`;
+  };
+
   const pendingRequests = appointments.filter(app => app.status === 'pending');
   const otherHistory = appointments.filter(app => app.status !== 'pending').sort((a, b) => {
       const dateA = parseApptDate(a.date);
@@ -93,14 +102,14 @@ const AppointmentRequests = ({
             <tr className="text-[10px] text-gray-400 font-extrabold uppercase tracking-[0.2em] px-2">
               <th className="pb-2 pl-4">Patient Profile</th>
               <th className="pb-2">Schedule</th>
-              <th className="pb-2">Current Status</th>
-              <th className="pb-2 text-right pr-4">Action Control</th>
+              <th className="pb-2 text-right pr-8">Current Status</th>
+              {activeSubTab === 'requests' && <th className="pb-2 text-right pr-4">Action Control</th>}
             </tr>
           </thead>
           <tbody>
             {list.length === 0 ? (
               <tr>
-                <td colSpan="4" className="bg-slate-50/50 rounded-2xl py-20 text-center text-gray-400 font-bold border-2 border-dashed border-gray-100 italic transition-colors">
+                <td colSpan={activeSubTab === 'requests' ? "4" : "3"} className="bg-slate-50/50 rounded-2xl py-20 text-center text-gray-400 font-bold border-2 border-dashed border-gray-100 italic transition-colors">
                   {emptyMsg}
                 </td>
               </tr>
@@ -124,15 +133,16 @@ const AppointmentRequests = ({
                     </td>
                     <td className="py-4 border-y border-gray-100">
                       <div className="font-black text-slate-700">{app.date}</div>
-                      <div className="text-[10px] text-clinic-600 font-black uppercase tracking-widest">At {app.time}</div>
+                      <div className="text-[10px] text-clinic-600 font-black uppercase tracking-widest">At {formatTime12Hour(app.time)}</div>
                     </td>
-                    <td className="py-4 border-y border-gray-100">
+                    <td className={`py-4 border-y border-gray-100 ${activeSubTab !== 'requests' ? 'text-right pr-4 rounded-r-2xl border-r' : ''}`}>
                       {app.status === 'in_progress' && <span className="bg-blue-50 text-blue-600 text-[9px] uppercase tracking-widest font-black px-3 py-1.5 rounded-xl border border-blue-100 animate-pulse">In Consultation</span>}
-                      {app.status === 'completed' && <span className="bg-slate-50 text-slate-500 text-[9px] uppercase tracking-widest font-black px-3 py-1.5 rounded-xl border border-slate-100">Session Closed</span>}
+                      {app.status === 'completed' && <span className="bg-slate-50 text-slate-500 text-[9px] uppercase tracking-widest font-black px-3 py-1.5 rounded-xl border border-slate-100">Completed</span>}
                       {app.status === 'approved' && <span className="bg-green-50 text-green-600 text-[9px] uppercase tracking-widest font-black px-3 py-1.5 rounded-xl border border-green-100">Confirmed</span>}
                       {app.status === 'pending' && <span className="bg-amber-50 text-amber-600 text-[9px] uppercase tracking-widest font-black px-3 py-1.5 rounded-xl border border-amber-100 shadow-xs">Awaiting Approval</span>}
                       {app.status === 'rejected' && <span className="bg-rose-50 text-rose-500 text-[9px] uppercase tracking-widest font-black px-3 py-1.5 rounded-xl border border-rose-100">Declined</span>}
                     </td>
+                    {activeSubTab === 'requests' && (
                     <td className="py-4 text-right pr-4 rounded-r-2xl border-y border-r border-gray-100">
                       {app.status === 'pending' ? (
                         <div className="flex justify-end gap-2">
@@ -155,6 +165,7 @@ const AppointmentRequests = ({
                         <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Logged Record</span>
                       )}
                     </td>
+                    )}
                   </tr>
                 );
               })
@@ -168,13 +179,12 @@ const AppointmentRequests = ({
 
   return (
     <div className="w-full h-full pb-10 flex flex-col">
-      {/* Search and Filters Header - Only shown for History */}
-      {activeSubTab === 'history' && (
+      {/* Search and Filters Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 shrink-0">
             <div className="relative w-full md:w-[400px] group">
               <input 
                 type="text" 
-                placeholder="Search patients by name..."
+                placeholder="Search patients by name or ID..."
                 value={debouncedSearch}
                 onChange={(e) => setDebouncedSearch(e.target.value)}
                 className="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-14 pr-6 text-slate-800 font-bold focus:outline-hidden focus:ring-4 focus:ring-blue-50 focus:border-blue-200 transition-all shadow-sm group-hover:shadow-md"
@@ -205,7 +215,6 @@ const AppointmentRequests = ({
                ))}
             </div>
         </div>
-      )}
 
       {/* Sub-Tab Switcher */}
       <div className="flex gap-8 mb-8 border-b border-gray-100 shrink-0">

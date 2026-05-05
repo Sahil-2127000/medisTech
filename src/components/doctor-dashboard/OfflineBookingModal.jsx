@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
 const OfflineBookingModal = ({ onClose, onSuccess }) => {
+  const formatTime12Hour = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(':');
+    const h = parseInt(hour, 10);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const formattedHour = h % 12 || 12;
+    return `${formattedHour}:${minute} ${ampm}`;
+  };
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -202,7 +211,7 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
                       onClick={() => setSelectedSlot(slot.time)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all disabled:opacity-50 disabled:bg-gray-100 disabled:text-gray-400 ${selectedSlot === slot.time ? 'bg-clinic-600 text-white shadow-md shadow-clinic-600/30' : 'bg-white text-slate-600 border border-gray-200 hover:border-clinic-600 hover:text-clinic-600'}`}
                     >
-                      {slot.time}
+                      {formatTime12Hour(slot.time)}
                     </button>
                   ))
                )}

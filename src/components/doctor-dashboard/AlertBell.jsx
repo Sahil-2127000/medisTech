@@ -1,7 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 const AlertBell = ({ appointments, onStatusChange }) => {
- const [isOpen, setIsOpen] = useState(false);
+  const formatTime12Hour = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(':');
+    const h = parseInt(hour, 10);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const formattedHour = h % 12 || 12;
+    return `${formattedHour}:${minute} ${ampm}`;
+  };
+
+  const [isOpen, setIsOpen] = useState(false);
  const dropdownRef = useRef(null);
 
  // Derive precisely only explicit pending queue structures securely
@@ -63,7 +72,7 @@ const AlertBell = ({ appointments, onStatusChange }) => {
  <div className="flex justify-between items-start mb-2">
  <div>
  <h4 className="font-bold text-slate-800 ">{request.name}</h4>
- <span className="text-xs font-semibold text-gray-500 block">{request.date} @ {request.time}</span>
+ <span className="text-xs font-semibold text-gray-500 block">{request.date} @ {formatTime12Hour(request.time)}</span>
  </div>
  <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-bold text-[10px] uppercase tracking-wider">Requested</span>
  </div>

@@ -3,6 +3,15 @@ import PrescriptionBuilder from './PrescriptionBuilder';
 
 
 const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, onSkip, doctorProfile }) => {
+  const formatTime12Hour = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(':');
+    const h = parseInt(hour, 10);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const formattedHour = h % 12 || 12;
+    return `${formattedHour}:${minute} ${ampm}`;
+  };
+
  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
  const [medicine, setMedicine] = useState('');
  const [timing, setTiming] = useState('');
@@ -53,7 +62,7 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
   <div className="w-full mt-2 bg-slate-50 rounded-2xl p-3 flex justify-between items-center text-left transition-colors">
   <div>
   <div className="text-[10px] uppercase font-bold text-gray-400 tracking-wider transition-colors">Scheduled Time</div>
-  <div className="font-bold text-slate-700 transition-colors">{patient.time}</div>
+  <div className="font-bold text-slate-700 transition-colors">{formatTime12Hour(patient.time)}</div>
   </div>
   <svg className="w-6 h-6 text-clinic-600/40 " fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
   </div>

@@ -13,6 +13,15 @@ const PatientHistoryView = ({ historyData, onBack }) => {
     return new Date(dateStr);
   };
 
+  const formatTime12Hour = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(':');
+    const h = parseInt(hour, 10);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const formattedHour = h % 12 || 12;
+    return `${formattedHour}:${minute} ${ampm}`;
+  };
+
   const sortedHistoryData = useMemo(() => {
     if (!historyData) return [];
     return [...historyData].sort((a, b) => {
@@ -142,7 +151,7 @@ const PatientHistoryView = ({ historyData, onBack }) => {
                     </div>
                     <div className="flex flex-col sm:items-end justify-between h-full gap-3 w-full sm:w-auto pt-3 sm:pt-0 border-t border-gray-50 sm:border-0 mt-2 sm:mt-0">
                       <div className="text-left sm:text-right flex flex-row sm:flex-col justify-between items-center sm:items-end w-full sm:w-auto">
-                        <div className="font-bold text-clinic-600 mb-0 sm:mb-1">{app.date} <span className="hidden sm:inline">•</span> <span className="sm:hidden text-gray-300">|</span> {app.time}</div>
+                        <div className="font-bold text-clinic-600 mb-0 sm:mb-1">{app.date} <span className="hidden sm:inline">•</span> <span className="sm:hidden text-gray-300">|</span> {formatTime12Hour(app.time)}</div>
                         <div>
                             {app.status === 'completed' && <span className="inline-block bg-gray-100 text-gray-500 font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded-lg">Completed</span>}
                             {app.status === 'approved' && <span className="inline-block bg-green-100 text-green-600 font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded-lg">Approved</span>}

@@ -209,7 +209,10 @@ exports.getDoctorHistory = async (req, res) => {
      // Search logic for both account holder name and explicit patient name
      if (search) {
        const users = await require('../models/User').find({ 
-         fullName: { $regex: search, $options: 'i' },
+         $or: [
+           { fullName: { $regex: search, $options: 'i' } },
+           { patientUid: { $regex: search, $options: 'i' } }
+         ],
          role: 'patient'
        }).select('_id');
        patientIds = users.map(u => u._id);

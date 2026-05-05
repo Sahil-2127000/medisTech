@@ -390,7 +390,7 @@ const DoctorDashboard = () => {
                                                 <div className="flex items-center gap-4">
                                                     <h1 className="hidden md:block text-2xl md:text-4xl font-extrabold text-[#021024] transition-colors whitespace-nowrap">Doctor Dashboard</h1>
                                                 </div>
-                                                <div className="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar pb-2 lg:pb-0 w-full lg:w-auto">
+                                                <div className="flex items-center gap-2 md:gap-4 flex-wrap w-full lg:w-auto">
                                                     <button 
                                                         onClick={handleToggleEmergency}
                                                         className={`shrink-0 px-3 md:px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-md transition-all flex items-center gap-1.5 md:gap-2 ${isEmergencyActive ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/30 animate-pulse' : 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30'}`}
