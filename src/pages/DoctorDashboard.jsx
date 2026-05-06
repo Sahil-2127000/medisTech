@@ -379,7 +379,7 @@ const DoctorDashboard = () => {
 
                 {(activeTab === 'dashboard' || activeTab === 'appointments') && (
                     <>
-                        <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar bg-transparent transition-colors">
+                        <div className="flex-1 h-full pt-8 md:pt-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar bg-transparent transition-colors">
                             {showHistoryView ? (
                                 <PatientHistoryView historyData={historyAppointments} onBack={() => setShowHistoryView(false)} />
                             ) : (
@@ -429,7 +429,7 @@ const DoctorDashboard = () => {
                                                 onCardClick={(id) => { if (id === 'total-patients') setShowHistoryView(true); }}
                                             />
 
-                                            <div className="flex flex-col lg:flex-row gap-8 w-full mt-2 pb-10 ">
+                                            <div className="flex flex-col lg:flex-row gap-8 w-full mt-2">
                                                 <div className="flex-1 w-full ">
                                                     <CurrentPatient 
                                                         appointments={appointments} 

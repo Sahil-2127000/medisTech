@@ -369,11 +369,15 @@ exports.resolveAndBookEmergency = async (req, res) => {
     });
     await newAppointment.save();
 
-    // 3. Shift upcoming appointments
+    const emergencyStartTime = new Date(Date.now() - elapsedMinutes * 60000);
+    const emergencyStartStr = `${emergencyStartTime.getHours().toString().padStart(2, '0')}:${emergencyStartTime.getMinutes().toString().padStart(2, '0')}`;
+
+    // 3. Shift upcoming appointments (only those scheduled after emergency started)
     const upcoming = await Appointment.find({ 
       doctorId, 
       date, 
-      status: { $in: ['pending', 'approved'] } 
+      status: { $in: ['pending', 'approved'] },
+      time: { $gte: emergencyStartStr }
     });
 
     const bulkOps = upcoming.map(appt => {
