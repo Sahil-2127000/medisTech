@@ -151,7 +151,7 @@ const ContactSection = ({ contactInfo = {} }) => {
             <div className="flex items-start gap-4 hover:translate-x-2 transition-transform cursor-default">
               <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center shrink-0">🕒</div>
               <div>
-                <p className="text-blue-100 text-md font-medium">Clinic Timings</p>
+                <p className="text-blue-100 text-md font-medium">Contact Timings</p>
                 <p className="text-lg">Mon – Sat: 9:00 AM – 6:00 PM<br/>Sunday: Closed</p>
               </div>
             </div>

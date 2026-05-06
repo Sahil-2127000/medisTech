@@ -40,7 +40,7 @@ const AboutSection = () => {
         {/* Main Image */}
         <div className="relative z-10 w-[90%] sm:w-[80%] lg:w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group">
           <img 
-            src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=800&q=80" 
+            src="public/doctor_image.png" 
             alt="Dr. Portrait" 
             className="w-full h-auto object-cover object-center aspect-4/5 group-hover:scale-110 transition-transform duration-1000 ease-in-out"
           />

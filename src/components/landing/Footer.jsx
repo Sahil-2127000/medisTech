@@ -4,7 +4,7 @@ const Footer = ({ contactInfo = {} }) => {
   const { address = '', phone = '', email = '' } = contactInfo;
   return (
     <footer className="w-full bg-white pt-20 pb-8 mt-12 border-t border-slate-100 relative z-10">
-      <div className="max-w-7xl mx-auto px-8 md:px-16 grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+      <div className="max-w-7xl mx-auto px-8 md:px-16 grid grid-cols-1 md:grid-cols-3 gap-12 mb-14 md:justify-items-center">
         
         {/* Column 1: Brand & OVERVIEW */}
         <div>
@@ -19,13 +19,8 @@ const Footer = ({ contactInfo = {} }) => {
           <p className="text-slate-500 text-sm mb-6 leading-relaxed">
             Delivering personalized, high-quality healthcare and expert medical advice for you and your family.
           </p>
-          <div className="flex gap-4 mb-6">
-            <a href="#" className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-colors">in</a>
-            <a href="#" className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-colors">tw</a>
-            <a href="#" className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-colors">fb</a>
-          </div>
           <p className="text-slate-400 text-xs">
-            Copyright © 2026 Dr. MV Sharma Clinic. <br/>All rights reserved.
+            Copyright © 2026 medisTech <br/>All rights reserved.
           </p>
         </div>
 
@@ -66,10 +61,6 @@ const Footer = ({ contactInfo = {} }) => {
                 />
               </span>
               <span>{email}</span>
-            </li>
-            <li className="flex items-start gap-3 pt-2">
-              <span className="text-blue-600 text-base mt-0.5">🕒</span>
-              <span>Mon – Sat: 9:00 AM – 6:00 PM<br/>Sunday: Closed</span>
             </li>
           </ul>
         </div>
