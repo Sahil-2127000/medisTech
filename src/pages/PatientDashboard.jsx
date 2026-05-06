@@ -72,9 +72,10 @@ const PatientDashboard = () => {
          setUpcomingAppointments(data);
 
          // Crucial Notification Logic Strategy evaluating math shifts!
-         const delayed = data.find(app => Number(app.emergencyDelayedMinutes) > 0 && app.status !== 'completed');
+         const delayed = data.find(app => Number(app.emergencyDelayedMinutes) > 0 && app.status !== 'completed' && !sessionStorage.getItem(`dismissed_alert_${app._id || app.id}`));
          if (delayed) {
            setEmergencyAlert({
+              id: delayed._id || delayed.id,
               doctor: delayed.doctorId?.fullName,
               delay: delayed.emergencyDelayedMinutes,
               newTime: delayed.time
@@ -163,7 +164,14 @@ const PatientDashboard = () => {
             <div className="bg-red-500 text-white font-extrabold text-sm md:text-md py-4 shadow-xl flex items-center justify-center gap-3 w-full text-center px-4">
               <span className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center animate-pulse"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></span>
               CLINIC ALERT: A medical code emergency drastically shifted {emergencyAlert.doctor}'s active schedule. Your native booking has been automatically adjusted by explicitly {emergencyAlert.delay} mins to a new block mapping at {emergencyAlert.newTime}.
-              <button onClick={() => setEmergencyAlert(null)} className="ml-4 hover:bg-black/20 px-3 py-1 rounded-full border border-white/40 shadow-sm transition-colors text-xs uppercase tracking-widest">Acknowledge</button>
+              <button onClick={() => {
+                 upcomingAppointments.forEach(app => {
+                     if (Number(app.emergencyDelayedMinutes) > 0) {
+                         sessionStorage.setItem(`dismissed_alert_${app._id || app.id}`, 'true');
+                     }
+                 });
+                 setEmergencyAlert(null);
+              }} className="ml-4 hover:bg-black/20 px-3 py-1 rounded-full border border-white/40 shadow-sm transition-colors text-xs uppercase tracking-widest">Acknowledge</button>
             </div>
          </div>
       )}
