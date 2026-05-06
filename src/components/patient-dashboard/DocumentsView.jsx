@@ -112,46 +112,52 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
               <div
                 key={px._id || i}
                 onClick={() => setActivePrescription(px)}
-                className="group relative bg-white dark:bg-slate-900/40 rounded-[2.5rem] p-7 border border-[#5265ec]/40 dark:border-white/5 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] dark:shadow-none hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.15)] dark:hover:bg-slate-900/60 transition-all duration-500 cursor-pointer flex flex-col lg:flex-row lg:items-center justify-between gap-6 overflow-hidden active:scale-[0.98] ring-1 ring-[#5265ec]/20 hover:ring-[#5265ec]/40"
+                className="group relative bg-white dark:bg-slate-900/40 rounded-3xl p-4 border border-[#5265ec]/40 dark:border-white/5 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] dark:shadow-none hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.15)] dark:hover:bg-slate-900/60 transition-all duration-500 cursor-pointer flex flex-col lg:flex-row lg:items-center justify-between gap-4 overflow-hidden active:scale-[0.98] ring-1 ring-[#5265ec]/20 hover:ring-[#5265ec]/40"
               >
+                {/* Decorative Subtle Blue Wave Background */}
+                <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 opacity-[0.15] dark:opacity-[0.2] pointer-events-none group-hover:opacity-[0.25] dark:group-hover:opacity-[0.3] transition-opacity duration-500">
+                    <svg viewBox="0 0 1440 320" className="w-full h-auto">
+                        <path fill="#5265ec" fillOpacity="1" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                    </svg>
+                </div>
                 {/* Visual Accent Gradient (hidden by default, revealed on hover) */}
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-[#5265ec] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-[#5265ec] opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
 
-                <div className="flex items-center gap-7 relative z-10">
+                <div className="flex items-center gap-4 relative z-10">
                   {/* High-Contrast Date Badge */}
-                  <div className="w-20 h-20 rounded-[1.75rem] bg-linear-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center text-white shadow-xl group-hover:from-[#5265ec] group-hover:to-[#3963F9] transition-all duration-500 shrink-0">
-                    <span className="text-[10px] font-black uppercase tracking-[0.15em] opacity-60 mb-0.5">{new Date(px.createdAt).toLocaleString('default', { month: 'short' })}</span>
-                    <span className="text-3xl font-black">{new Date(px.createdAt).getDate()}</span>
+                  <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center text-white shadow-xl group-hover:from-[#5265ec] group-hover:to-[#3963F9] transition-all duration-500 shrink-0">
+                    <span className="text-[8px] font-black uppercase tracking-[0.15em] opacity-60 mb-0.5">{new Date(px.createdAt).toLocaleString('default', { month: 'short' })}</span>
+                    <span className="text-xl font-black">{new Date(px.createdAt).getDate()}</span>
                   </div>
 
                   <div>
-                    <h3 className="text-2xl font-black text-[#021024] dark:text-white tracking-tight group-hover:text-[#5265ec] dark:group-hover:text-blue-400 transition-colors leading-tight mb-2 uppercase">{currentMember.name}</h3>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex items-center gap-1.5 bg-[#5265ec]/10 dark:bg-blue-500/20 px-3.5 py-1.5 rounded-full border border-[#5265ec]/10 dark:border-blue-500/20">
+                    <h3 className="text-lg font-black text-[#021024] dark:text-white tracking-tight group-hover:text-[#5265ec] dark:group-hover:text-blue-400 transition-colors leading-tight mb-2 uppercase">{currentMember.name}</h3>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex items-center gap-1.5 bg-[#5265ec]/10 dark:bg-blue-500/20 px-2.5 py-1 rounded-full border border-[#5265ec]/10 dark:border-blue-500/20">
                         <svg className="w-3.5 h-3.5 text-[#5265ec] dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                        <span className="text-[10px] font-black text-[#5265ec] dark:text-blue-400 uppercase tracking-wider">Dr. {px.doctorId?.fullName || 'Specialist'}</span>
+                        <span className="text-[9px] font-black text-[#5265ec] dark:text-blue-400 uppercase tracking-wider">Dr. {px.doctorId?.fullName || 'Specialist'}</span>
                       </div>
 
-                      <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-500/10 px-3.5 py-1.5 rounded-full border border-emerald-100 dark:border-emerald-500/20">
-                        <svg className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                        <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{px.diagnosis || 'Evaluation'}</span>
+                      <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-100 dark:border-emerald-500/20">
+                        <svg className="w-3 h-3 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{px.diagnosis || 'Evaluation'}</span>
                       </div>
 
-                      <div className="flex items-center gap-1.5 bg-rose-50 dark:bg-rose-500/10 px-3.5 py-1.5 rounded-full border border-rose-100 dark:border-rose-500/20">
-                        <svg className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.638.319a4 4 0 01-1.833.446H8.442a1 1 0 01-1-1V6.26c0-.287.12-.56.333-.756L10 3.333m-1.583 6.167L3.417 9.5M3.417 9.5L1 12l2.417 2.5m0-10l-2.417 2.5L2.417 7.5" /></svg>
-                        <span className="text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-wider">{px.medicines?.length || 0} Meds</span>
+                      <div className="flex items-center gap-1.5 bg-rose-50 dark:bg-rose-500/10 px-2.5 py-1 rounded-full border border-rose-100 dark:border-rose-500/20">
+                        <svg className="w-3 h-3 text-rose-500 dark:text-rose-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.638.319a4 4 0 01-1.833.446H8.442a1 1 0 01-1-1V6.26c0-.287.12-.56.333-.756L10 3.333m-1.583 6.167L3.417 9.5M3.417 9.5L1 12l2.417 2.5m0-10l-2.417 2.5L2.417 7.5" /></svg>
+                        <span className="text-[9px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-wider">{px.medicines?.length || 0} Meds</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-6 relative z-10 lg:ml-auto">
+                <div className="flex items-center gap-4 relative z-10 lg:ml-auto">
                   <div className="text-right hidden sm:block">
-                    <div className="text-[9px] font-black text-[#5265ec] dark:text-blue-400 uppercase tracking-[0.2em] mb-1 opacity-50">Auth Node Signature</div>
-                    <div className="text-xs font-mono font-bold text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg border border-[#5265ec]/10 dark:border-white/5 shadow-inner">#{(px._id || 'RX').toString().slice(-6).toUpperCase()}</div>
+                    <div className="text-[8px] font-black text-[#5265ec] dark:text-blue-400 uppercase tracking-[0.2em] mb-0.5 opacity-50">Auth Node</div>
+                    <div className="text-[10px] font-mono font-bold text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg border border-[#5265ec]/10 dark:border-white/5 shadow-inner">#{(px._id || 'RX').toString().slice(-6).toUpperCase()}</div>
                   </div>
-                  <div className="w-14 h-14 rounded-2xl bg-white dark:bg-slate-800 shadow-[0_4px_10px_rgb(0,0,0,0.05)] border border-[#5265ec]/10 dark:border-white/5 flex items-center justify-center text-slate-400 group-hover:bg-[#5265ec] dark:group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-[0_10px_20px_rgb(82,101,236,0.3)] group-hover:scale-110 transition-all duration-300">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7-7 7" /></svg>
+                  <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-[0_4px_10px_rgb(0,0,0,0.05)] border border-[#5265ec]/10 dark:border-white/5 flex items-center justify-center text-slate-400 group-hover:bg-[#5265ec] dark:group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-[0_10px_20px_rgb(82,101,236,0.3)] group-hover:scale-110 transition-all duration-300">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7-7 7" /></svg>
                   </div>
                 </div>
               </div>

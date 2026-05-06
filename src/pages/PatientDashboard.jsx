@@ -13,7 +13,11 @@ const PatientDashboard = () => {
   // Natively rip routing variables dynamically catching root paths explicitly
   const pathParts = location.pathname.split('/').filter(Boolean);
   const activeTab = pathParts[1] || 'home'; 
-  const setActiveTab = (tab) => navigate(`/patientdashboard/${tab}`);
+  const setActiveTab = (tab, search = "") => {
+    React.startTransition(() => {
+      navigate(`/patientdashboard/${tab}${search}`);
+    });
+  };
   const socket = useSocket();
 
   // Attempt to load real logged-in user profile, fallback to Guest
@@ -144,6 +148,7 @@ const PatientDashboard = () => {
       date: app.date,
       time: app.time,
       status: app.status,
+      patientName: app.patientName,
       img: `https://placehold.co/100x100/fca5a5/ffffff.png?text=D`
     })),
     history: historyFiltered.map(app => ({
@@ -151,6 +156,7 @@ const PatientDashboard = () => {
       date: app.date,
       time: app.time,
       status: app.status,
+      patientName: app.patientName,
       img: `https://placehold.co/100x100/fca5a5/ffffff.png?text=D`
     }))
   };
