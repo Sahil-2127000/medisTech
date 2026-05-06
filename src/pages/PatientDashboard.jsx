@@ -72,7 +72,7 @@ const PatientDashboard = () => {
          setUpcomingAppointments(data);
 
          // Crucial Notification Logic Strategy evaluating math shifts!
-         const delayed = data.find(app => Number(app.emergencyDelayedMinutes) > 0 && app.status !== 'completed' && !sessionStorage.getItem(`dismissed_alert_${app._id || app.id}`));
+         const delayed = data.find(app => Number(app.emergencyDelayedMinutes) > 0 && app.status !== 'completed' && !localStorage.getItem(`dismissed_alert_${app._id || app.id}`));
          if (delayed) {
            setEmergencyAlert({
               id: delayed._id || delayed.id,
@@ -167,7 +167,7 @@ const PatientDashboard = () => {
               <button onClick={() => {
                  upcomingAppointments.forEach(app => {
                      if (Number(app.emergencyDelayedMinutes) > 0) {
-                         sessionStorage.setItem(`dismissed_alert_${app._id || app.id}`, 'true');
+                         localStorage.setItem(`dismissed_alert_${app._id || app.id}`, 'true');
                      }
                  });
                  setEmergencyAlert(null);

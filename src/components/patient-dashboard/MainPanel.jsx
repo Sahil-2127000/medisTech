@@ -83,7 +83,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
               <div className="text-xl font-extrabold text-[#0F172A] dark:text-white leading-none mb-1">
                  {(patientData.upcoming?.length || 0) + (patientData.history?.length || 0)}
               </div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Appts</div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Appointments</div>
            </div>
         </div>
 
@@ -206,12 +206,12 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
         <div className="bg-[#F8FAFC] dark:bg-slate-800/80 rounded-3xl p-8 shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-[#E2E8F0] dark:border-slate-700 flex flex-col h-full">
            <div className="flex justify-between items-center mb-6 shrink-0">
              <h3 className="font-extrabold text-[#0F172A] dark:text-white text-lg">Today's Appointments</h3>
-             <span className="bg-blue-100 text-blue-600 text-[11px] font-bold px-3 py-1.5 rounded-full">
+             <span className="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-1.5 rounded-full w-25 text-center">
                {todayApps.length} matches
              </span>
            </div>
            
-           <div className="flex-1 flex flex-col items-center justify-center text-center">
+           <div className="flex-1 flex flex-col items-center  text-center">
               {todayApps.length > 0 ? (
                  <div className="w-full space-y-4">
                    {todayApps.map((app, idx) => (
