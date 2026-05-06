@@ -8,7 +8,7 @@ const HeroSection = () => {
       {/* Background Image & Overlays */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://www.healthathomes.com/wp-content/uploads/2024/02/DOCTOR-AT-HOME-1.png"
+          src="public/hero_image.png"
           alt="Medical Hospital Background"
           className="w-full h-full object-cover object-top"
         />
