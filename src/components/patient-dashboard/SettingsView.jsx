@@ -208,7 +208,7 @@ const SettingsView = ({ patientData }) => {
 
       <div className="space-y-6">
         {/* Security Context */}
-        <div className="bg-white dark:bg-slate-900/40 rounded-4xl border border-gray-100 dark:border-white/5 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-8 transition-colors">
+        <div className="bg-white dark:bg-slate-900/40 rounded-4xl border-2 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
             <svg className="w-6 h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
             Security Core Context
@@ -234,17 +234,17 @@ const SettingsView = ({ patientData }) => {
                   )}
                 </div>
               ) : (
-                <div className="bg-slate-50/40 backdrop-blur-md p-6 rounded-3xl border border-white/60 shadow-inner">
+                <div className="bg-slate-50/40 dark:bg-slate-800/40 backdrop-blur-md p-6 rounded-3xl border-2 border-slate-200 dark:border-slate-700 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50">
                   <div className="flex justify-between items-center mb-6">
-                    <div className="font-bold text-slate-800 text-lg">{isVerified ? 'Set New Security Credentials' : 'Verify Current Identity'}</div>
-                    <button onClick={() => { setIsChangingPassword(false); setSaveMessage(''); setIsVerified(false); setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' }) }} className="text-gray-400 hover:text-red-500 font-bold text-sm bg-white/50 px-3 py-1 rounded-lg transition-colors">Cancel</button>
+                    <div className="font-bold text-slate-800 dark:text-white text-lg">{isVerified ? 'Set New Security Credentials' : 'Verify Current Identity'}</div>
+                    <button onClick={() => { setIsChangingPassword(false); setSaveMessage(''); setIsVerified(false); setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' }) }} className="text-gray-400 hover:text-red-500 font-bold text-sm bg-white/50 dark:bg-white/10 px-3 py-1 rounded-lg transition-colors">Cancel</button>
                   </div>
 
                   {!isVerified ? (
                     <div className="flex flex-col gap-4">
                       <div className="flex-1">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5 ml-1">Confirm Old Password</label>
-                        <input type="password" name="oldPassword" value={passwordData.oldPassword} onChange={handlePasswordChange} className="w-full bg-white/60 backdrop-blur-sm border border-white focus:border-[#5265ec] rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 outline-none transition-all shadow-sm placeholder:text-gray-300" placeholder="••••••••" />
+                        <input type="password" name="oldPassword" value={passwordData.oldPassword} onChange={handlePasswordChange} className="w-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm border border-slate-200 dark:border-slate-700 focus:border-[#5265ec] dark:focus:border-[#5265ec] rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 dark:text-white outline-none transition-all shadow-sm placeholder:text-gray-400 dark:placeholder:text-gray-500" placeholder="••••••••" />
                       </div>
                       <div className="flex items-center justify-between mt-2">
                         {saveMessage && (
@@ -275,11 +275,11 @@ const SettingsView = ({ patientData }) => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div className="flex-1">
                           <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5 ml-1">New Secure Password</label>
-                          <input type="password" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} className="w-full bg-white/60 backdrop-blur-sm border border-white focus:border-[#5265ec] rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 outline-none transition-all shadow-sm placeholder:text-gray-300" placeholder="••••••••" />
+                          <input type="password" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} className="w-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm border border-slate-200 dark:border-slate-700 focus:border-[#5265ec] dark:focus:border-[#5265ec] rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 dark:text-white outline-none transition-all shadow-sm placeholder:text-gray-400 dark:placeholder:text-gray-500" placeholder="••••••••" />
                         </div>
                         <div className="flex-1">
                           <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5 ml-1">Confirm New Selection</label>
-                          <input type="password" name="confirmPassword" value={passwordData.confirmPassword} onChange={handlePasswordChange} className="w-full bg-white/60 backdrop-blur-sm border border-white focus:border-[#5265ec] rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 outline-none transition-all shadow-sm placeholder:text-gray-300" placeholder="••••••••" />
+                          <input type="password" name="confirmPassword" value={passwordData.confirmPassword} onChange={handlePasswordChange} className="w-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm border border-slate-200 dark:border-slate-700 focus:border-[#5265ec] dark:focus:border-[#5265ec] rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 dark:text-white outline-none transition-all shadow-sm placeholder:text-gray-400 dark:placeholder:text-gray-500" placeholder="••••••••" />
                         </div>
                       </div>
 
@@ -301,12 +301,12 @@ const SettingsView = ({ patientData }) => {
       </div>
 
         {/* 🌓 Appearance & Theme */}
-        <div className="bg-white dark:bg-slate-900/40 rounded-4xl border border-gray-100 dark:border-white/5 shadow-[0_10px_20px_rgba(0,0,0,0.03)] p-8 transition-colors">
+        <div className="bg-white dark:bg-slate-900/40 rounded-4xl border-2 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
             <svg className="w-6 h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
             Appearance & Theme
           </h2>
-          <div className="flex items-center justify-between p-6 bg-slate-50/50 dark:bg-slate-800/40 rounded-3xl border border-white/60 dark:border-white/5 shadow-inner transition-all">
+          <div className="flex items-center justify-between p-6 bg-slate-50/50 dark:bg-slate-800/40 rounded-3xl border-2 border-slate-200 dark:border-slate-700 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 transition-all">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-900 shadow-sm flex items-center justify-center text-[#5265ec]">
                 {!isDark ? (

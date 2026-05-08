@@ -295,118 +295,109 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
       {/* Hidden PDF Template for Generation */}
       {activePrescription && (
         <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
-          <div id="pdf-template" style={{ width: '800px', minHeight: '1130px', backgroundColor: 'white', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-            {/* Header Wave */}
-            <div style={{ height: '180px', backgroundColor: '#0d9488', position: 'relative' }}>
-              <div style={{ padding: '40px 60px', color: 'white' }}>
-                <h1 style={{ fontSize: '32px', fontWeight: '900', margin: 0 }}>Dr. {activePrescription.doctorId?.fullName || 'Specialist'}</h1>
-                <p style={{ fontSize: '14px', fontWeight: '700', opacity: 0.9 }}>M.B.B.S, M.D. (Internal Medicine)</p>
-              </div>
-              <svg style={{ position: 'absolute', bottom: 0, width: '100%', height: '80px' }} viewBox="0 0 1440 320" preserveAspectRatio="none">
-                <path fill="#ffffff" fillOpacity="1" d="M0,160L48,176C96,192,192,224,288,224C384,224,480,192,576,165.3C672,139,768,117,864,128C960,139,1056,181,1152,197.3C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-              </svg>
-            </div>
-
-            {/* Graphic Horizontal Watermark */}
-            <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', pointerEvents: 'none', zIndex: 0, opacity: 0.04 }}>
-              <div style={{ fontSize: '100px', fontWeight: '900', color: '#0d9488', letterSpacing: '-5px', position: 'relative' }}>
-                MedicsTech
-                <div style={{ position: 'absolute', bottom: '-10px', left: 0, width: '100%', height: '8px', background: 'linear-gradient(90deg, transparent, #0d9488, transparent)' }}></div>
-              </div>
-              {/* Visual Tech Graphics */}
-              <div style={{ display: 'flex', gap: '40px', marginTop: '20px' }}>
-                {[1, 2, 3, 4, 5].map(v => (
-                  <div key={v} style={{ width: '40px', height: '40px', border: '2px solid #0d9488', borderRadius: '10px', transform: 'rotate(45deg)' }}></div>
-                ))}
-              </div>
-            </div>
-
-            {/* Patient Info */}
-            <div style={{ padding: '60px 60px 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', fontSize: '14px', position: 'relative' }}>
-              <div style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '8px' }}>
-                <span style={{ color: '#aaa', fontWeight: 'bold' }}>Patient :</span>
-                <span style={{ fontWeight: '900', color: '#1a1a1a', marginLeft: '10px' }}>{currentMember.name}</span>
-              </div>
-              <div style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '8px' }}>
-                <span style={{ color: '#aaa', fontWeight: 'bold' }}>Date :</span>
-                <span style={{ fontWeight: '900', color: '#1a1a1a', marginLeft: '10px' }}>{new Date(activePrescription.createdAt).toLocaleDateString()}</span>
-              </div>
-              <div style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '8px' }}>
-                <span style={{ color: '#aaa', fontWeight: 'bold' }}>Age/Gender :</span>
-                <span style={{ fontWeight: '900', color: '#1a1a1a', marginLeft: '10px' }}>{patientData.age || '--'} Yrs • {patientData.gender || '---'}</span>
-              </div>
-              <div style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '8px' }}>
-                <span style={{ color: '#aaa', fontWeight: 'bold' }}>Diagnosis :</span>
-                <span style={{ fontWeight: '900', color: '#1a1a1a', marginLeft: '10px' }}>{activePrescription.diagnosis || 'General evaluation'}</span>
-              </div>
-            </div>
-
-            {/* Medicines Header Row */}
-            <div style={{ padding: '40px 60px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #0d9488', paddingBottom: '10px', position: 'relative' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <div style={{ fontSize: '14px', fontWeight: '900', color: '#0d9488', textTransform: 'uppercase', letterSpacing: '2px' }}>Clinical Prescription</div>
-
-              </div>
-              <div style={{ display: 'flex', gap: '20px', paddingRight: '10px' }}>
-              </div>
-            </div>              {/* Medicines List Row-Style */}
-            <div style={{ padding: '30px 60px', flex: 1, position: 'relative' }}>
-              {activePrescription.medicines.map((med, i) => {
-                const freq = med.frequency || '';
-                const isM = freq.includes('Morning');
-                const isA = freq.includes('Afternoon');
-                const isN = freq.includes('Night');
-
-                return (
-                  <div key={i} style={{ padding: '20px 0', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '18px', fontWeight: '900', color: '#111827' }}>{i + 1}. {med.name} {med.dosage}</div>
-                      <div style={{ display: 'flex', marginTop: '10px' }}>
-                        <div style={{ backgroundColor: '#ecfdf5', padding: '4px 12px', borderRadius: '12px', fontSize: '10px', fontWeight: '900', color: '#0d9488', border: '1px solid #d1fae5', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                          For {med.duration?.toLowerCase().includes('day') ? med.duration : `${med.duration} Days`}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '20px', paddingRight: '10px' }}>
-                      {/* Morning */}
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: isM ? '#0d9488' : '#f9fafb', color: isM ? 'white' : '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '900' }}>
-                          {isM ? '1' : '0'}
-                        </div>
-                        <span style={{ fontSize: '7px', fontWeight: '900', color: '#9ca3af', textTransform: 'uppercase' }}>Morn</span>
-                      </div>
-                      {/* Afternoon */}
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: isA ? '#0d9488' : '#f9fafb', color: isA ? 'white' : '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '900' }}>
-                          {isA ? '1' : '0'}
-                        </div>
-                        <span style={{ fontSize: '7px', fontWeight: '900', color: '#9ca3af', textTransform: 'uppercase' }}>Aftn</span>
-                      </div>
-                      {/* Night */}
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: isN ? '#0d9488' : '#f9fafb', color: isN ? 'white' : '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '900' }}>
-                          {isN ? '1' : '0'}
-                        </div>
-                        <span style={{ fontSize: '7px', fontWeight: '900', color: '#9ca3af', textTransform: 'uppercase' }}>Night</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Footer Wave */}
-            <div style={{ marginTop: 'auto', minHeight: '130px', backgroundColor: '#0d9488', position: 'relative', display: 'flex', alignItems: 'flex-end', padding: '30px 60px' }}>
-              <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '80px', transform: 'rotate(180deg)' }} viewBox="0 0 1440 320" preserveAspectRatio="none">
-                <path fill="#ffffff" fillOpacity="1" d="M0,160L48,176C96,192,192,224,288,224C384,224,480,192,576,165.3C672,139,768,117,864,128C960,139,1056,181,1152,197.3C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-              </svg>
-              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', color: 'white', position: 'relative', zIndex: 10 }}>
+          <div id="pdf-template" className="w-[600px] bg-white relative flex flex-col justify-start" style={{ minHeight: '850px', backgroundColor: 'white' }}>
+            {/* Header Data */}
+            <div className="w-full relative z-10 shrink-0 bg-[#0d9488] p-10 pb-16">
+              <div className="flex justify-between items-start text-white">
                 <div>
-                  <h4 style={{ fontSize: '18px', fontWeight: '900', margin: 0 }}>Pulse Health Clinic</h4>
-                  <p style={{ fontSize: '10px', fontWeight: 'bold', opacity: 0.8, margin: '2px 0 0' }}>123 Clinical Way, Medica Sector • 000-000-0000</p>
+                  <h1 className="text-3xl font-bold tracking-tight leading-none mb-1">Dr. {activePrescription.doctorId?.fullName || activePrescription.doctorName || 'Specialist'}</h1>
+                  <p className="text-sm font-medium opacity-90">{activePrescription.doctorId?.specialization || 'M.B.B.S , M.D. '}</p>
                 </div>
               </div>
+            </div>
+
+            {/* Patient Info Grid */}
+            <div className="px-10 relative z-10 w-full shrink-0 -mt-8">
+              <div className="bg-white rounded-2xl p-8 shadow-xl shadow-black/5 grid grid-cols-2 gap-y-6 text-[13px] border border-gray-100">
+                <div className="flex gap-2 items-end">
+                  <span className="text-gray-400 font-semibold whitespace-nowrap">Patient :</span>
+                  <span className="flex-1 border-b border-gray-100 font-semibold text-slate-800 pb-0.5">{currentMember.name}</span>
+                </div>
+                <div className="flex gap-2 items-end ml-4">
+                  <span className="text-gray-400 font-semibold whitespace-nowrap">Patient ID :</span>
+                  <span className="flex-1 border-b border-gray-100 font-semibold text-slate-800 pb-0.5">{patientData?.patientUid || '---'}</span>
+                </div>
+                <div className="flex gap-2 items-end">
+                  <span className="text-gray-400 font-semibold whitespace-nowrap">Date :</span>
+                  <span className="flex-1 border-b border-gray-100 font-semibold text-slate-800 pb-0.5">{new Date(activePrescription.createdAt).toLocaleDateString()}</span>
+                </div>
+                <div className="flex gap-2 items-end ml-4">
+                  <span className="text-gray-400 font-semibold">Age/Gender :</span>
+                  <span className="flex-1 border-b border-gray-100 font-semibold text-slate-800 pb-0.5">{patientData.age || '--'} yrs • {patientData.gender || '---'}</span>
+                </div>
+                <div className="flex gap-2 items-end">
+                  <span className="text-gray-400 font-semibold whitespace-nowrap">Diagnosis :</span>
+                  <span className="flex-1 border-b border-gray-100 font-medium text-slate-800 pb-0.5 italic text-xs">{activePrescription.diagnosis || 'General evaluation completed.'}</span>
+                </div>
+                <div className="flex gap-2 items-end ml-4">
+                  <span className="text-gray-400 font-semibold whitespace-nowrap">Notes :</span>
+                  <span className="flex-1 border-b border-gray-100 font-medium text-slate-800 pb-0.5 italic text-xs">{activePrescription.clinicalNotes || "No extra notes."}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Medicines Dynamic Grid Body */}
+            <div className="px-10 mt-10 w-full relative z-10 flex-1">
+              <div className="mb-6 flex items-center justify-between border-b-2 border-slate-200 pb-4">
+                <div className="flex items-center gap-4">
+                  <div className="text-[11px] font-semibold text-[#0d9488] uppercase tracking-[0.3em]">Clinical Prescription</div>
+                </div>
+                <div className="flex gap-4 pr-4 items-center">
+                  <div className="text-[9px] font-semibold text-white bg-[#0d9488] px-1 py-1 rounded-full uppercase tracking-widest w-18 text-center">
+                    Duration
+                  </div>
+                  <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-10 text-center">Morn</div>
+                  <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-10 text-center">Aftn</div>
+                  <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest w-10 text-center">Night</div>
+                </div>
+              </div>
+
+              {(!activePrescription.medicines || activePrescription.medicines.length === 0) ? (
+                <div className="mt-10 px-8 py-16 border-2 border-dashed border-gray-100 rounded-[2.5rem] text-center text-gray-300 w-full bg-slate-50/20">
+                  <h4 className="text-xl font-bold text-gray-400 mb-2 uppercase tracking-widest">No medicine prescribed</h4>
+                  <p className="text-sm">Refer to clinical notes for further instructions.</p>
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  {activePrescription.medicines.map((med, i) => {
+                    // Backwards compatibility: Handle both string 'Morning' in an array (timing) OR string includes 'Morning' (frequency)
+                    const isM = (med.timing && med.timing.includes('Morning')) || (med.frequency && med.frequency.includes('Morning'));
+                    const isA = (med.timing && med.timing.includes('Afternoon')) || (med.frequency && med.frequency.includes('Afternoon'));
+                    const isN = (med.timing && med.timing.includes('Night')) || (med.frequency && med.frequency.includes('Night'));
+
+                    return (
+                      <div key={med.id || i} className="flex items-center justify-between gap-2 py-2 border-b border-gray-50 last:border-b-0">
+                        <div className="flex-1">
+                          <h4 className="text-base font-semibold text-slate-800">{i + 1}. {med.name} {med.dosage && `- ${med.dosage}`}</h4>
+                          <p className="text-[8px] font-semibold text-[#0d9488] mt-0.5 uppercase tracking-widest">({med.food || 'As Directed'})</p>
+                        </div>
+
+                        <div className="flex gap-4 pr-4 items-center">
+                          <div className="w-16 text-center text-xs font-semibold text-[#0d9488] flex flex-col items-center justify-center">
+                             <span className="truncate" title={med.duration}>{med.duration} {med.duration?.toLowerCase().includes('day') ? '' : 'days'}</span>
+                             {med.alternativeDays && <span className="text-[8px] mt-0.5 uppercase tracking-widest">(Alt. Days)</span>}
+                          </div>
+                          <div className={`w-10 text-center text-lg font-semibold ${isM ? 'text-[#0d9488]' : 'text-slate-300'}`}>{isM ? '1' : '0'}</div>
+                          <div className={`w-10 text-center text-lg font-semibold ${isA ? 'text-[#0d9488]' : 'text-slate-300'}`}>{isA ? '1' : '0'}</div>
+                          <div className={`w-10 text-center text-lg font-semibold ${isN ? 'text-[#0d9488]' : 'text-slate-300'}`}>{isN ? '1' : '0'}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Footer Area */}
+            <div className="mt-auto p-10 pt-16 w-full relative shrink-0">
+              <div className="flex justify-between items-end relative z-10">
+                <div className="text-gray-400">
+                  <div className="text-xs font-semibold text-[#0d9488] uppercase tracking-widest mb-1">Authenticated By</div>
+                  <h5 className="font-semibold text-lg text-slate-800 leading-none">Dr. {activePrescription.doctorId?.fullName || activePrescription.doctorName || 'Specialist'}</h5>
+                  <p className="text-[10px] font-medium opacity-80 mt-1">{activePrescription.doctorId?.clinicAddress || 'Registered Clinic'} • {activePrescription.doctorId?.phone || 'MedicsTech ecosystem'}</p>
+                </div>
+              </div>
+              <div className="absolute bottom-0 right-0 left-0 h-2 bg-[#0d9488]"></div>
             </div>
           </div>
         </div>
