@@ -63,8 +63,9 @@ const DoctorDashboard = () => {
     useEffect(() => {
         historyStatusRef.current = historyStatus;
     }, [historyStatus]);
-    
+
     const [profile, setProfile] = useState({});
+    const [activeStatModal, setActiveStatModal] = useState(null); // 'todays-consults', 'completed', 'pending'
     const [showHistoryView, setShowHistoryView] = useState(false); // New Interactive Gateway
     const [showOfflineBooking, setShowOfflineBooking] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -92,7 +93,7 @@ const DoctorDashboard = () => {
         };
         checkEmergency();
         window.addEventListener("emergencyStateToggled", checkEmergency);
-        
+
         if (isEmergencyActive) {
             interval = setInterval(checkEmergency, 1000);
         }
@@ -146,7 +147,7 @@ const DoctorDashboard = () => {
                     clinicAddress: data.clinicAddress || ''
                 });
             }
-        } catch{
+        } catch {
             console.error("Binding profile structure natively failed.");
         }
     };
@@ -219,13 +220,13 @@ const DoctorDashboard = () => {
         };
         window.addEventListener("appointmentsUpdated", handleUpdate);
         window.addEventListener("doctorProfileUpdated", loadDoctorProfile);
-        
+
         if (socket) {
             socket.on('queueUpdated', handleUpdate);
         }
 
-        const interval = setInterval(handleUpdate, 15000); 
-        
+        const interval = setInterval(handleUpdate, 15000);
+
         return () => {
             window.removeEventListener("appointmentsUpdated", handleUpdate);
             window.removeEventListener("doctorProfileUpdated", loadDoctorProfile);
@@ -346,28 +347,28 @@ const DoctorDashboard = () => {
 
             {/* Master Flex Canvas matching exactly the Patient perspective UI bounds */}
             <div className="w-full max-w-[1500px] h-screen md:h-[90vh] md:min-h-[800px] bg-white/80 backdrop-blur-2xl md:rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.06)] flex flex-col md:flex-row overflow-hidden border-0 md:border border-white/60 transition-colors duration-300 z-10 relative">
-                
+
                 {/* GLOBAL MOBILE HEADER */}
                 <div className="md:hidden flex flex-row items-center justify-between w-full bg-white/95 backdrop-blur-md border-b border-gray-100 px-6 py-4 z-30 shrink-0 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <button 
+                        <button
                             onClick={() => setIsMobileMenuOpen(true)}
                             className="p-2 -ml-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 transition-colors"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
                         </button>
                         <h1 className="text-xl font-extrabold text-[#021024]">MedisTech</h1>
                     </div>
                 </div>
                 {/* Left Explicit Profile & Navigation Tab Controller */}
-                <DoctorSidebar 
-                    activeTab={activeTab} 
-                    setActiveTab={(t) => { 
-                        setActiveTab(t); 
-                        setShowHistoryView(false); 
-                        setIsMobileMenuOpen(false); 
-                    }} 
-                    profile={profile} 
+                <DoctorSidebar
+                    activeTab={activeTab}
+                    setActiveTab={(t) => {
+                        setActiveTab(t);
+                        setShowHistoryView(false);
+                        setIsMobileMenuOpen(false);
+                    }}
+                    profile={profile}
                     isOpen={isMobileMenuOpen}
                     onClose={() => setIsMobileMenuOpen(false)}
                 />
@@ -391,18 +392,18 @@ const DoctorDashboard = () => {
                                                     <h1 className="hidden md:block text-2xl md:text-4xl font-extrabold text-[#021024] transition-colors whitespace-nowrap">Doctor Dashboard</h1>
                                                 </div>
                                                 <div className="flex items-center gap-2 md:gap-4 flex-wrap w-full lg:w-auto">
-                                                    <button 
+                                                    <button
                                                         onClick={handleToggleEmergency}
                                                         className={`shrink-0 px-3 md:px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-md transition-all flex items-center gap-1.5 md:gap-2 ${isEmergencyActive ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/30 animate-pulse' : 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30'}`}
                                                     >
-                                                        <svg className="w-4 h-4 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                                        <svg className="w-4 h-4 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                                                         {isEmergencyActive ? `Stop (${formatEmergencyTime(emergencyElapsed)})` : 'Emergency Case'}
                                                     </button>
-                                                    <button 
+                                                    <button
                                                         onClick={() => setShowOfflineBooking(true)}
                                                         className="shrink-0 bg-clinic-600 hover:bg-clinic-800 text-white px-3 md:px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-md shadow-clinic-600/30 transition-all flex items-center gap-1.5 md:gap-2"
                                                     >
-                                                        <svg className="w-4 h-4 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                                        <svg className="w-4 h-4 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                                                         <span className="hidden sm:inline">Make Appointment</span>
                                                         <span className="sm:hidden">Book</span>
                                                     </button>
@@ -426,16 +427,22 @@ const DoctorDashboard = () => {
                                             </div>
 
                                             <StatCards appointments={appointments} historicalTotal={historyAppointments.length}
-                                                onCardClick={(id) => { if (id === 'total-patients') setShowHistoryView(true); }}
+                                                onCardClick={(id) => { 
+                                                    if (id === 'total-patients') {
+                                                        setShowHistoryView(true); 
+                                                    } else {
+                                                        setActiveStatModal(id);
+                                                    }
+                                                }}
                                             />
 
                                             <div className="flex flex-col lg:flex-row gap-8 w-full mt-2">
                                                 <div className="flex-1 w-full ">
-                                                    <CurrentPatient 
-                                                        appointments={appointments} 
-                                                        onStatusChange={handleStatusChange} 
+                                                    <CurrentPatient
+                                                        appointments={appointments}
+                                                        onStatusChange={handleStatusChange}
                                                         onSkip={handleSkipAppointment}
-                                                        onFinishConsultation={handleFinishConsultation} 
+                                                        onFinishConsultation={handleFinishConsultation}
                                                         doctorProfile={profile}
                                                     />
                                                 </div>
@@ -471,9 +478,9 @@ const DoctorDashboard = () => {
             </div>
 
             {showOfflineBooking && (
-                <OfflineBookingModal 
-                    onClose={() => setShowOfflineBooking(false)} 
-                    onSuccess={loadDoctorAppointments} 
+                <OfflineBookingModal
+                    onClose={() => setShowOfflineBooking(false)}
+                    onSuccess={loadDoctorAppointments}
                 />
             )}
 
@@ -504,7 +511,7 @@ const DoctorDashboard = () => {
             )}
 
             {showEmergencyPrescription && emergencyApptForPrescription && (
-                <PrescriptionBuilder 
+                <PrescriptionBuilder
                     activePatient={emergencyApptForPrescription}
                     onCancel={() => setShowEmergencyPrescription(false)}
                     onSave={async (medicinesArray, pdfBase64, diagnosis, clinicalNotes) => {
@@ -537,6 +544,49 @@ const DoctorDashboard = () => {
                     }}
                     doctorProfile={profile}
                 />
+            )}
+            {/* Stat Detail Modal */}
+            {activeStatModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in" onClick={() => setActiveStatModal(null)}>
+                    <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl relative animate-slide-up border border-slate-100 overflow-hidden flex flex-col max-h-[80vh]" onClick={e => e.stopPropagation()}>
+                        <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <h3 className="text-2xl font-black text-slate-800 capitalize">
+                                {activeStatModal === 'todays-consults' ? "Today's Consults" : activeStatModal + ' Appointments'}
+                            </h3>
+                            <button onClick={() => setActiveStatModal(null)} className="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                        <div className="p-8 overflow-y-auto flex-1 no-scrollbar space-y-4">
+                            {(() => {
+                                let list = [];
+                                if (activeStatModal === 'completed') list = historyAppointments.filter(a => a.status === 'completed');
+                                else if (activeStatModal === 'pending') list = historyAppointments.filter(a => a.status === 'pending');
+                                else if (activeStatModal === 'todays-consults') list = appointments;
+
+                                if (list.length === 0) {
+                                    return <div className="text-center py-10 text-slate-400 font-medium">No records found.</div>;
+                                }
+
+                                return list.map((app, idx) => (
+                                    <div key={idx} className="p-4 rounded-2xl border border-slate-100 bg-white shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+                                        <div>
+                                            <div className="font-bold text-slate-800 text-lg">{app.name}</div>
+                                            <div className="text-sm font-medium text-slate-500">{app.date} at {app.time}</div>
+                                        </div>
+                                        <div className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider ${app.status === 'completed' ? 'bg-emerald-100 text-emerald-600' :
+                                            app.status === 'pending' ? 'bg-amber-100 text-amber-600' :
+                                            app.status === 'approved' ? 'bg-blue-100 text-blue-600' :
+                                            'bg-slate-100 text-slate-600'
+                                        }`}>
+                                            {app.status}
+                                        </div>
+                                    </div>
+                                ));
+                            })()}
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

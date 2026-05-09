@@ -16,7 +16,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
   const notifications = useMemo(() => {
     const allApps = [...(patientData.history || []), ...(patientData.upcoming || [])];
     return allApps
-      .filter(app => ['approved', 'rejected', 'completed'].includes(app.status))
+      .filter(app => ['approved', 'rejected', 'completed', 'cancelled'].includes(app.status))
       // Sort newest first by parsing DD-MM-YYYY
       .sort((a, b) => {
          const dateA = new Date(a.date.split('-').reverse().join('-'));
@@ -106,7 +106,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${notif.status === 'approved' ? 'bg-emerald-100 text-emerald-600' : notif.status === 'completed' ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}`}>
                           {notif.status === 'approved' && <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                           {notif.status === 'completed' && <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-                          {notif.status === 'rejected' && <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>}
+                          {(notif.status === 'rejected' || notif.status === 'cancelled') && <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>}
                         </div>
                         <div>
                           <div className="font-bold text-sm text-slate-800 dark:text-white mb-0.5">{notif.title}</div>

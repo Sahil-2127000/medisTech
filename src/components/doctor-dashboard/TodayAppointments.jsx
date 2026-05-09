@@ -57,7 +57,7 @@ const TodayAppointments = ({ appointments }) => {
                     {app.status === 'completed' && <span className="bg-gray-200 text-gray-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Completed</span>}
                     {app.status === 'approved' && <span className="bg-green-100 text-green-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Approved</span>}
                     {app.status === 'pending' && <span className="bg-amber-100 text-amber-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Pending</span>}
-                    {app.status === 'rejected' && <span className="bg-red-100 text-red-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Rejected</span>}
+                    {(app.status === 'rejected' || app.status === 'cancelled') && <span className="bg-red-100 text-red-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">{app.status === 'cancelled' ? 'Cancelled' : 'Rejected'}</span>}
                   </div>
                 </div>
               </div>
