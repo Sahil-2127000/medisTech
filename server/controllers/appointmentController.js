@@ -562,23 +562,55 @@ exports.skipAppointment = async (req, res) => {
       return res.status(400).json({ message: 'No available slots left today to reschedule this patient.' });
     }
 
-    const latestSlot = availableSlots[availableSlots.length - 1]; // Last slot of the day
-    const newTokenNumber = result.slots.indexOf(latestSlot) + 1;
+    // Find slots that are later than the current appointment time
+    const nextSlots = availableSlots.filter(s => s > appt.time);
+
+    // If there are no available slots after the current one, cancel it
+    if (nextSlots.length === 0) {
+      appt.status = 'cancelled';
+      await appt.save();
+      console.log(`[DEBUG] Appt successfully cancelled because there are no available slots after it.`);
+
+      // Notify Patient via Email
+      if (appt.patientId && appt.patientId.email && appt.patientId.emailNotifications !== false) {
+        const pName = capitalizeNames(appt.patientId.fullName);
+        const dName = capitalizeNames(appt.doctorId.fullName);
+        
+        const subject = "Appointment Cancelled - MedisTech";
+        const html = `<h2>Hello ${pName},</h2>
+                      <p>Your appointment with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Cancelled</strong> as it was skipped and no further slots are available today.</p>
+                      <p>Please log in to your dashboard to schedule a new appointment.</p>`;
+        sendEmail(appt.patientId.email, subject, html).catch(e => console.error("Email fail:", e));
+      }
+
+      // Trigger Socket.io update natively
+      const io = req.app.get('socketio');
+      if (io) {
+        const emitId = targetDoctorId.toString();
+        io.emit('queueUpdated', { doctorId: emitId });
+      }
+
+      return res.status(200).json({ message: 'Patient cancelled because they were at the end of the queue.', appointment: appt });
+    }
+
+    // Assign to the next available slot immediately following the current one
+    const targetSlot = nextSlots[0];
+    const newTokenNumber = result.slots.indexOf(targetSlot) + 1;
 
     const oldTime = appt.time;
-    appt.time = latestSlot;
+    appt.time = targetSlot;
     appt.tokenNumber = newTokenNumber;
     await appt.save();
-    console.log(`[DEBUG] Appt successfully moved from ${oldTime} to ${latestSlot} (Token ${newTokenNumber})`);
+    console.log(`[DEBUG] Appt successfully moved from ${oldTime} to ${targetSlot} (Token ${newTokenNumber})`);
 
     // Notify Patient via Email
     if (appt.patientId && appt.patientId.email && appt.patientId.emailNotifications !== false) {
       const pName = capitalizeNames(appt.patientId.fullName);
       const dName = capitalizeNames(appt.doctorId.fullName);
       
-      const subject = "Appointment Update - Clinic@Flow";
+      const subject = "Appointment Update - MedisTech";
       const html = `<h2>Hello ${pName},</h2>
-                    <p>Your appointment with <strong>Dr. ${dName}</strong> has been <strong>Rescheduled</strong> to the end of the day's queue.</p>
+                    <p>Your appointment with <strong>Dr. ${dName}</strong> has been <strong>Rescheduled</strong> to the next available slot in the queue.</p>
                     <p><strong>New Time:</strong> ${appt.time}<br>
                     <strong>New Token:</strong> ${appt.tokenNumber}</p>
                     <p>Previous Time: ${oldTime}</p>
