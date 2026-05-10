@@ -12,6 +12,7 @@ const HeroSection = ({ stats }) => {
   // Display logic: show base values unless dynamic values are higher
   const displayTreated = Math.max(2000, totalPatientsTreated);
   const displaySatisfaction = Math.max(98, patientSatisfaction);
+  const displayExperience = Math.max(15, yearsOfExperience);
 
   return (
 
@@ -51,7 +52,7 @@ const HeroSection = ({ stats }) => {
           {/* Stats */}
           <div className="flex items-center gap-8 md:gap-12 pt-8 mt-8 border-t border-white/20">
             <div>
-              <div className="text-4xl font-bold text-white">{yearsOfExperience}+</div>
+              <div className="text-4xl font-bold text-white">{displayExperience}+</div>
               <div className="text-sm text-blue-200 mt-1 font-medium">Years of Experience</div>
             </div>
             <div>
