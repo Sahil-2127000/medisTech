@@ -47,6 +47,27 @@ const Landing = () => {
     fetchContactInfo();
   }, []);
 
+  const [stats, setStats] = React.useState({
+    totalPatientsTreated: 0,
+    yearsOfExperience: '15',
+    patientSatisfaction: 98
+  });
+
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('http://localhost:5001/api/appointments/public/stats');
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch stats", err);
+      }
+    };
+    fetchStats();
+  }, []);
+
   return (
     <div id="home" className="min-h-screen bg-slate-50/50 font-sans text-slate-900 flex flex-col items-center overflow-x-hidden relative selection:bg-blue-200">
 
@@ -59,7 +80,7 @@ const Landing = () => {
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-linear-to-tr from-purple-100/20 via-pink-50/20 to-transparent rounded-full blur-[120px] pointer-events-none -z-10"></div>
 
       <Navbar />
-      <HeroSection />
+      <HeroSection stats={stats} />
       <AboutSection />
       <ServicesSection />
       <BlogSection />
@@ -70,5 +91,6 @@ const Landing = () => {
     </div>
   );
 };
+
 
 export default Landing;

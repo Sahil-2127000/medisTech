@@ -3,8 +3,12 @@ const router = express.Router();
 const appointmentController = require('../controllers/appointmentController');
 const authMiddleware = require('../middleware/authMiddleware');
 
+// Public Routes
+router.get('/public/stats', appointmentController.getPublicStats);
+
 // Patient Routes
 router.get('/my', authMiddleware, appointmentController.getPatientAppointments);
+
 router.get('/slots', appointmentController.getAvailableSlots);
 router.post('/book', authMiddleware, appointmentController.bookAppointment);
 

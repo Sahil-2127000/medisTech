@@ -754,3 +754,23 @@ exports.offlineBook = async (req, res) => {
   }
 };
 
+exports.getPublicStats = async (req, res) => {
+  try {
+    const totalCompleted = await Appointment.countDocuments({ status: 'completed' });
+    
+    // Fetch the first doctor for experience reference
+    const firstDoctor = await Doctor.findOne();
+    const experience = firstDoctor ? firstDoctor.experience : '15';
+    
+    res.status(200).json({
+      totalPatientsTreated: totalCompleted,
+      yearsOfExperience: experience,
+      patientSatisfaction: 98 // Hardcoded as a number
+    });
+  } catch (error) {
+    console.error('Public Stats Error:', error);
+    res.status(500).json({ message: 'Failed to fetch public stats' });
+  }
+};
+
+
