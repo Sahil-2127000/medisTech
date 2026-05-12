@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const DoctorSidebar = ({ activeTab, setActiveTab, profile, isOpen, onClose }) => {
     const navigate = useNavigate();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
@@ -61,7 +62,7 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile, isOpen, onClose }) =>
 
 
             {/* Logout Button */}
-            <button onClick={handleLogout}
+            <button onClick={() => setShowLogoutModal(true)}
                 className="flex items-center gap-4 px-4 py-3.5 rounded-2xl text-red-500 font-semibold hover:bg-red-50 transition-colors"
             >
                 <svg className="w-5 h-5 rotate-180 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
@@ -69,6 +70,43 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile, isOpen, onClose }) =>
             </button>
 
         </div>
+
+        {/* Logout Confirmation Modal */}
+        {showLogoutModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md animate-fade-in">
+                <div className="bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-white dark:border-white/10 rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.3)] w-full max-w-sm overflow-hidden animate-bounce-in">
+                    <div className="h-2 w-full bg-linear-to-r from-red-400 to-rose-600"></div>
+                    
+                    <div className="p-8 text-center">
+                        <div className="w-16 h-16 bg-red-50 dark:bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-red-500 shadow-inner">
+                            <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </div>
+                        
+                        <h3 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight mb-2">Log Out?</h3>
+                        <p className="text-gray-500 dark:text-gray-400 font-medium text-sm mb-8 leading-relaxed">
+                            Are you sure you want to Log Out?
+                        </p>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            <button
+                                onClick={() => setShowLogoutModal(false)}
+                                className="py-3.5 px-6 rounded-2xl font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-all active:scale-95"
+                            >
+                                No, Stay
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                className="py-3.5 px-6 rounded-2xl font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-all active:scale-95"
+                            >
+                                Yes, Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
         </>
     );
 };

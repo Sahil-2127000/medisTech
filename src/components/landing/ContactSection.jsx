@@ -71,7 +71,7 @@ const ContactSection = ({ contactInfo = {} }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-              <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="John Doe" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+              <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="Sahil Maurya" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -81,7 +81,7 @@ const ContactSection = ({ contactInfo = {} }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="john@gmail.com" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="email@gmail.com" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
               </div>
             </div>
             
