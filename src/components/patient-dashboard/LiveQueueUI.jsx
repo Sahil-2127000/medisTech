@@ -79,13 +79,13 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
             </div>
             <div>
               <h3 className="text-white/70 font-black uppercase tracking-[0.2em] text-xs mb-2">Live Queue Status</h3>
-              <div className="text-5xl font-black tracking-tight">
+              <div className="text-4xl md:text-5xl font-black tracking-tight">
                 {patientToken ? (
                   patientToken - currentlyServing > 0 
                     ? `${patientToken - currentlyServing} Patients Ahead` 
-                    : (patientToken === currentlyServing ? "It's Your Turn!" : `Serving Token ${currentlyServing}`)
+                    : (patientToken === currentlyServing ? "It's Your Turn!" : "Check your live status here")
                 ) : (
-                  `Token ${currentlyServing || '--'}`
+                  "Check your live status here"
                 )}
               </div>
             </div>
