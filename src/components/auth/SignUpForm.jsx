@@ -121,7 +121,7 @@ const SignUpForm = ({ onSwitch }) => {
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="John Doe"
+              placeholder="Enter your full name"
               className="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-blue-500 text-sm text-gray-800 placeholder-gray-300 transition-colors"
             />
           </div>
