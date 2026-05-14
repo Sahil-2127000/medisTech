@@ -476,32 +476,119 @@ exports.getQueueStatus = async (req, res) => {
     let waitTime = 0;
     let estimatedTimeFormatted = null;
 
+    let appointmentStatus = null;
+
     if (req.user && req.user.role === 'patient') {
       const myAppt = await Appointment.findOne({ doctorId, date, patientId: req.user.id, status: { $in: ['pending', 'approved'] } });
       if (myAppt) {
         patientToken = myAppt.tokenNumber;
+        appointmentStatus = myAppt.status;
         // Calculation: (MyToken - CurrentlyServing) * dynamic basis
         const gap = patientToken - currentlyServing;
-        waitTime = gap > 0 ? gap * 15 : 0; // Baseline 15 mins
-
-        // Dynamically shift physical clock forward
+        
+        let eta = new Date();
         if (gap > 0 && currentlyServing > 0) {
-            const eta = new Date();
-            eta.setMinutes(eta.getMinutes() + waitTime);
+            // Queue is active, calculate relative to now
+            eta.setMinutes(eta.getMinutes() + (gap * 15));
+        }
+
+        // Parse scheduled time from the DB
+        const [slotH, slotM] = (myAppt.time).split(':').map(Number);
+        const slotDate = new Date();
+        slotDate.setHours(slotH, slotM, 0, 0);
+
+        // ETA should never be earlier than their scheduled slot
+        // If gap < 0, their token ID is lower but their time might be in the future,
+        // so strictly fallback to their scheduled slot time.
+        if (eta < slotDate || currentlyServing === 0 || gap < 0) {
+            eta = slotDate;
+        }
+
+        const nowMs = new Date();
+        const diffMins = Math.floor((eta - nowMs) / 60000);
+        
+        if (diffMins <= 0) {
+            waitTime = 0;
+            if (gap < 0) {
+                // Patient completely missed their physical turn. Auto-assign next free slot.
+                const result = await getSlotsList(doctorId, date);
+                if (!result.error && !result.isOff) {
+                    const activeAppts = await Appointment.find({ doctorId, date, status: { $in: ['pending', 'approved', 'in_progress'] } });
+                    const bookedTimes = activeAppts.map(a => a.time);
+                    
+                    const nextSlots = result.slots.filter(s => {
+                        const [h, m] = s.split(':').map(Number);
+                        const sDate = new Date();
+                        sDate.setHours(h, m, 0, 0);
+                        return sDate > nowMs && !bookedTimes.includes(s);
+                    });
+
+                    if (nextSlots.length > 0) {
+                        const targetSlot = nextSlots[0];
+                        const newTokenNumber = result.slots.indexOf(targetSlot) + 1;
+                        
+                        // Update DB silently
+                        myAppt.time = targetSlot;
+                        myAppt.tokenNumber = newTokenNumber;
+                        await myAppt.save();
+                        
+                        // Re-evaluate values for UI
+                        patientToken = newTokenNumber;
+                        
+                        const [nH, nM] = targetSlot.split(':').map(Number);
+                        const newSlotDate = new Date();
+                        newSlotDate.setHours(nH, nM, 0, 0);
+                        
+                        waitTime = Math.floor((newSlotDate - nowMs) / 60000);
+                        
+                        let hours = newSlotDate.getHours();
+                        let minutes = newSlotDate.getMinutes();
+                        const ampm = hours >= 12 ? 'PM' : 'AM';
+                        hours = hours % 12 || 12;
+                        const minStr = minutes < 10 ? '0' + minutes : minutes;
+                        
+                        let waitStr = "";
+                        if (waitTime >= 60) {
+                            const wH = Math.floor(waitTime / 60);
+                            const wM = waitTime % 60;
+                            waitStr = wM > 0 ? `${wH} hr ${wM} min` : `${wH} hr`;
+                        } else {
+                            waitStr = `${waitTime} min`;
+                        }
+
+                        estimatedTimeFormatted = `${waitStr} (${hours}:${minStr} ${ampm})`;
+                    } else {
+                        estimatedTimeFormatted = "Turn Passed (No Free Slots)";
+                    }
+                } else {
+                    estimatedTimeFormatted = "Turn Passed";
+                }
+            } else {
+                estimatedTimeFormatted = "Now";
+            }
+        } else {
+            waitTime = diffMins;
             
+            // Format to 12-hour AM/PM
             let hours = eta.getHours();
-            const minutes = eta.getMinutes();
+            let minutes = eta.getMinutes();
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12; 
             const minStr = minutes < 10 ? '0' + minutes : minutes;
-            estimatedTimeFormatted = `${hours}:${minStr} ${ampm}`;
-        } else if (gap > 0 && currentlyServing === 0) {
-            // Queue hasn't started natively, fallback to original physical slot mapping
-            estimatedTimeFormatted = myAppt.originalTime || myAppt.time;
-        } else {
-            // Already time
-            estimatedTimeFormatted = "Now";
+            
+            // Format duration string
+            let waitStr = "";
+            if (waitTime >= 60) {
+                const wH = Math.floor(waitTime / 60);
+                const wM = waitTime % 60;
+                waitStr = wM > 0 ? `${wH} hr ${wM} min` : `${wH} hr`;
+            } else {
+                waitStr = `${waitTime} min`;
+            }
+
+            // Return both duration and absolute real time
+            estimatedTimeFormatted = `${waitStr} (${hours}:${minStr} ${ampm})`;
         }
       }
     }
@@ -512,7 +599,8 @@ exports.getQueueStatus = async (req, res) => {
       estimatedWaitMinutes: waitTime,
       estimatedTimeFormatted,
       activeAppointmentId: active ? active._id : null,
-      isEmergencyActive
+      isEmergencyActive,
+      appointmentStatus
     });
   } catch (error) {
     res.status(500).json({ message: 'Queue data failed' });

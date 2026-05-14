@@ -50,7 +50,7 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
 
   if (loading) return <div className="p-10 text-center"><Spin size="large" tip="Loading Live Queue..." /></div>;
 
-  const { currentlyServing, patientToken, estimatedWaitMinutes, estimatedTimeFormatted, isEmergencyActive } = queueData || {};
+  const { currentlyServing, patientToken, estimatedWaitMinutes, estimatedTimeFormatted, isEmergencyActive, appointmentStatus } = queueData || {};
 
   return (
     <div className="w-full flex flex-col gap-8 animate-fade-in pb-12">
@@ -79,7 +79,15 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
             </div>
             <div>
               <h3 className="text-white/70 font-black uppercase tracking-[0.2em] text-xs mb-2">Live Queue Status</h3>
-              <div className="text-5xl font-black tracking-tight">Token {currentlyServing || '--'}</div>
+              <div className="text-5xl font-black tracking-tight">
+                {patientToken ? (
+                  patientToken - currentlyServing > 0 
+                    ? `${patientToken - currentlyServing} Patients Ahead` 
+                    : (patientToken === currentlyServing ? "It's Your Turn!" : `Serving Token ${currentlyServing}`)
+                ) : (
+                  `Token ${currentlyServing || '--'}`
+                )}
+              </div>
             </div>
           </div>
           
@@ -114,7 +122,11 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
                 <div>
                   <div className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest">Estimated Time</div>
                   <div className="text-3xl font-black text-slate-800 dark:text-white mt-1">
-                    {estimatedTimeFormatted || (estimatedWaitMinutes === 0 ? "Now" : "Calculating...")}
+                    {appointmentStatus === 'pending' 
+                      ? <span className="text-xl">Not Accepted Yet</span> 
+                      : isEmergencyActive 
+                        ? <span className="text-xl">Paused (Emergency)</span> 
+                        : (estimatedTimeFormatted || (estimatedWaitMinutes === 0 ? "Now" : "Calculating..."))}
                   </div>
                 </div>
               </div>
@@ -139,21 +151,7 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
         )}
       </div>
 
-      {/* 3. Queue Logic Visualizer */}
-      {patientToken && estimatedWaitMinutes > 0 && (
-        <div className="bg-slate-50/50 dark:bg-slate-900/30 border border-dashed border-slate-200 dark:border-white/10 rounded-[3rem] p-10 text-center">
-           <p className="text-slate-400 dark:text-slate-500 font-bold text-lg mb-8">
-             There are <strong className="text-blue-600 dark:text-blue-400">{patientToken - currentlyServing > 0 ? patientToken - currentlyServing - 1 : 0}</strong> patients ahead of you.
-           </p>
-           <div className="flex flex-wrap items-center justify-center gap-6">
-              <div className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black shadow-lg shadow-blue-500/20">Token {currentlyServing}</div>
-              <ArrowRightOutlined className="text-slate-300 dark:text-slate-700" />
-              <div className="bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-6 py-3 rounded-2xl font-black opacity-50">Token {currentlyServing + 1}</div>
-              <ArrowRightOutlined className="text-slate-300 dark:text-slate-700" />
-              <div className="bg-emerald-500 text-white px-6 py-3 rounded-2xl font-black shadow-lg shadow-emerald-500/20">Token {patientToken} (You)</div>
-           </div>
-        </div>
-      )}
+
 
     </div>
   );

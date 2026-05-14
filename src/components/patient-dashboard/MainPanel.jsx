@@ -63,7 +63,9 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
   const completedCount = [...(patientData.history || []), ...(patientData.upcoming || [])]
     .filter(app => app.status === 'completed').length;
 
-  const todayApps = patientData.upcoming?.filter(app => app.date === new Date().toLocaleDateString('en-GB').replace(/\//g, '-')) || [];
+  const todayRaw = new Date();
+  const todayFormatted = `${String(todayRaw.getDate()).padStart(2, '0')}-${String(todayRaw.getMonth() + 1).padStart(2, '0')}-${todayRaw.getFullYear()}`;
+  const todayApps = patientData.upcoming?.filter(app => app.date === todayFormatted) || [];
 
   return (
     <div className="flex-1 h-full py-6 md:py-6 px-6 md:px-10 flex flex-col overflow-y-auto overflow-x-hidden no-scrollbar bg-[#F8FAFC] dark:bg-slate-900 rounded-[2.5rem]">
@@ -206,7 +208,30 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
 
         {/* Next Upcoming Appointment */}
         {(() => {
-          const nextApps = patientData.upcoming?.filter(app => ['approved', 'pending'].includes(app.status)) || [];
+          const now = new Date();
+          const nextApps = (patientData.upcoming || [])
+            .filter(app => ['approved', 'pending', 'in_progress'].includes(app.status))
+            .filter(app => {
+              if (!app.date || !app.time) return false;
+              const [d, m, y] = app.date.split('-').map(Number);
+              
+              // Compare purely by calendar date so today's appointments don't vanish mid-queue
+              const apptDateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+              const todayDateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+              
+              return apptDateStr >= todayDateStr;
+            })
+            .sort((a, b) => {
+              const [dA, mA, yA] = a.date.split('-').map(Number);
+              const [hA, minA] = a.time.split(':').map(Number);
+              const dateA = new Date(yA, mA - 1, dA, hA, minA);
+              
+              const [dB, mB, yB] = b.date.split('-').map(Number);
+              const [hB, minB] = b.time.split(':').map(Number);
+              const dateB = new Date(yB, mB - 1, dB, hB, minB);
+              
+              return dateA - dateB;
+            });
           const nextApp = nextApps.length > 0 ? nextApps[0] : null;
           const patientName = nextApp?.patientName && nextApp.patientName !== 'All Family' ? nextApp.patientName : 'Me';
 
