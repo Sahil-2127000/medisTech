@@ -113,7 +113,7 @@ const BookAppointment = ({ onClose }) => {
         </button>
 
         <h2 className="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Book Native Slot</h2>
-        <p className="text-sm font-semibold text-gray-400 dark:text-slate-500 mb-8">Securely parsing mathematical doctor availability arrays directly from MongoDB.</p>
+        <p className="text-sm font-semibold text-gray-400 dark:text-slate-500 mb-8">Book Appointment according to your preference.</p>
 
         <form onSubmit={handleBook} className="space-y-6 relative z-10">
           <style>{`
@@ -182,10 +182,10 @@ const BookAppointment = ({ onClose }) => {
           </div>
 
           <div className="flex flex-col space-y-1">
-            <label className="text-xs font-bold uppercase tracking-widest text-[#5265ec] dark:text-blue-400">Calculated Bookable Slots</label>
+            <label className="text-xs font-bold uppercase tracking-widest text-[#5265ec] dark:text-blue-400">Available Slots</label>
             <div className="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100 dark:border-white/5 rounded-2xl p-4 min-h-[100px] flex flex-wrap gap-3">
               {!date ? (
-                <div className="w-full flex items-center justify-center text-sm font-bold text-gray-400 dark:text-slate-500">Select Date to generate array globally</div>
+                <div className="w-full flex items-center justify-center text-sm font-bold text-gray-400 dark:text-slate-500">Select from available slots</div>
               ) : loading ? (
                 <div className="w-full flex items-center justify-center text-sm font-bold text-[#5265ec] animate-pulse">Calculating Native Splits...</div>
               ) : isDayOff ? (
