@@ -3,7 +3,7 @@ const Vital = require('../models/Vital');
 // Get all vitals for the logged-in patient
 exports.getMyVitals = async (req, res) => {
   try {
-    const vitals = await Vital.find({ patientId: req.user._id }).sort({ recordedAt: -1 });
+    const vitals = await Vital.find({ patientId: req.user.id }).sort({ recordedAt: -1 });
     res.json(vitals);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -15,7 +15,7 @@ exports.addVital = async (req, res) => {
   try {
     const { type, value, unit, note, recordedAt } = req.body;
     const newVital = new Vital({
-      patientId: req.user._id,
+      patientId: req.user.id,
       type,
       value,
       unit,
@@ -34,7 +34,7 @@ exports.getVitalTrend = async (req, res) => {
   try {
     const { type } = req.params;
     const vitals = await Vital.find({ 
-      patientId: req.user._id, 
+      patientId: req.user.id, 
       type: type 
     })
     .sort({ recordedAt: 1 })

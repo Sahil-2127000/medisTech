@@ -14,6 +14,19 @@ exports.issuePrescription = async (req, res) => {
     // We are optimizing DB weight by potentially receiving empty pdfBase64
     const doctorId = req.user.id; // Authorized endpoint inherently
 
+    if (!diagnosis || !diagnosis.trim()) {
+      return res.status(400).json({ message: 'Diagnosis is required.' });
+    }
+    if (!Array.isArray(medicines) || medicines.length === 0) {
+      return res.status(400).json({ message: 'Add at least one medicine before saving the prescription.' });
+    }
+
+    // Only the doctor who owns the appointment can issue its prescription
+    const ownAppt = await Appointment.findById(appointmentId);
+    if (!ownAppt || ownAppt.doctorId.toString() !== doctorId) {
+      return res.status(403).json({ message: 'You can only issue prescriptions for your own appointments.' });
+    }
+
     const rx = new Prescription({
       appointmentId,
       patientId,
@@ -66,7 +79,7 @@ exports.getMyPrescriptions = async (req, res) => {
   try {
     console.log("[PRESCRIPTION CONTROLLER] Fetching prescriptions for Patient ID:", req.user.id);
     const rxList = await Prescription.find({ patientId: req.user.id })
-                                     .populate('doctorId', 'fullName')
+                                     .populate('doctorId', 'fullName specialization clinicAddress phone')
                                      .sort({ createdAt: -1 });
     
     console.log(`[PRESCRIPTION CONTROLLER] Found ${rxList.length} prescriptions for user ${req.user.id}`);
@@ -74,5 +87,31 @@ exports.getMyPrescriptions = async (req, res) => {
   } catch (error) {
     console.error("[PRESCRIPTION CONTROLLER] Error:", error);
     res.status(500).json({ message: 'Failed fetching patient history natively.' });
+  }
+};
+
+// Doctor view: full prescription history + past visits of a patient
+exports.getPatientHistory = async (req, res) => {
+  try {
+    if (req.user.role !== 'doctor') {
+      return res.status(403).json({ message: 'Only doctors can view patient history.' });
+    }
+    const { patientId } = req.params;
+
+    const prescriptions = await Prescription.find({ patientId })
+                                            .select('-pdfBase64')
+                                            .populate('doctorId', 'fullName specialization')
+                                            .populate('appointmentId', 'date time symptoms')
+                                            .sort({ createdAt: -1 });
+
+    const visits = await Appointment.find({ patientId, status: 'completed' })
+                                    .select('date time symptoms doctorId patientName')
+                                    .populate('doctorId', 'fullName specialization')
+                                    .sort({ createdAt: -1 });
+
+    res.status(200).json({ prescriptions, visits });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed fetching patient history.' });
   }
 };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PrescriptionBuilder from './PrescriptionBuilder';
+import PatientRxHistory from './PatientRxHistory';
 
 
 const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, onSkip, doctorProfile }) => {
@@ -27,15 +28,14 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
  .filter(app => app.date === todayFormatted && app.status === 'approved')
  .sort((a, b) => a.time.localeCompare(b.time))[0];
 
-  const handlePrescriptionSave = (medicinesArray, pdfBase64, diagnosis, clinicalNotes) => {
+  const handlePrescriptionSave = async (medicinesArray, pdfBase64, diagnosis, clinicalNotes) => {
     if (!activePatient) return;
-    // Explicitly update status to completed to clear it from in_progress
-    onStatusChange(activePatient.id, 'completed');
+    // The server marks the appointment completed once the prescription is stored
 
     // Extract the raw MongoDB ObjectId from the populated patient payload securely natively
     const correctPatientId = activePatient.patientId?._id || activePatient.patientId;
 
-    onFinishConsultation(activePatient.id, correctPatientId, {
+    const saved = await onFinishConsultation(activePatient.id, correctPatientId, {
       medicines: medicinesArray,
       pdfBase64: pdfBase64,
       date: todayFormatted,
@@ -43,7 +43,7 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
       clinicalNotes: clinicalNotes || "No extra clinical notes provided."
     });
 
- setShowPrescriptionModal(false);
+ if (saved) setShowPrescriptionModal(false);
  };
 
   const renderPatientCard = (patient) => {
@@ -54,7 +54,10 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
   return (
   <div className=" rounded-3xl p-4 shadow-xl shadow-blue-500/5 flex flex-col items-center text-center border border-gray-50 relative overflow-hidden transition-colors duration-300 w-full mb-2 shrink-0 px-6 ">
   <div className="absolute w-24 h-24 bg-blue-500 rounded-full opacity-10 -right-5 -top-5 blur-xl "></div>
-  <h2 className="text-xl font-black text-slate-800 mb-1 transition-colors">{displayName}</h2>
+  <div className="flex items-center justify-center gap-2 mb-1">
+  <h2 className="text-xl font-black text-slate-800 transition-colors">{displayName}</h2>
+  {patient.hasHistory && patient.patientId && <PatientRxHistory patientId={patient.patientId} patientName={displayName} />}
+  </div>
   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">ID: {patient.patientUid || "---"}</div>
   <div className="text-xs font-bold text-clinic-600 bg-blue-50 px-3 py-1 rounded-full inline-block tracking-wider transition-colors">
   {patient.age || "--"} yrs • {patient.gender || "Unknown"}

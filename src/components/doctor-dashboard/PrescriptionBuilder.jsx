@@ -41,6 +41,10 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
       message.warning("Please enter the prescription diagnosis before saving.");
       return;
     }
+    if (medicines.length === 0) {
+      message.warning("Add at least one medicine before saving the prescription.");
+      return;
+    }
 
     onSave && onSave(medicines, "", diagnosis, clinicalNotes);
   };
@@ -324,7 +328,7 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
 
                       <div className="flex gap-4 pr-4 items-center">
                         <div className="w-16 text-center text-xs font-semibold text-[#0d9488] flex flex-col items-center justify-center">
-                           <span className="truncate" title={med.duration}>{med.duration} days</span>
+                           <span className="truncate" title={med.duration}>{med.duration}</span>
                            {med.alternativeDays && <span className="text-[8px] mt-0.5 uppercase tracking-widest">(Alt. Days)</span>}
                         </div>
                         <div className={`w-10 text-center text-lg font-semibold ${isM ? 'text-[#0d9488]' : 'text-slate-300'}`}>{isM ? '1' : '0'}</div>

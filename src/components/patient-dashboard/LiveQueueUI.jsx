@@ -9,7 +9,8 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchQueueStatus = async () => {
+  const fetchQueueStatus = async (isStale = () => false) => {
+    if (!doctorId) { setQueueData(null); setLoading(false); return; }
     setRefreshing(true);
     try {
       const now = new Date();
@@ -20,7 +21,8 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
       });
       if (res.ok) {
         const data = await res.json();
-        setQueueData(data);
+        // Ignore responses for a doctorId that is no longer current
+        if (!isStale()) setQueueData(data);
       }
     } catch (err) {
       console.error("Queue fetch error:", err);
@@ -33,17 +35,20 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
   const socket = useSocket();
 
   useEffect(() => {
-    fetchQueueStatus();
-    const interval = setInterval(fetchQueueStatus, 15000); // Polling fallback every 15s
+    let stale = false;
+    const refresh = () => fetchQueueStatus(() => stale);
+    refresh();
+    const interval = setInterval(refresh, 15000); // Polling fallback every 15s
     
     if (socket) {
-      socket.on('queueUpdated', fetchQueueStatus);
+      socket.on('queueUpdated', refresh);
     }
 
     return () => {
+      stale = true;
       clearInterval(interval);
       if (socket) {
-         socket.off('queueUpdated', fetchQueueStatus);
+         socket.off('queueUpdated', refresh);
       }
     };
   }, [doctorId, socket]);

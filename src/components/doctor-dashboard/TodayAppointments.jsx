@@ -1,4 +1,5 @@
 import React from 'react';
+import PatientRxHistory from './PatientRxHistory';
 
 const TodayAppointments = ({ appointments }) => {
   // Ensure we format current date correctly matching DD-MM-YYYY
@@ -42,7 +43,10 @@ const TodayAppointments = ({ appointments }) => {
  {displayChar}
  </div>
  <div>
- <div className="font-bold text-slate-800 transition-colors">{displayName}</div>
+ <div className="font-bold text-slate-800 transition-colors flex items-center gap-2">
+ {displayName}
+ {app.hasHistory && app.patientId && <PatientRxHistory patientId={app.patientId} patientName={displayName} />}
+ </div>
  <div className="text-xs text-clinic-600/80 font-bold uppercase tracking-wider transition-colors">{formatTime12Hour(app.time)}</div>
  </div>
  </div>

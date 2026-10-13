@@ -24,3 +24,11 @@ module.exports = (req, res, next) => {
   }
 };
 
+
+// Role guard: use after the auth middleware on doctor-only routes
+module.exports.requireDoctor = (req, res, next) => {
+  if (req.user?.role !== 'doctor') {
+    return res.status(403).json({ message: 'Only doctors can perform this action.' });
+  }
+  next();
+};

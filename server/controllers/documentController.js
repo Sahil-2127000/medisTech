@@ -5,11 +5,14 @@ const path = require('path');
 // Upload base64 PDF
 exports.uploadDocument = async (req, res) => {
   try {
-    const { title, type, patientId, fileBase64, filename } = req.body;
-    const doctorId = req.user.id; // From authMiddleware
+    const { title, type, fileBase64, filename } = req.body;
+    const isDoctor = req.user.role === 'doctor';
+    // Patients upload into their own records; doctors upload for the selected patient
+    const patientId = isDoctor ? req.body.patientId : req.user.id;
+    const doctorId = isDoctor ? req.user.id : undefined;
 
-    if (!fileBase64 || !filename) {
-      return res.status(400).json({ message: 'File is required.' });
+    if (!fileBase64 || !filename || !title) {
+      return res.status(400).json({ message: 'Title and file are required.' });
     }
 
     // Decode base64 and save to disk

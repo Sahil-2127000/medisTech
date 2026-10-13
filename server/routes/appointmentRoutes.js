@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const appointmentController = require('../controllers/appointmentController');
 const authMiddleware = require('../middleware/authMiddleware');
+const { requireDoctor } = authMiddleware;
 
 // Public Routes
 router.get('/public/stats', appointmentController.getPublicStats);
@@ -13,13 +14,13 @@ router.get('/slots', appointmentController.getAvailableSlots);
 router.post('/book', authMiddleware, appointmentController.bookAppointment);
 
 // Doctor Routes
-router.get('/doctor', authMiddleware, appointmentController.getDoctorAppointmentsDaily);
-router.get('/doctor/history', authMiddleware, appointmentController.getDoctorHistory);
-router.post('/offline-book', authMiddleware, appointmentController.offlineBook);
-router.put('/:id/status', authMiddleware, appointmentController.updateStatus);
-router.put('/:id/skip', authMiddleware, appointmentController.skipAppointment);
-router.post('/emergency-resolve-and-book', authMiddleware, appointmentController.resolveAndBookEmergency);
-router.post('/emergency-start', authMiddleware, appointmentController.startEmergency);
+router.get('/doctor', authMiddleware, requireDoctor, appointmentController.getDoctorAppointmentsDaily);
+router.get('/doctor/history', authMiddleware, requireDoctor, appointmentController.getDoctorHistory);
+router.post('/offline-book', authMiddleware, requireDoctor, appointmentController.offlineBook);
+router.put('/:id/status', authMiddleware, requireDoctor, appointmentController.updateStatus);
+router.put('/:id/skip', authMiddleware, requireDoctor, appointmentController.skipAppointment);
+router.post('/emergency-resolve-and-book', authMiddleware, requireDoctor, appointmentController.resolveAndBookEmergency);
+router.post('/emergency-start', authMiddleware, requireDoctor, appointmentController.startEmergency);
 
 router.get('/queue-status', authMiddleware, appointmentController.getQueueStatus);
 

@@ -169,7 +169,8 @@ const DoctorDashboard = () => {
                     time: app.time,
                     date: app.date,
                     symptoms: app.symptoms,
-                    status: app.status
+                    status: app.status,
+                    hasHistory: app.hasPrescriptionHistory
                 }));
                 setAppointments(mapped);
             }
@@ -283,7 +284,7 @@ const DoctorDashboard = () => {
                 duration: med.alternativeDays ? `${med.duration || "As Directed"} (Alt. Days)` : (med.duration || "As Directed")
             }));
 
-            await fetch('http://localhost:5001/api/prescriptions/issue', {
+            const res = await fetch('http://localhost:5001/api/prescriptions/issue', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -293,10 +294,16 @@ const DoctorDashboard = () => {
                     diagnosis: prescriptionData.diagnosis || "General evaluation completed.",
                     medicines: formattedMedicines,
                     pdfBase64: prescriptionData.pdfBase64,
-                    clinicalNotes: "Issued securely via Advanced Prescription Builder natively."
+                    clinicalNotes: prescriptionData.clinicalNotes
                 })
             });
+            if (!res.ok) {
+                const data = await res.json();
+                alert(data.message || "Failed to save prescription.");
+                return false;
+            }
             loadDoctorAppointments();
+            return true;
         } catch (err) {
             console.error("Failed to generate robust prescription", err);
         }

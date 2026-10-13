@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 const BookAppointment = ({ onClose }) => {
   const [doctors, setDoctors] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [specialty, setSpecialty] = useState('All');
   const [date, setDate] = useState('');
   const [slots, setSlots] = useState([]);
   const [isDayOff, setIsDayOff] = useState(false);
@@ -18,14 +19,17 @@ const BookAppointment = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
 
-  // 1. Auto-select the Clinic's singular Doctor transparently
+  // 1. Load all doctors; pre-select the one chosen on the landing page (if any)
   useEffect(() => {
-
     fetch('http://localhost:5001/api/auth/doctors', { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
-        if (data && data.length > 0) {
-          setSelectedDoctor(data[0]._id);
+        if (!Array.isArray(data)) return;
+        setDoctors(data);
+        const preferred = sessionStorage.getItem('preferredDoctorId');
+        if (preferred && data.some(d => d._id === preferred)) {
+          setSelectedDoctor(preferred);
+          sessionStorage.removeItem('preferredDoctorId');
         }
       })
       .catch(console.error);
@@ -138,6 +142,43 @@ const BookAppointment = ({ onClose }) => {
             .dark .react-datepicker__day:hover { background-color: #334155; color: white; }
             .dark .react-datepicker__day--disabled { color: #475569; }
           `}</style>
+
+          <div className="flex flex-col space-y-1">
+            <label className="block text-xs font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-2">Specialization</label>
+            <div className="flex flex-wrap gap-2">
+              {['All', ...new Set(doctors.map(d => d.specialization).filter(Boolean))].map(s => (
+                <button
+                  type="button"
+                  key={s}
+                  onClick={() => {
+                    setSpecialty(s);
+                    const current = doctors.find(d => d._id === selectedDoctor);
+                    if (s !== 'All' && current?.specialization !== s) { setSelectedDoctor(''); setSelectedSlot(''); }
+                  }}
+                  className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${specialty === s ? 'bg-[#5265ec] text-white shadow-md' : 'bg-gray-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-gray-100 dark:border-white/5 hover:border-blue-200'}`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col space-y-1">
+            <label className="block text-xs font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-2">Select Doctor</label>
+            <select
+              required
+              value={selectedDoctor}
+              onChange={e => { setSelectedDoctor(e.target.value); setSelectedSlot(''); }}
+              className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold border border-gray-100 dark:border-white/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all shadow-sm cursor-pointer"
+            >
+              <option value="" disabled>Choose a doctor...</option>
+              {doctors.filter(d => specialty === 'All' || d.specialization === specialty).map(d => (
+                <option key={d._id} value={d._id}>
+                  Dr. {d.fullName}{d.specialization ? ` — ${d.specialization}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col space-y-1">

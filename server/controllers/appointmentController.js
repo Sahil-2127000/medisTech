@@ -2,6 +2,7 @@ const Appointment = require('../models/Appointment');
 const Availability = require('../models/Availability');
 const User = require('../models/User');
 const Doctor = require('../models/Doctor');
+const Prescription = require('../models/Prescription');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { sendEmail } = require('../utils/emailService');
@@ -180,7 +181,17 @@ exports.getDoctorAppointmentsDaily = async (req, res) => {
      
      const appointments = await Appointment.find({ doctorId: req.user.id, date })
                                            .populate('patientId', 'fullName age gender phone patientUid')
-                                           .sort({ time: 1 });
+                                           .sort({ time: 1 })
+                                           .lean();
+
+     // Flag patients who already have prescriptions on record (shows history icon on dashboard)
+     const patientIds = appointments.map(a => a.patientId?._id).filter(Boolean);
+     const withHistory = await Prescription.distinct('patientId', { patientId: { $in: patientIds } });
+     const historySet = new Set(withHistory.map(id => id.toString()));
+     appointments.forEach(a => {
+       a.hasPrescriptionHistory = !!a.patientId?._id && historySet.has(a.patientId._id.toString());
+     });
+
      res.status(200).json(appointments);
   } catch (err) {
     console.error(err);
@@ -255,6 +266,9 @@ exports.updateStatus = async (req, res) => {
                                   .populate('doctorId', 'fullName');
 
     if (!appt) return res.status(404).json({ message: 'Appointment not found natively' });
+    if (appt.doctorId?._id?.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'This appointment belongs to another doctor.' });
+    }
 
     appt.status = status;
     await appt.save();
@@ -378,7 +392,7 @@ exports.resolveAndBookEmergency = async (req, res) => {
       date, 
       status: { $in: ['pending', 'approved'] },
       time: { $gte: emergencyStartStr }
-    });
+    }).populate('patientId', 'fullName email emailNotifications');
 
     const bulkOps = upcoming.map(appt => {
        const [h, m] = appt.time.split(':').map(Number);
@@ -401,6 +415,19 @@ exports.resolveAndBookEmergency = async (req, res) => {
     if (bulkOps.length > 0) {
       await Appointment.bulkWrite(bulkOps);
     }
+
+    // Notify every delayed patient of this doctor by e-mail
+    const emergencyDoctor = await Doctor.findById(doctorId).select('fullName');
+    upcoming.forEach((appt, i) => {
+      const p = appt.patientId;
+      if (!p || !p.email || p.emailNotifications === false) return;
+      const newTime = bulkOps[i].updateOne.update.$set.time;
+      const html = `<h2>Hello ${capitalizeNames(p.fullName)},</h2>
+                    <p>Dr. ${capitalizeNames(emergencyDoctor?.fullName || '')} had to attend an emergency case, so your appointment on <strong>${date}</strong> has been delayed by <strong>${elapsedMinutes} minutes</strong>.</p>
+                    <p><strong>Previous Time:</strong> ${appt.time}<br><strong>New Time:</strong> ${newTime}</p>
+                    <p>You can follow the live queue from your dashboard. We apologise for the inconvenience.</p>`;
+      sendEmail(p.email, 'Appointment Delayed (Emergency) - MedisTech', html).catch(e => console.error('Email fail:', e));
+    });
 
     // Reset Doctor emergency status
     await Doctor.findByIdAndUpdate(doctorId, { isEmergencyActive: false });
@@ -428,7 +455,7 @@ exports.resolveAndBookEmergency = async (req, res) => {
       io.emit('queueUpdated', { doctorId });
     }
 
-    const savedAppointment = await Appointment.findById(newAppointment._id).populate('patientId');
+    const savedAppointment = await Appointment.findById(newAppointment._id).populate('patientId', 'fullName email age gender phone patientUid');
 
     res.status(200).json({ message: 'Emergency recorded and queue dynamically shifted natively.', appointment: savedAppointment });
   } catch (error) {
@@ -623,6 +650,9 @@ exports.skipAppointment = async (req, res) => {
     const { doctorId, date } = appt;
     // Extract ID even if populated to be safe for DB queries and socket emits
     const targetDoctorId = doctorId._id ? doctorId._id : doctorId;
+    if (targetDoctorId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'This appointment belongs to another doctor.' });
+    }
     
     console.log(`[DEBUG] Rescheduling for Doctor: ${targetDoctorId}, Date: ${date}`);
     const result = await getSlotsList(targetDoctorId, date);
