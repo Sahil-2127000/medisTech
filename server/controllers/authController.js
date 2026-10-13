@@ -4,7 +4,7 @@ const User = require('../models/User');
 const Doctor = require('../models/Doctor');
 const { sendEmail } = require('../utils/emailService');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_for_development';
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 // In-memory OTP store (email -> { otp, expiresAt })
 const otps = {};
@@ -30,17 +30,9 @@ exports.sendOtp = async (req, res) => {
       }
     }
 
-    if (phone) {
-      const existingPatientPhone = await User.findOne({ phone });
-      const existingDoctorPhone = await Doctor.findOne({ phone });
-      
-      if (existingPatientPhone || existingDoctorPhone) {
-        return res.status(400).json({ message: 'User already exists with this phone number' });
-      }
-    }
   } catch (error) {
     console.error('Database Error:', error);
-    return res.status(500).json({ message: 'Failed to verify email' });
+    return res.status(500).json({ message: 'Failed to verify email' , error: error.message});
   }
 
   // Generate a random 6-digit OTP
@@ -128,24 +120,29 @@ const html = `
     console.error('Error sending email:', error.message);
     console.log(`[TEST MODE FALLBACK] Real email failed, but here is OTP: ${otpCode}`);
     // Return 200 so the frontend can still proceed with OTP verification
-    res.status(200).json({ message: 'OTP generated locally (Email sending failed due to credentials)' });
+    res.status(500).json({ message: 'OTP generated locally (Email sending failed due to credentials)',error:error.message });
   }
 };
 
 exports.register = async (req, res) => {
-  const { fullName, email, password, otp, role, age, gender, phone } = req.body;
-
-  if (!fullName || !email || !password || !otp) {
-    return res.status(400).json({ message: 'All fields including OTP are required' });
-  }
+  
 
   try {
-    // Structural Isolation logic handling distinct databases
+
+
+    //fetching data from request body
+    const { fullName, email, password, otp, role, age, gender, phone } = req.body;
+
+    //validating data
+    if (!fullName || !email || !password || !otp) {
+      return res.status(400).json({ message: 'All fields including OTP are required' });
+    }
+    
     const existingPatient = await User.findOne({ email });
     const existingDoctor = await Doctor.findOne({ email });
     
     if (existingPatient || existingDoctor) {
-      return res.status(400).json({ message: 'Entity already exists with this email' });
+      return res.status(400).json({ message: 'User already exists with this email' });
     }
 
     if (phone) {
@@ -153,7 +150,7 @@ exports.register = async (req, res) => {
       const existingDoctorPhone = await Doctor.findOne({ phone });
       
       if (existingPatientPhone || existingDoctorPhone) {
-        return res.status(400).json({ message: 'Entity already exists with this phone number' });
+        return res.status(400).json({ message: 'User already exists with this phone number' });
       }
     }
 
@@ -172,7 +169,7 @@ exports.register = async (req, res) => {
     // OTP verified successfully. Remove from memory.
     delete otps[email];
 
-    // Cryptographic Salting & Hashing
+    //  Salting & Hashing of password 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -196,7 +193,7 @@ exports.register = async (req, res) => {
     }
     await newlyCreatedEntity.save();
 
-    // Sign JWT (Inject role into JWT natively so middlewares can check authorization)
+    // Sign JWT (Inject role into JWT  so middlewares can check authorization)
     const token = jwt.sign(
       { id: newlyCreatedEntity._id, email: newlyCreatedEntity.email, role: actualRole }, 
       JWT_SECRET, 
@@ -217,15 +214,19 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     console.error('Registration Error:', error);
-    res.status(500).json({ message: 'Registration failed due to server error' });
+    res.status(500).json({ message: 'Registration failed due to server error'  , error : error.message });
   }
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  
 
   try {
-    // Intelligent hunt natively routing sequentially via isolated bodies
+
+    //fetching data from body
+    const { email, password } = req.body;
+
+    // validation of data
     let targetUser = await User.findOne({ email });
     
     if (!targetUser) {
@@ -236,7 +237,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email' });
     }
 
-    // Cryptographic comparative hash match check
+    // password checking
     const isMatch = await bcrypt.compare(password, targetUser.password);
     if (!isMatch) {
        return res.status(401).json({ message: 'Invalid email or password' });
@@ -249,22 +250,28 @@ exports.login = async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    // If 2FA is formally enabled, halt login and require OTP phase
-    if (targetUser.is2FAEnabled && targetUser.twoFactorPhone) {
+    // If 2FA is formally enabled, pause login and require OTP phase
+    if (targetUser.is2FAEnabled) {
+
         // Generate a 6-digit SMS OTP
         const smsOtp = Math.floor(100000 + Math.random() * 900000).toString();
-        // Since we don't have a live Twilio key, simulate SMS transmission
-        console.log(`[SMS MOCK] Sending OTP ${smsOtp} to phone ${targetUser.twoFactorPhone} for login...`);
-        
+
         targetUser.twoFactorOTP = smsOtp;
-        targetUser.twoFactorOTPExpires = Date.now() + 1 * 60 * 1000; // 60 seconds duration
+        targetUser.twoFactorOTPExpires = Date.now() + 5 * 60 * 1000; // 5 minutes
         await targetUser.save();
-        
+
+        // Second factor is delivered by e-mail
+        await sendEmail(targetUser.email, 'Your MedisTech Login Code',
+          `<h2>Login verification</h2><p>Your one-time login code is:</p><h1 style="letter-spacing:8px">${smsOtp}</h1><p>It expires in 5 minutes.</p>`);
+        if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+          console.log(`[TEST MODE] 2FA login OTP for ${targetUser.email}: ${smsOtp}`);
+        }
+
         return res.status(200).json({
            requires2FA: true,
            userId: targetUser._id,
            role: targetUser.role,
-           message: `OTP sent to ${targetUser.twoFactorPhone.replace(/.(?=.{4})/g, '*')}`
+           message: `OTP sent to ${targetUser.email.replace(/(.{2}).*(@.*)/, '$1***$2')}`
         });
     }
 
@@ -292,10 +299,10 @@ exports.verifyLogin2FA = async (req, res) => {
      let targetUser = role === 'doctor' ? await Doctor.findById(userId) : await User.findById(userId);
      if (!targetUser) return res.status(404).json({ message: 'User not found' });
 
-     if (targetUser.twoFactorOTP !== otp) {
+     if (!targetUser.is2FAEnabled || !otp || !targetUser.twoFactorOTP || targetUser.twoFactorOTP !== otp) {
         return res.status(400).json({ message: 'Invalid OTP' });
      }
-     if (targetUser.twoFactorOTPExpires < Date.now()) {
+     if (!targetUser.twoFactorOTPExpires || targetUser.twoFactorOTPExpires < Date.now()) {
         return res.status(400).json({ message: 'OTP has expired' });
      }
 
@@ -329,16 +336,22 @@ exports.verifyLogin2FA = async (req, res) => {
 
 exports.getDoctors = async (req, res) => {
   try {
-    const doctors = await Doctor.find().select('-password');
+    // Only expose public profile fields (never password / 2FA data)
+    const doctors = await Doctor.find().select('fullName email phone specialization experience clinicAddress photo');
     res.status(200).json(doctors);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to extract Doctor schemas directly' });
+  } catch (err) {
+    res.status(500).json({ 
+      message: 'Failed to extract all the doctors',
+      error: err.message,
+    });
   }
 };
 
 exports.logout = (req, res) => {
   res.clearCookie('token');
-  res.status(200).json({ message: 'Logged out successfully' });
+  res.status(200).json({ 
+    message: 'Logged out successfully' 
+  });
 };
 
 // Forgot Password Workflow for Authenticated Users (Settings Page)
@@ -461,10 +474,18 @@ exports.publicForgotPasswordRequestOtp = async (req, res) => {
     `;
 
     await sendEmail(email, 'Medistech Recovery Code', html);
-    res.status(200).json({ message: 'Recovery code sent to inbox.' });
+    res.status(200).json({ 
+      message: 'Recovery code sent to inbox.' 
+    });
+
   } catch (err) {
+
     console.error(err);
-    res.status(500).json({ message: 'Failed to send recovery code.' });
+
+    res.status(500).json({ 
+      message: 'Failed to send recovery code.',
+      error : err.message
+    });
   }
 };
 
@@ -502,16 +523,29 @@ exports.publicForgotPasswordReset = async (req, res) => {
 
     // Update the identified user
     if (targetUser.role === 'doctor') {
-      await Doctor.findByIdAndUpdate(targetUser._id, { password: hashedPassword, lastPasswordChange: new Date() });
+      await Doctor.findByIdAndUpdate(targetUser._id, 
+                                    { password: hashedPassword,
+                                      lastPasswordChange: new Date()
+                                    },
+                                    {new:true}
+                                    );
     } else {
-      await User.findByIdAndUpdate(targetUser._id, { password: hashedPassword, lastPasswordChange: new Date() });
+      await User.findByIdAndUpdate(targetUser._id, 
+                                  { password: hashedPassword, 
+                                    lastPasswordChange: new Date() 
+                                  });
     }
 
     delete otps[email];
 
-    res.status(200).json({ message: 'Password updated successfully! You can now log in.' });
+    res.status(200).json({ 
+        message: 'Password updated successfully! You can now log in.' 
+      });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Structural failure during password reset operation.' });
+    res.status(500).json({ 
+      message: 'Server error ocuured while updating the password',
+      error: err.message
+    });
   }
 };

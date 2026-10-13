@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import PatientDocuments from './PatientDocuments';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import AppointmentsView from './AppointmentsView';
 import DocumentsView from './DocumentsView';
@@ -55,7 +56,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
   if (activeTab === 'profile') return <ProfileView patientData={patientData} />;
   if (activeTab === 'settings') return <SettingsView patientData={patientData} />
   if (activeTab === 'queue') {
-    const doctorId = patientData.upcoming?.[0]?.doctorId?._id || "60b8c8d8f1e6b3b3a4a9c888";
+    const doctorId = patientData.upcoming?.[0]?.doctorId?._id;
     const doctorName = patientData.upcoming?.[0]?.doctor || "Dr. Specialist";
     return <LiveQueueUI doctorId={doctorId} doctorName={doctorName} />;
   }
@@ -204,7 +205,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
       </div>
 
       {/* 3 Large Bottom Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 flex-1 min-h-[250px] mb-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 flex-none min-h-[250px] mb-2">
 
         {/* Next Upcoming Appointment */}
         {(() => {
@@ -349,6 +350,8 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
         </div>
 
       </div>
+
+      <PatientDocuments />
 
       {/* Vital Capture Modal */}
       {showVitalModal && (

@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Doctor = require('../models/Doctor');
 const bcrypt = require('bcryptjs');
+const { sendEmail } = require('../utils/emailService');
 
 exports.getProfile = async (req, res) => {
   try {
@@ -129,17 +130,19 @@ exports.verifyPassword = async (req, res) => {
 
 exports.setup2FA = async (req, res) => {
   try {
-    const { phone } = req.body;
-    if (!phone) return res.status(400).json({ message: 'Phone number explicitly required for 2FA' });
 
     let targetUser = req.user.role === 'doctor' ? await Doctor.findById(req.user.id) : await User.findById(req.user.id);
     if (!targetUser) return res.status(404).json({ message: 'User mapping failed natively' });
 
     const smsOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log(`[SMS MOCK] Sending 2FA Verification OTP ${smsOtp} to phone ${phone}`);
-    
+    await sendEmail(targetUser.email, 'Enable Two-Factor Authentication - MedisTech',
+      `<h2>Two-factor setup</h2><p>Your verification code is:</p><h1 style="letter-spacing:8px">${smsOtp}</h1><p>It expires in 5 minutes.</p>`);
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.log(`[TEST MODE] 2FA setup OTP for ${targetUser.email}: ${smsOtp}`);
+    }
+
     targetUser.twoFactorOTP = smsOtp;
-    targetUser.twoFactorOTPExpires = Date.now() + 1 * 60 * 1000; // 60 seconds duration
+    targetUser.twoFactorOTPExpires = Date.now() + 5 * 60 * 1000; // 5 minutes
     
     if (req.user.role === 'doctor') {
        await Doctor.findByIdAndUpdate(req.user.id, { twoFactorOTP: smsOtp, twoFactorOTPExpires: targetUser.twoFactorOTPExpires });
@@ -159,14 +162,14 @@ exports.verifySetup2FA = async (req, res) => {
     const { phone, otp } = req.body;
     let targetUser = req.user.role === 'doctor' ? await Doctor.findById(req.user.id) : await User.findById(req.user.id);
 
-    if (targetUser.twoFactorOTP !== otp) return res.status(400).json({ message: 'Invalid OTP natively mapped.' });
-    if (targetUser.twoFactorOTPExpires < Date.now()) return res.status(400).json({ message: 'OTP physically expired.' });
+    if (!otp || !targetUser.twoFactorOTP || targetUser.twoFactorOTP !== otp) return res.status(400).json({ message: 'Invalid OTP natively mapped.' });
+    if (!targetUser.twoFactorOTPExpires || targetUser.twoFactorOTPExpires < Date.now()) return res.status(400).json({ message: 'OTP physically expired.' });
 
     // Enable it rigidly
     if (req.user.role === 'doctor') {
-       await Doctor.findByIdAndUpdate(req.user.id, { is2FAEnabled: true, twoFactorPhone: phone, twoFactorOTP: '', twoFactorOTPExpires: null });
+       await Doctor.findByIdAndUpdate(req.user.id, { is2FAEnabled: true, twoFactorPhone: phone || 'email', twoFactorOTP: '', twoFactorOTPExpires: null });
     } else {
-       await User.findByIdAndUpdate(req.user.id, { is2FAEnabled: true, twoFactorPhone: phone, twoFactorOTP: '', twoFactorOTPExpires: null });
+       await User.findByIdAndUpdate(req.user.id, { is2FAEnabled: true, twoFactorPhone: phone || 'email', twoFactorOTP: '', twoFactorOTPExpires: null });
     }
 
     res.status(200).json({ message: 'Two-Factor Authentication firmly locked and active.' });

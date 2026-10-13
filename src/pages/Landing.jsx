@@ -4,6 +4,7 @@ import Navbar from '../components/landing/Navbar';
 import HeroSection from '../components/landing/HeroSection';
 import AboutSection from '../components/landing/AboutSection';
 import ServicesSection from '../components/landing/ServicesSection';
+import DoctorsSection from '../components/landing/DoctorsSection';
 import BlogSection from '../components/landing/BlogSection';
 import FaqSection from '../components/landing/FaqSection';
 import ContactSection from '../components/landing/ContactSection';
@@ -83,6 +84,7 @@ const Landing = () => {
       <HeroSection stats={stats} />
       <AboutSection />
       <ServicesSection />
+      <DoctorsSection />
       <BlogSection />
       <FaqSection />
       <ContactSection contactInfo={contactInfo} />

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import TwoFactorCard from './TwoFactorCard';
 import { useTheme } from '../../context/ThemeContext';
 
 const SettingsView = ({ patientData }) => {
@@ -299,6 +300,8 @@ const SettingsView = ({ patientData }) => {
           </div>
         </div>
       </div>
+
+        <TwoFactorCard initiallyEnabled={patientData?.is2FAEnabled} />
 
         {/* 🌓 Appearance & Theme */}
         <div className="bg-white dark:bg-slate-900/40 rounded-4xl border-2 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors">
