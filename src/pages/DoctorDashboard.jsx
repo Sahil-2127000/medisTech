@@ -42,6 +42,7 @@ const DoctorDashboard = () => {
 
     const [appointments, setAppointments] = useState([]); // Today's dynamic appointments
     const [historyAppointments, setHistoryAppointments] = useState([]);
+    const [pendingRequests, setPendingRequests] = useState([]); // all pending, not limited to one history page
     const [historyPageInfo, setHistoryPageInfo] = useState({ currentPage: 1, totalPages: 1, totalCount: 0 });
     const [historySearch, setHistorySearch] = useState('');
     const [historyStatus, setHistoryStatus] = useState('');
@@ -179,24 +180,34 @@ const DoctorDashboard = () => {
         }
     };
 
+    const mapHistoryAppt = (app) => ({
+        id: app._id,
+        patientId: app.patientId?._id || app.patientId,
+        name: app.patientName || app.patientId?.fullName || "Walk-In",
+        patientUid: app.patientId?.patientUid || "---",
+        age: app.patientId?.age || "--",
+        gender: app.patientId?.gender || "Unknown",
+        time: app.time,
+        date: app.date,
+        symptoms: app.symptoms,
+        status: app.status
+    });
+
+    const loadPendingRequests = async () => {
+        try {
+            const res = await fetch('http://localhost:5001/api/appointments/doctor/pending', { credentials: 'include' });
+            if (res.ok) setPendingRequests((await res.json()).map(mapHistoryAppt));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const loadDoctorHistory = async (page = 1, search = '', status = '') => {
         try {
             const res = await fetch(`http://localhost:5001/api/appointments/doctor/history?page=${page}&search=${search}&status=${status}`, { credentials: 'include' });
             if (res.ok) {
                 const result = await res.json();
-                const mapped = result.data.map(app => ({
-                    id: app._id,
-                    patientId: app.patientId?._id || app.patientId,
-                    name: app.patientName || app.patientId?.fullName || "Walk-In",
-                    patientUid: app.patientId?.patientUid || "---",
-                    age: app.patientId?.age || "--",
-                    gender: app.patientId?.gender || "Unknown",
-                    time: app.time,
-                    date: app.date,
-                    symptoms: app.symptoms,
-                    status: app.status
-                }));
-                setHistoryAppointments(mapped);
+                setHistoryAppointments(result.data.map(mapHistoryAppt));
                 setHistoryPageInfo({
                     currentPage: result.currentPage,
                     totalPages: result.totalPages,
@@ -212,10 +223,12 @@ const DoctorDashboard = () => {
         ensureMockData();
         loadDoctorAppointments();
         loadDoctorHistory();
+        loadPendingRequests();
         loadDoctorProfile();
 
         const handleUpdate = () => {
             loadDoctorAppointments();
+            loadPendingRequests();
             // Use refs to ensure we don't reset filters during background sync
             loadDoctorHistory(historyPageRef.current, historySearchRef.current, historyStatusRef.current);
         };
@@ -246,6 +259,7 @@ const DoctorDashboard = () => {
                 body: JSON.stringify({ status: newStatus })
             });
             loadDoctorAppointments();
+            loadPendingRequests();
             loadDoctorHistory(historyPageInfo.currentPage, historySearch, historyStatus);
         } catch (error) {
             console.error("Status migration failed", error);
@@ -415,7 +429,7 @@ const DoctorDashboard = () => {
                                                         <span className="sm:hidden">Book</span>
                                                     </button>
                                                     <div className="shrink-0">
-                                                        <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                                                        <AlertBell appointments={pendingRequests} onStatusChange={handleStatusChange} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -463,10 +477,11 @@ const DoctorDashboard = () => {
                                         <div className="w-full flex flex-col">
                                             <div className="flex justify-between items-center mb-8 w-full">
                                                 <h1 className="text-4xl font-extrabold text-[#021024] transition-colors">All Queue Records</h1>
-                                                <AlertBell appointments={historyAppointments} onStatusChange={handleStatusChange} />
+                                                <AlertBell appointments={pendingRequests} onStatusChange={handleStatusChange} />
                                             </div>
                                             <AppointmentRequests
                                                 appointments={historyAppointments}
+                                                pendingAppointments={pendingRequests}
                                                 onStatusChange={handleStatusChange}
                                                 pageInfo={historyPageInfo}
                                                 onFetchHistory={loadDoctorHistory}

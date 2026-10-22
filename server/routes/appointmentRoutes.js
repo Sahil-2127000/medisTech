@@ -15,6 +15,7 @@ router.post('/book', authMiddleware, appointmentController.bookAppointment);
 
 // Doctor Routes
 router.get('/doctor', authMiddleware, requireDoctor, appointmentController.getDoctorAppointmentsDaily);
+router.get('/doctor/pending', authMiddleware, requireDoctor, appointmentController.getDoctorPendingRequests);
 router.get('/doctor/history', authMiddleware, requireDoctor, appointmentController.getDoctorHistory);
 router.post('/offline-book', authMiddleware, requireDoctor, appointmentController.offlineBook);
 router.put('/:id/status', authMiddleware, requireDoctor, appointmentController.updateStatus);

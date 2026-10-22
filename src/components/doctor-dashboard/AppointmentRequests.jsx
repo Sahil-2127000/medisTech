@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const AppointmentRequests = ({ 
   appointments, 
+  pendingAppointments = [],
   onStatusChange, 
   pageInfo, 
   onFetchHistory, 
@@ -51,7 +52,11 @@ const AppointmentRequests = ({
     return `${formattedHour}:${minute} ${ampm}`;
   };
 
-  const pendingRequests = appointments.filter(app => app.status === 'pending');
+  // Pending requests come from their own endpoint so none are hidden on later history pages;
+  // the search box still filters them by name / patient ID
+  const q = (searchQuery || '').trim().toLowerCase();
+  const pendingRequests = pendingAppointments.filter(app =>
+    !q || app.name?.toLowerCase().includes(q) || app.patientUid?.toLowerCase().includes(q));
   const otherHistory = appointments.filter(app => app.status !== 'pending').sort((a, b) => {
       const dateA = parseApptDate(a.date);
       const dateB = parseApptDate(b.date);
@@ -238,7 +243,7 @@ const AppointmentRequests = ({
           <div className="flex items-center gap-3">
              History & Records
              <span className={`px-2 py-0.5 rounded-lg text-[10px] ${activeSubTab === 'history' ? 'bg-clinic-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
-               {pageInfo.totalCount - pendingRequests.length}
+               {Math.max(0, pageInfo.totalCount - (statusFilter ? 0 : pendingRequests.length))}
              </span>
           </div>
           {activeSubTab === 'history' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-clinic-600 rounded-full animate-fade-in" />}

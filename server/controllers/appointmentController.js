@@ -3,6 +3,7 @@ const Availability = require('../models/Availability');
 const User = require('../models/User');
 const Doctor = require('../models/Doctor');
 const Prescription = require('../models/Prescription');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { sendEmail } = require('../utils/emailService');
@@ -199,6 +200,19 @@ exports.getDoctorAppointmentsDaily = async (req, res) => {
   }
 };
 
+// All pending requests of the logged-in doctor (independent of history pagination)
+exports.getDoctorPendingRequests = async (req, res) => {
+  try {
+    const pending = await Appointment.find({ doctorId: req.user.id, status: 'pending' })
+                                     .populate('patientId', 'fullName age gender patientUid')
+                                     .sort({ createdAt: -1 });
+    res.status(200).json(pending);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to load pending requests.' });
+  }
+};
+
 // Global massive historical fetch natively sorting by newest descending
 exports.getDoctorHistory = async (req, res) => {
   try {
@@ -226,7 +240,7 @@ exports.getDoctorHistory = async (req, res) => {
          ],
          role: 'patient'
        }).select('_id');
-       patientIds = users.map(u => u._id);
+       const patientIds = users.map(u => u._id);
        
        query.$or = [
          { patientId: { $in: patientIds } },
@@ -239,11 +253,16 @@ exports.getDoctorHistory = async (req, res) => {
 
      
 
-     const history = await Appointment.find(query)
-                                      .populate('patientId', 'fullName age gender patientUid')
-                                      .sort({ date: -1, time: -1 })
-                                      .skip(skip)
-                                      .limit(limit);
+     // Dates are stored as DD-MM-YYYY strings, so sort on a YYYYMMDD key instead of the raw string
+     query.doctorId = new mongoose.Types.ObjectId(req.user.id);
+     const rows = await Appointment.aggregate([
+       { $match: query },
+       { $addFields: { sortDate: { $concat: [{ $substrCP: ['$date', 6, 4] }, { $substrCP: ['$date', 3, 2] }, { $substrCP: ['$date', 0, 2] }] } } },
+       { $sort: { sortDate: -1, time: -1 } },
+       { $skip: skip },
+       { $limit: limit }
+     ]);
+     const history = await Appointment.populate(rows, { path: 'patientId', select: 'fullName age gender patientUid' });
 
      res.status(200).json({
        data: history,
