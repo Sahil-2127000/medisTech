@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Doctor = require('../models/Doctor');
+const Availability = require('../models/Availability');
 const { sendEmail } = require('../utils/emailService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_for_development';
@@ -133,7 +134,7 @@ const html = `
 };
 
 exports.register = async (req, res) => {
-  const { fullName, email, password, otp, role, age, gender, phone } = req.body;
+  const { fullName, email, password, otp, role, age, gender, phone, specialization, experience, clinicName, clinicAddress } = req.body;
 
   if (!fullName || !email || !password || !otp) {
     return res.status(400).json({ message: 'All fields including OTP are required' });
@@ -181,7 +182,11 @@ exports.register = async (req, res) => {
     let actualRole = role === 'doctor' ? 'doctor' : 'patient';
 
     if (actualRole === 'doctor') {
-       newlyCreatedEntity = new Doctor({ fullName, email, password: hashedPassword, role: 'doctor', phone });
+       // A doctor signing up opens their own clinic on the platform
+       if (!specialization || !clinicName || !clinicAddress) {
+         return res.status(400).json({ message: 'Specialization, clinic name and clinic address are required for doctors' });
+       }
+       newlyCreatedEntity = new Doctor({ fullName, email, password: hashedPassword, role: 'doctor', phone, specialization, experience, clinicName, clinicAddress });
     } else {
        // Generate Unique Patient UID strictly natively
        let patientUid;
@@ -195,6 +200,10 @@ exports.register = async (req, res) => {
        newlyCreatedEntity = new User({ fullName, email, password: hashedPassword, role: 'patient', age, gender, phone, patientUid });
     }
     await newlyCreatedEntity.save();
+    if (actualRole === 'doctor') {
+      // Default weekly schedule so patients can book right away (editable under Availability)
+      await Availability.create({ doctorId: newlyCreatedEntity._id });
+    }
 
     // Sign JWT (Inject role into JWT natively so middlewares can check authorization)
     const token = jwt.sign(

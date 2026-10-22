@@ -12,7 +12,11 @@ const SignUpForm = ({ onSwitch }) => {
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const role = "patient";
+  const [role, setRole] = useState('patient');
+  const [specialization, setSpecialization] = useState('');
+  const [experience, setExperience] = useState('');
+  const [clinicName, setClinicName] = useState('');
+  const [clinicAddress, setClinicAddress] = useState('');
 
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
@@ -89,7 +93,9 @@ const SignUpForm = ({ onSwitch }) => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ fullName, email, password, otp, role, age: age ? Number(age) : undefined, gender, phone })
+          body: JSON.stringify(role === 'doctor'
+            ? { fullName, email, password, otp, role, phone, specialization, experience, clinicName, clinicAddress }
+            : { fullName, email, password, otp, role, age: age ? Number(age) : undefined, gender, phone })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Registration failed');
@@ -110,7 +116,7 @@ const SignUpForm = ({ onSwitch }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3">
 
       {!otpSent ? (
         <>
@@ -214,6 +220,50 @@ const SignUpForm = ({ onSwitch }) => {
             </>
           )}
 
+          {/* Role selection */}
+          <div className="space-y-1.5 pt-1">
+            <label className="text-xs font-semibold text-blue-500">Sign up as</label>
+            <div className="grid grid-cols-2 gap-2 bg-gray-100 p-1 rounded-xl">
+              {[['patient', 'Patient'], ['doctor', 'Doctor']].map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setRole(value)}
+                  className={`py-2 rounded-lg text-sm font-semibold transition-all ${role === value ? 'bg-white text-[#3963F9] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {role === 'doctor' && (
+            <>
+              <div className="flex gap-4">
+                <div className="space-y-1 flex-[2]">
+                  <label className="text-xs font-semibold text-blue-500">Specialization</label>
+                  <input type="text" required value={specialization} onChange={(e) => setSpecialization(e.target.value)}
+                    placeholder="e.g. General Physician" className="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-blue-500 text-sm text-gray-800 placeholder-gray-300 transition-colors" />
+                </div>
+                <div className="space-y-1 flex-1">
+                  <label className="text-xs font-semibold text-blue-500">Experience (yrs)</label>
+                  <input type="number" min="0" value={experience} onChange={(e) => setExperience(e.target.value)}
+                    placeholder="e.g. 8" className="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-blue-500 text-sm text-gray-800 placeholder-gray-300 transition-colors" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-blue-500">Clinic Name</label>
+                <input type="text" required value={clinicName} onChange={(e) => setClinicName(e.target.value)}
+                  placeholder="e.g. Dr. Jane Doe's Clinic" className="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-blue-500 text-sm text-gray-800 placeholder-gray-300 transition-colors" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-blue-500">Clinic Address</label>
+                <input type="text" required value={clinicAddress} onChange={(e) => setClinicAddress(e.target.value)}
+                  placeholder="Street, area, Ludhiana" className="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-blue-500 text-sm text-gray-800 placeholder-gray-300 transition-colors" />
+              </div>
+            </>
+          )}
+
         </>
       ) : (
         <div className="space-y-2 transition-all">
@@ -256,7 +306,7 @@ const SignUpForm = ({ onSwitch }) => {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#3963F9] hover:bg-blue-700 text-white font-medium py-3 rounded-xl mt-4 transition-all shadow-lg shadow-blue-500/30 hover:cursor-pointer disabled:opacity-50"
+        className="w-full bg-[#3963F9] hover:bg-blue-700 text-white font-medium py-3 rounded-xl mt-2 transition-all shadow-lg shadow-blue-500/30 hover:cursor-pointer disabled:opacity-50"
       >
         {loading ? 'Processing...' : (otpSent ? 'Verify & Register' : 'Sign Up')}
       </button>

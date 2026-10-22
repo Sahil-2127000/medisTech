@@ -9,7 +9,7 @@ const Auth = () => {
     <div className="min-h-screen bg-linear-to-tr from-clinic-900 via-clinic-800 to-[#0a183d] animate-gradient-xy flex items-center justify-center p-4 font-sans relative overflow-hidden">
       
       {/* Outer Card Container */}
-      <div className="w-full max-w-5xl h-[650px] relative rounded-4xl md:rounded-4xl overflow-hidden shadow-2xl z-10 bg-linear-to-br from-[#419EF6] to-[#1444D8]">
+      <div className="w-full max-w-5xl h-[min(760px,calc(100vh-2rem))] min-h-[560px] relative rounded-4xl md:rounded-4xl overflow-hidden shadow-2xl z-10 bg-linear-to-br from-[#419EF6] to-[#1444D8]">
         
         {/* Animated Graphic Panel */}
         <div 
@@ -32,7 +32,7 @@ const Auth = () => {
              <img 
                src="/doctor_auth.png" 
                alt="Doctor" 
-               className="w-full max-w-[320px] object-contain drop-shadow-2xl scale-155 translate-y-20"
+               className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[320px] object-contain drop-shadow-2xl scale-155 origin-bottom"
                onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = "https://placehold.co/300x400/1444d8/ffffff.png?text=Medical+Staff";
@@ -45,7 +45,7 @@ const Auth = () => {
 
         {/* Animated Form Panel */}
         <div 
-          className={`absolute top-0 h-full w-full md:w-[55%] bg-[#F8F9FD] flex items-center justify-center p-8 shadow-[0_0_40px_rgba(0,0,0,0.2)] transition-all duration-800 ease-in-out z-20
+          className={`absolute top-0 h-full w-full md:w-[55%] bg-[#F8F9FD] flex justify-center overflow-y-auto no-scrollbar p-6 shadow-[0_0_40px_rgba(0,0,0,0.2)] transition-all duration-800 ease-in-out z-20
             ${authMode === 'signup' 
               ? 'left-0 md:left-[45%] md:rounded-l-[3rem] md:rounded-r-none' 
               : 'left-0 md:left-0 md:rounded-r-[3rem] md:rounded-l-none'
@@ -53,10 +53,10 @@ const Auth = () => {
           `}
         >
           
-          <div className="w-full max-w-[380px] bg-white rounded-3xl p-8 shadow-xl relative">
+          <div className="w-full max-w-[380px] my-auto bg-white rounded-3xl px-8 py-6 shadow-xl relative">
             
             {/* Tabs */}
-            <div className="flex items-center gap-6 mb-8 text-lg font-bold border-b border-gray-100 pb-2">
+            <div className="flex items-center gap-6 mb-5 text-lg font-bold border-b border-gray-100 pb-2">
               <button 
                 className={`transition-colors hover:scale-[1.03] relative ${authMode === 'signup' ? 'text-gray-800' : 'text-gray-400'}`}
                 onClick={() => setAuthMode('signup')}
