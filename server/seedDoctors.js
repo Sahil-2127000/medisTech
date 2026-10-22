@@ -1,79 +1,76 @@
-// Seeds 5 mock doctors (different specializations) + default availability for testing multi-doctor support.
-// Run once from the server folder:  node seedDoctors.js
-// All mock doctors share the test password below. Re-running skips doctors that already exist.
+// Seeds doctors for the multi-clinic platform: every clinic has exactly one doctor,
+// its own Ludhiana address and its own weekly schedule. No photos are stored —
+// the UI shows initials avatars instead.
+//
+// Usage (from the server folder):
+//   SEED_DOCTOR_PASSWORD='<password>' node seedDoctors.js <email-1> <email-2>
+// E-mails and the password are passed in so no personal data is committed.
+// Re-running skips e-mails that already exist.
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const Doctor = require('./models/Doctor');
 const Availability = require('./models/Availability');
+const User = require('./models/User');
 
-const TEST_PASSWORD = 'Doctor@123';
+const week = (fn) => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => {
+  const slots = fn(day);
+  return { day, isOff: slots.length === 0, slots };
+});
 
-const doctors = [
+const clinics = [
   {
-    fullName: 'Ananya Sharma',
-    email: 'ananya.derma@medistech.test',
-    phone: '9000000001',
+    fullName: 'Arjun Sethi',
+    specialization: 'General Physician',
+    experience: '12',
+    clinicName: 'Sethi Family Care Clinic',
+    clinicAddress: '214-B, Model Town Extension, Ludhiana, Punjab 141002',
+    availability: {
+      slotDuration: 15,
+      weeklyConfig: week(day => day === 'Sunday' ? [] : [{ start: '10:00', end: '14:00' }, { start: '17:00', end: '20:00' }])
+    }
+  },
+  {
+    fullName: 'Neha Kapoor',
     specialization: 'Dermatologist',
     experience: '8',
-    clinicAddress: 'Skin Care Wing, MedisTech Clinic, Ludhiana',
-    photo: 'https://randomuser.me/api/portraits/women/44.jpg'
-  },
-  {
-    fullName: 'Rohan Mehta',
-    email: 'rohan.cardio@medistech.test',
-    phone: '9000000002',
-    specialization: 'Cardiologist',
-    experience: '15',
-    clinicAddress: 'Heart Centre, MedisTech Clinic, Ludhiana',
-    photo: 'https://randomuser.me/api/portraits/men/32.jpg'
-  },
-  {
-    fullName: 'Priya Kapoor',
-    email: 'priya.pediatric@medistech.test',
-    phone: '9000000003',
-    specialization: 'Pediatrician',
-    experience: '10',
-    clinicAddress: 'Child Care Block, MedisTech Clinic, Ludhiana',
-    photo: 'https://randomuser.me/api/portraits/women/65.jpg'
-  },
-  {
-    fullName: 'Arjun Singh',
-    email: 'arjun.ortho@medistech.test',
-    phone: '9000000004',
-    specialization: 'Orthopedic',
-    experience: '12',
-    clinicAddress: 'Bone & Joint Unit, MedisTech Clinic, Ludhiana',
-    photo: 'https://randomuser.me/api/portraits/men/75.jpg'
-  },
-  {
-    fullName: 'Neha Verma',
-    email: 'neha.ent@medistech.test',
-    phone: '9000000005',
-    specialization: 'ENT Specialist',
-    experience: '6',
-    clinicAddress: 'ENT Department, MedisTech Clinic, Ludhiana',
-    photo: 'https://randomuser.me/api/portraits/women/12.jpg'
+    clinicName: 'Kapoor Skin & Hair Clinic',
+    clinicAddress: 'SCO 35, Sarabha Nagar Market, Ludhiana, Punjab 141001',
+    availability: {
+      slotDuration: 20,
+      weeklyConfig: week(day => ['Sunday', 'Wednesday'].includes(day) ? [] : day === 'Saturday' ? [{ start: '10:00', end: '14:00' }] : [{ start: '11:00', end: '17:00' }])
+    }
   }
 ];
 
 const seed = async () => {
-  await mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/clinicflow');
-  const hashedPassword = await bcrypt.hash(TEST_PASSWORD, 10);
+  const emails = process.argv.slice(2);
+  const password = process.env.SEED_DOCTOR_PASSWORD;
+  if (emails.length !== clinics.length || !password) {
+    console.error(`Usage: SEED_DOCTOR_PASSWORD='<password>' node seedDoctors.js ${clinics.map((_, i) => `<email-${i + 1}>`).join(' ')}`);
+    process.exit(1);
+  }
 
-  for (const doc of doctors) {
-    const exists = await Doctor.findOne({ email: doc.email });
-    if (exists) {
-      console.log(`Skipping ${doc.email} (already exists)`);
+  await mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/clinicflow');
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  for (const [i, { availability, ...clinic }] of clinics.entries()) {
+    const email = emails[i].toLowerCase();
+    if (await Doctor.findOne({ email })) {
+      console.log(`Skipping ${email} (already exists)`);
       continue;
     }
-    const created = await Doctor.create({ ...doc, password: hashedPassword, role: 'doctor' });
-    await Availability.create({ doctorId: created._id }); // default Mon-Fri 9-5 grid
-    console.log(`Created Dr. ${doc.fullName} (${doc.specialization})`);
+    // Login looks up patients first, so an e-mail can belong to only one account type
+    if (await User.findOne({ email })) {
+      console.log(`Skipping ${email} (already registered as a patient)`);
+      continue;
+    }
+    const doctor = await Doctor.create({ ...clinic, email, password: hashedPassword, role: 'doctor' });
+    await Availability.create({ doctorId: doctor._id, ...availability });
+    console.log(`Created ${clinic.clinicName} — Dr. ${clinic.fullName} (${clinic.specialization}) <${email}>`);
   }
 
   await mongoose.disconnect();
-  console.log(`Done. Login with any seeded email and password: ${TEST_PASSWORD}`);
 };
 
 seed().catch(err => {

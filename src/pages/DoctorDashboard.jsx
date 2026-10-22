@@ -145,6 +145,7 @@ const DoctorDashboard = () => {
                     specialization: data.specialization || '',
                     photo: data.photo || '',
                     phone: data.phone || '',
+                    clinicName: data.clinicName || '',
                     clinicAddress: data.clinicAddress || ''
                 });
             }

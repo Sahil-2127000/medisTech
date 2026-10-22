@@ -394,7 +394,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                 <div className="text-gray-400">
                   <div className="text-xs font-semibold text-[#0d9488] uppercase tracking-widest mb-1">Authenticated By</div>
                   <h5 className="font-semibold text-lg text-slate-800 leading-none">Dr. {activePrescription.doctorId?.fullName || activePrescription.doctorName || 'Specialist'}</h5>
-                  <p className="text-[10px] font-medium opacity-80 mt-1">{activePrescription.doctorId?.clinicAddress || 'Registered Clinic'} • {activePrescription.doctorId?.phone || 'MedicsTech ecosystem'}</p>
+                  <p className="text-[10px] font-medium opacity-80 mt-1">{[activePrescription.doctorId?.clinicName, activePrescription.doctorId?.clinicAddress].filter(Boolean).join(', ') || 'Registered Clinic'} • {activePrescription.doctorId?.phone || 'MedicsTech ecosystem'}</p>
                 </div>
               </div>
               <div className="absolute bottom-0 right-0 left-0 h-2 bg-[#0d9488]"></div>

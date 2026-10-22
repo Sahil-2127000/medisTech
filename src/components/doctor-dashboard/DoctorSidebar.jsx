@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { initialsAvatar } from '../../utils/avatar';
 import { useNavigate } from 'react-router-dom';
 
 const DoctorSidebar = ({ activeTab, setActiveTab, profile, isOpen, onClose }) => {
@@ -40,7 +41,7 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile, isOpen, onClose }) =>
             <div className="flex flex-col items-center mt-4 mb-10 pb-8 border-b border-gray-100 transition-colors">
                 <div className="relative w-24 h-24 mb-4">
                     <div className="absolute inset-0 border-2 border-clinic-600 rounded-full scale-110 border-dashed animate-spin-slow"></div>
-                    <img src={profile?.photo || `https://placehold.co/150x150/5483B3/ffffff.png?text=${encodeURIComponent((profile?.firstName || 'Dr')[0])}`} alt="Doctor Avatar" className="w-full h-full rounded-full object-cover shadow-sm relative z-10" />
+                    <img src={profile?.photo || initialsAvatar(`${profile?.firstName || ''} ${profile?.lastName || ''}`, 150)} alt="Doctor Avatar" className="w-full h-full rounded-full object-cover shadow-sm relative z-10" />
                 </div>
                 <h2 className="text-xl font-bold text-slate-800 text-center transition-colors">Dr. {profile?.firstName || 'Name'} {profile?.lastName || ''}</h2>
                 <span className="text-clinic-600 text-sm font-semibold mt-1 bg-clinic-200/30 px-3 py-1 rounded-full">{profile?.specialization || 'Specialization'}</span>

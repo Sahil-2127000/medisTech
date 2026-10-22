@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { initialsAvatar } from '../../utils/avatar';
 
 const DoctorProfile = ({ email }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -9,6 +10,7 @@ const DoctorProfile = ({ email }) => {
         phone: '',
         specialization: '',
         experience: '',
+        clinicName: '',
         clinicAddress: '',
         photo: '' // Avatar with camera icon overlay conceptually
     });
@@ -23,9 +25,10 @@ const DoctorProfile = ({ email }) => {
                     firstName: data.fullName?.split(' ')[0] || '',
                     lastName: data.fullName?.split(' ').slice(1).join(' ') || '',
                     email: data.email || '',
-                    phone: data.phone || '12345',
+                    phone: data.phone || '',
                     specialization: data.specialization || '',
                     experience: data.experience || '',
+                    clinicName: data.clinicName || '',
                     clinicAddress: data.clinicAddress || '',
                     photo: data.photo || ''
                 });
@@ -53,6 +56,7 @@ const DoctorProfile = ({ email }) => {
                 phone: profile.phone,
                 specialization: profile.specialization,
                 experience: profile.experience,
+                clinicName: profile.clinicName,
                 clinicAddress: profile.clinicAddress,
                 photo: profile.photo
             };
@@ -97,7 +101,7 @@ const DoctorProfile = ({ email }) => {
                     <div className="flex flex-col items-center shrink-0 w-full md:w-64">
                         <div className="relative group cursor-pointer mb-6">
                             <div className="w-48 h-48 rounded-4xl border-4 border-slate-100 overflow-hidden shadow-lg transition-all group-hover:scale-[1.02]">
-                                <img src={profile.photo || `https://placehold.co/400x400/5265ec/ffffff.png?text=${profile.firstName?.charAt(0) || 'D'}`} alt="Current Avatar" className="w-full h-full object-cover" />
+                                <img src={profile.photo || initialsAvatar(`${profile.firstName} ${profile.lastName}`, 400)} alt="Current Avatar" className="w-full h-full object-cover" />
                                 {isEditing && (
                                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                         <svg className="w-12 h-12 text-white/90" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
@@ -120,6 +124,7 @@ const DoctorProfile = ({ email }) => {
                             { label: 'Phone Number', name: 'phone' },
                             { label: 'Specialization', name: 'specialization' },
                             { label: 'Years Experience', name: 'experience' },
+                            { label: 'Clinic Name', name: 'clinicName', mdColSpan: true },
                             { label: 'Clinic Address', name: 'clinicAddress', mdColSpan: true }
                         ].map((field, i) => (
                             <div key={i} className={`flex flex-col space-y-1.5 ${field.mdColSpan ? 'md:col-span-2' : ''}`}>

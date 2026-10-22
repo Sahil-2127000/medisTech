@@ -164,17 +164,17 @@ const BookAppointment = ({ onClose }) => {
           </div>
 
           <div className="flex flex-col space-y-1">
-            <label className="block text-xs font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-2">Select Doctor</label>
+            <label className="block text-xs font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-2">Select Clinic / Doctor</label>
             <select
               required
               value={selectedDoctor}
               onChange={e => { setSelectedDoctor(e.target.value); setSelectedSlot(''); }}
               className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold border border-gray-100 dark:border-white/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all shadow-sm cursor-pointer"
             >
-              <option value="" disabled>Choose a doctor...</option>
+              <option value="" disabled>Choose a clinic...</option>
               {doctors.filter(d => specialty === 'All' || d.specialization === specialty).map(d => (
                 <option key={d._id} value={d._id}>
-                  Dr. {d.fullName}{d.specialization ? ` — ${d.specialization}` : ''}
+                  {d.clinicName ? `${d.clinicName} — ` : ''}Dr. {d.fullName}{d.specialization ? ` (${d.specialization})` : ''}
                 </option>
               ))}
             </select>

@@ -79,7 +79,7 @@ exports.getMyPrescriptions = async (req, res) => {
   try {
     console.log("[PRESCRIPTION CONTROLLER] Fetching prescriptions for Patient ID:", req.user.id);
     const rxList = await Prescription.find({ patientId: req.user.id })
-                                     .populate('doctorId', 'fullName specialization clinicAddress phone')
+                                     .populate('doctorId', 'fullName specialization clinicName clinicAddress phone')
                                      .sort({ createdAt: -1 });
     
     console.log(`[PRESCRIPTION CONTROLLER] Found ${rxList.length} prescriptions for user ${req.user.id}`);

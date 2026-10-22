@@ -24,6 +24,7 @@ const DoctorSchema = new mongoose.Schema({
   phone: { type: String, default: '' },
   specialization: { type: String, default: '' },
   experience: { type: String, default: '' },
+  clinicName: { type: String, default: '' },   // each clinic on the platform has exactly one doctor
   clinicAddress: { type: String, default: '' },
   photo: { type: String, default: '' },
   lastPasswordChange: { type: Date },

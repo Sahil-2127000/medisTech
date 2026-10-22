@@ -348,7 +348,7 @@ const PrescriptionBuilder = ({ activePatient, onCancel, onSave, doctorProfile })
               <div className="text-gray-400">
                 <div className="text-xs font-semibold text-[#0d9488] uppercase tracking-widest mb-1">Authenticated By</div>
                 <h5 className="font-semibold text-lg text-slate-800 leading-none">{doctorName}</h5>
-                <p className="text-[10px] font-medium opacity-80 mt-1">{doctorProfile?.clinicAddress || 'Registered Clinic'} • {doctorProfile?.phone || 'MedicsTech ecosystem'}</p>
+                <p className="text-[10px] font-medium opacity-80 mt-1">{[doctorProfile?.clinicName, doctorProfile?.clinicAddress].filter(Boolean).join(', ') || 'Registered Clinic'} • {doctorProfile?.phone || 'MedicsTech ecosystem'}</p>
               </div>
             </div>
             <div className="absolute bottom-0 right-0 left-0 h-2 bg-[#0d9488]"></div>

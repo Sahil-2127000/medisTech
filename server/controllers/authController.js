@@ -4,7 +4,7 @@ const User = require('../models/User');
 const Doctor = require('../models/Doctor');
 const { sendEmail } = require('../utils/emailService');
 
-const JWT_SECRET = process.env.JWT_SECRET ;
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_for_development';
 
 // In-memory OTP store (email -> { otp, expiresAt })
 const otps = {};
@@ -30,9 +30,17 @@ exports.sendOtp = async (req, res) => {
       }
     }
 
+    if (phone) {
+      const existingPatientPhone = await User.findOne({ phone });
+      const existingDoctorPhone = await Doctor.findOne({ phone });
+      
+      if (existingPatientPhone || existingDoctorPhone) {
+        return res.status(400).json({ message: 'User already exists with this phone number' });
+      }
+    }
   } catch (error) {
     console.error('Database Error:', error);
-    return res.status(500).json({ message: 'Failed to verify email' , error: error.message});
+    return res.status(500).json({ message: 'Failed to verify email' });
   }
 
   // Generate a random 6-digit OTP
@@ -120,29 +128,24 @@ const html = `
     console.error('Error sending email:', error.message);
     console.log(`[TEST MODE FALLBACK] Real email failed, but here is OTP: ${otpCode}`);
     // Return 200 so the frontend can still proceed with OTP verification
-    res.status(500).json({ message: 'OTP generated locally (Email sending failed due to credentials)',error:error.message });
+    res.status(200).json({ message: 'OTP generated locally (Email sending failed due to credentials)' });
   }
 };
 
 exports.register = async (req, res) => {
-  
+  const { fullName, email, password, otp, role, age, gender, phone } = req.body;
+
+  if (!fullName || !email || !password || !otp) {
+    return res.status(400).json({ message: 'All fields including OTP are required' });
+  }
 
   try {
-
-
-    //fetching data from request body
-    const { fullName, email, password, otp, role, age, gender, phone } = req.body;
-
-    //validating data
-    if (!fullName || !email || !password || !otp) {
-      return res.status(400).json({ message: 'All fields including OTP are required' });
-    }
-    
+    // Structural Isolation logic handling distinct databases
     const existingPatient = await User.findOne({ email });
     const existingDoctor = await Doctor.findOne({ email });
     
     if (existingPatient || existingDoctor) {
-      return res.status(400).json({ message: 'User already exists with this email' });
+      return res.status(400).json({ message: 'Entity already exists with this email' });
     }
 
     if (phone) {
@@ -150,7 +153,7 @@ exports.register = async (req, res) => {
       const existingDoctorPhone = await Doctor.findOne({ phone });
       
       if (existingPatientPhone || existingDoctorPhone) {
-        return res.status(400).json({ message: 'User already exists with this phone number' });
+        return res.status(400).json({ message: 'Entity already exists with this phone number' });
       }
     }
 
@@ -169,7 +172,7 @@ exports.register = async (req, res) => {
     // OTP verified successfully. Remove from memory.
     delete otps[email];
 
-    //  Salting & Hashing of password 
+    // Cryptographic Salting & Hashing
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -193,7 +196,7 @@ exports.register = async (req, res) => {
     }
     await newlyCreatedEntity.save();
 
-    // Sign JWT (Inject role into JWT  so middlewares can check authorization)
+    // Sign JWT (Inject role into JWT natively so middlewares can check authorization)
     const token = jwt.sign(
       { id: newlyCreatedEntity._id, email: newlyCreatedEntity.email, role: actualRole }, 
       JWT_SECRET, 
@@ -214,19 +217,15 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     console.error('Registration Error:', error);
-    res.status(500).json({ message: 'Registration failed due to server error'  , error : error.message });
+    res.status(500).json({ message: 'Registration failed due to server error' });
   }
 };
 
 exports.login = async (req, res) => {
-  
+  const { email, password } = req.body;
 
   try {
-
-    //fetching data from body
-    const { email, password } = req.body;
-
-    // validation of data
+    // Intelligent hunt natively routing sequentially via isolated bodies
     let targetUser = await User.findOne({ email });
     
     if (!targetUser) {
@@ -237,7 +236,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email' });
     }
 
-    // password checking
+    // Cryptographic comparative hash match check
     const isMatch = await bcrypt.compare(password, targetUser.password);
     if (!isMatch) {
        return res.status(401).json({ message: 'Invalid email or password' });
@@ -250,12 +249,10 @@ exports.login = async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    // If 2FA is formally enabled, pause login and require OTP phase
+    // If 2FA is formally enabled, halt login and require OTP phase
     if (targetUser.is2FAEnabled) {
-
         // Generate a 6-digit SMS OTP
         const smsOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
         targetUser.twoFactorOTP = smsOtp;
         targetUser.twoFactorOTPExpires = Date.now() + 5 * 60 * 1000; // 5 minutes
         await targetUser.save();
@@ -337,21 +334,16 @@ exports.verifyLogin2FA = async (req, res) => {
 exports.getDoctors = async (req, res) => {
   try {
     // Only expose public profile fields (never password / 2FA data)
-    const doctors = await Doctor.find().select('fullName email phone specialization experience clinicAddress photo');
+    const doctors = await Doctor.find().select('fullName email phone specialization experience clinicName clinicAddress photo');
     res.status(200).json(doctors);
-  } catch (err) {
-    res.status(500).json({ 
-      message: 'Failed to extract all the doctors',
-      error: err.message,
-    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to extract Doctor schemas directly' });
   }
 };
 
 exports.logout = (req, res) => {
   res.clearCookie('token');
-  res.status(200).json({ 
-    message: 'Logged out successfully' 
-  });
+  res.status(200).json({ message: 'Logged out successfully' });
 };
 
 // Forgot Password Workflow for Authenticated Users (Settings Page)
@@ -474,18 +466,10 @@ exports.publicForgotPasswordRequestOtp = async (req, res) => {
     `;
 
     await sendEmail(email, 'Medistech Recovery Code', html);
-    res.status(200).json({ 
-      message: 'Recovery code sent to inbox.' 
-    });
-
+    res.status(200).json({ message: 'Recovery code sent to inbox.' });
   } catch (err) {
-
     console.error(err);
-
-    res.status(500).json({ 
-      message: 'Failed to send recovery code.',
-      error : err.message
-    });
+    res.status(500).json({ message: 'Failed to send recovery code.' });
   }
 };
 
@@ -523,29 +507,16 @@ exports.publicForgotPasswordReset = async (req, res) => {
 
     // Update the identified user
     if (targetUser.role === 'doctor') {
-      await Doctor.findByIdAndUpdate(targetUser._id, 
-                                    { password: hashedPassword,
-                                      lastPasswordChange: new Date()
-                                    },
-                                    {new:true}
-                                    );
+      await Doctor.findByIdAndUpdate(targetUser._id, { password: hashedPassword, lastPasswordChange: new Date() });
     } else {
-      await User.findByIdAndUpdate(targetUser._id, 
-                                  { password: hashedPassword, 
-                                    lastPasswordChange: new Date() 
-                                  });
+      await User.findByIdAndUpdate(targetUser._id, { password: hashedPassword, lastPasswordChange: new Date() });
     }
 
     delete otps[email];
 
-    res.status(200).json({ 
-        message: 'Password updated successfully! You can now log in.' 
-      });
+    res.status(200).json({ message: 'Password updated successfully! You can now log in.' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ 
-      message: 'Server error ocuured while updating the password',
-      error: err.message
-    });
+    res.status(500).json({ message: 'Structural failure during password reset operation.' });
   }
 };
