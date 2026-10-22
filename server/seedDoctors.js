@@ -20,10 +20,10 @@ const week = (fn) => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'S
 
 const clinics = [
   {
-    fullName: 'Arjun Sethi',
+    fullName: 'Purvika Jain',
     specialization: 'General Physician',
     experience: '12',
-    clinicName: 'Sethi Family Care Clinic',
+    clinicName: "Dr. Purvika Jain's Clinic",
     clinicAddress: '214-B, Model Town Extension, Ludhiana, Punjab 141002',
     availability: {
       slotDuration: 15,
@@ -31,10 +31,10 @@ const clinics = [
     }
   },
   {
-    fullName: 'Neha Kapoor',
+    fullName: 'Akshit Kumar',
     specialization: 'Dermatologist',
     experience: '8',
-    clinicName: 'Kapoor Skin & Hair Clinic',
+    clinicName: "Dr. Akshit Kumar's Clinic",
     clinicAddress: 'SCO 35, Sarabha Nagar Market, Ludhiana, Punjab 141001',
     availability: {
       slotDuration: 20,
