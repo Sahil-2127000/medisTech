@@ -5,13 +5,11 @@ const HeroSection = ({ stats }) => {
   // Dynamic values from backend
   const { 
     totalPatientsTreated = 0, 
-    yearsOfExperience = '15', 
-    patientSatisfaction = 0 
+    yearsOfExperience = '15'
   } = stats || {};
 
   // Display logic: show base values unless dynamic values are higher
   const displayTreated = Math.max(2000, totalPatientsTreated);
-  const displaySatisfaction = Math.max(98, patientSatisfaction);
   const displayExperience = Math.max(15, yearsOfExperience);
 
   return (
@@ -40,7 +38,7 @@ const HeroSection = ({ stats }) => {
           </h1>
 
           <p className="text-blue-50 text-lg leading-relaxed font-medium opacity-90">
-            Our Clinic provides personalized medical care with easy appointment booking, quick consultations, and a patient-friendly experience—all in one place.
+            MedisTech connects you with trusted clinics across Ludhiana — easy appointment booking, live queue updates and digital prescriptions, all in one place.
           </p>
 
           <div className="pt-2">
@@ -58,10 +56,6 @@ const HeroSection = ({ stats }) => {
             <div>
               <div className="text-4xl font-bold text-white">{displayTreated}+</div>
               <div className="text-sm text-blue-200 mt-1 font-medium">Patients Treated</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[#04fdfd]">{displaySatisfaction}%</div>
-              <div className="text-sm text-blue-200 mt-1 font-medium">Patient Satisfaction</div>
             </div>
 
           </div>

@@ -252,6 +252,9 @@ const DoctorDashboard = () => {
 
     // Action Mutators strictly utilizing the explicit Dispatch payload flow
     const handleStatusChange = async (id, newStatus) => {
+        // Show the change immediately; the reloads below confirm it from the server
+        setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
+        setPendingRequests(prev => newStatus === 'pending' ? prev : prev.filter(a => a.id !== id));
         try {
             await fetch(`http://localhost:5001/api/appointments/${id}/status`, {
                 method: 'PUT',
@@ -469,7 +472,7 @@ const DoctorDashboard = () => {
                                                     />
                                                 </div>
                                                 <div className="w-full lg:w-[400px] shrink-0">
-                                                    <TodayAppointments appointments={appointments} />
+                                                    <TodayAppointments appointments={appointments} onStatusChange={handleStatusChange} />
                                                 </div>
                                             </div>
                                         </>

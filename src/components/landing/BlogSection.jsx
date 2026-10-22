@@ -71,7 +71,7 @@ const BlogSection = () => {
       >
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Health Insights & Wellness Tips</h2>
         <p className="text-slate-500 text-sm md:text-base leading-relaxed">
-          Read the latest medical advice and wellness strategies written directly by Dr. MV Sharma.
+          Read the latest medical advice and wellness strategies written by doctors on MedisTech.
         </p>
       </motion.div>
 

@@ -1,5 +1,4 @@
 const Contact = require('../models/Contact');
-const Doctor = require('../models/Doctor');
 const { sendEmail } = require('../utils/emailService');
 
 exports.submitContact = async (req, res) => {
@@ -13,9 +12,8 @@ exports.submitContact = async (req, res) => {
     // Save to database
     const newContact = await Contact.create({ name, phone, email, message });
 
-    // Find the doctor's email
-    const doctor = await Doctor.findOne();
-    const doctorEmail = doctor ? doctor.email : process.env.SMTP_USER;
+    // Platform-level inquiry: delivered to the MedisTech support inbox
+    const doctorEmail = process.env.SMTP_USER;
 
     // Send email to the doctor
     const doctorHtml = `

@@ -1,7 +1,7 @@
 import React from 'react';
 import PatientRxHistory from './PatientRxHistory';
 
-const TodayAppointments = ({ appointments }) => {
+const TodayAppointments = ({ appointments, onStatusChange }) => {
   // Ensure we format current date correctly matching DD-MM-YYYY
   const todayRaw = new Date();
   const todayFormatted = `${String(todayRaw.getDate()).padStart(2, '0')}-${String(todayRaw.getMonth() + 1).padStart(2, '0')}-${todayRaw.getFullYear()}`;
@@ -60,7 +60,20 @@ const TodayAppointments = ({ appointments }) => {
                     {app.status === 'in_progress' && <span className="bg-blue-100 text-blue-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors shadow-sm animate-pulse">In Progress</span>}
                     {app.status === 'completed' && <span className="bg-gray-200 text-gray-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Completed</span>}
                     {app.status === 'approved' && <span className="bg-green-100 text-green-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Approved</span>}
-                    {app.status === 'pending' && <span className="bg-amber-100 text-amber-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Pending</span>}
+                    {app.status === 'pending' && (
+                      <div className="flex items-center gap-1.5">
+                        {onStatusChange && (
+                          <button
+                            onClick={() => onStatusChange(app.id, 'approved')}
+                            title="Accept this appointment"
+                            className="bg-green-500 hover:bg-green-600 text-white text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md shadow-sm transition-colors active:scale-95"
+                          >
+                            Accept
+                          </button>
+                        )}
+                        <span className="bg-amber-100 text-amber-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Pending</span>
+                      </div>
+                    )}
                     {(app.status === 'rejected' || app.status === 'cancelled') && <span className="bg-red-100 text-red-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">{app.status === 'cancelled' ? 'Cancelled' : 'Rejected'}</span>}
                   </div>
                 </div>

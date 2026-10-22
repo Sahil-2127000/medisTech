@@ -157,7 +157,7 @@ exports.bookAppointment = async (req, res) => {
                     <strong>Time:</strong> ${populatedAppt.time}</p>
                     <p>Status: <strong>Pending Approval</strong></p>
                     <p>You will receive another email once the doctor accepts your request.</p>`;
-       await sendEmail(populatedAppt.patientId.email, subject, html);
+       sendEmail(populatedAppt.patientId.email, subject, html).catch(e => console.error('Email fail:', e));
     }
 
     // Notify everyone via Socket.io inherently
@@ -320,7 +320,7 @@ exports.updateStatus = async (req, res) => {
        }
 
        if (subject && html) {
-          await sendEmail(appt.patientId.email, subject, html);
+          sendEmail(appt.patientId.email, subject, html).catch(e => console.error('Email fail:', e));
        }
     }
 
@@ -901,8 +901,7 @@ exports.getPublicStats = async (req, res) => {
     
     res.status(200).json({
       totalPatientsTreated: totalCompleted,
-      yearsOfExperience: experience,
-      patientSatisfaction: 98 // Hardcoded as a number
+      yearsOfExperience: experience
     });
   } catch (error) {
     console.error('Public Stats Error:', error);

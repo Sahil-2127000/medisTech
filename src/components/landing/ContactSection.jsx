@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ContactSection = ({ contactInfo = {} }) => {
-  const { address = '', phone = '', email = '' } = contactInfo;
+  const { address = '', phone = '', email = '', hours = [], clinicCount = 0 } = contactInfo;
   const panelVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { 
@@ -65,7 +65,7 @@ const ContactSection = ({ contactInfo = {} }) => {
         >
           <h2 className="text-3xl font-bold text-slate-900 mb-2">Get in Touch</h2>
           <p className="text-slate-500 mb-8 text-sm">
-            We are here to help you feel your best. Reach out to schedule a consultation.
+            Questions about booking, a clinic or your account? Send us a message and the MedisTech team will get back to you.
           </p>
           
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -117,8 +117,13 @@ const ContactSection = ({ contactInfo = {} }) => {
             <div className="flex items-start gap-4 hover:translate-x-2 transition-transform cursor-default group">
               <div className="w-10 h-10 bg-white/10 group-hover:bg-white/20 rounded-full flex items-center justify-center shrink-0 transition-colors">📍</div>
               <div>
-                <p className="text-blue-100 text-md font-medium">Clinic Address</p>
+                <p className="text-blue-100 text-md font-medium">Head Office</p>
                 <p className="text-lg"> {address} </p>
+                {clinicCount > 0 && (
+                  <a href="#doctors" className="text-sm text-blue-100 underline underline-offset-2 hover:text-white">
+                    {clinicCount} partner clinic{clinicCount === 1 ? '' : 's'} across Ludhiana — find one near you
+                  </a>
+                )}
               </div>
             </div>
             
@@ -129,7 +134,7 @@ const ContactSection = ({ contactInfo = {} }) => {
                 </svg>
               </div>
               <div>
-                <p className="text-blue-100 text-md font-medium">Phone Number</p>
+                <p className="text-blue-100 text-md font-medium">Helpline</p>
                 <button 
                   onClick={() => setShowCallModal(true)} 
                   className="text-lg cursor-pointer transition-all hover:text-white text-left outline-none"
@@ -148,7 +153,7 @@ const ContactSection = ({ contactInfo = {} }) => {
                 />
               </div>
               <div>
-                <p className="text-blue-100 text-md font-medium">Email Address</p>
+                <p className="text-blue-100 text-md font-medium">Support Email</p>
                 <a 
                   href={`https://mail.google.com/mail/?view=cm&fs=1&to=${email}`}
                   target="_blank"
@@ -163,8 +168,9 @@ const ContactSection = ({ contactInfo = {} }) => {
             <div className="flex items-start gap-4 hover:translate-x-2 transition-transform cursor-default group">
               <div className="w-10 h-10 bg-white/10 group-hover:bg-white/20 rounded-full flex items-center justify-center shrink-0 transition-colors">🕒</div>
               <div>
-                <p className="text-blue-100 text-md font-medium">Contact Timings</p>
-                <p className="text-lg">Mon – Sat: 9:00 AM – 6:00 PM<br/>Sunday: Closed</p>
+                <p className="text-blue-100 text-md font-medium">Support Hours</p>
+                <p className="text-lg">{hours.map((h, i) => <React.Fragment key={i}>{i > 0 && <br />}{h}</React.Fragment>)}</p>
+                <p className="text-sm text-blue-100 mt-1">Each clinic has its own timings, shown when you book.</p>
               </div>
             </div>
           </div>
@@ -206,9 +212,9 @@ const ContactSection = ({ contactInfo = {} }) => {
                 </svg>
               </div>
 
-              <h3 className="text-3xl font-bold text-slate-800 mb-2">Call Clinic</h3>
+              <h3 className="text-3xl font-bold text-slate-800 mb-2">Call MedisTech</h3>
               <p className="text-blue-900/60 font-medium mb-8">
-                Would you like to initiate a call to our clinic?
+                Would you like to call the MedisTech helpline?
               </p>
 
               <div className="w-full flex flex-col justify-center items-center space-y-4">

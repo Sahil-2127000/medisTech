@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Footer = ({ contactInfo = {} }) => {
-  const { address = '', phone = '', email = '' } = contactInfo;
+  const { address = '', phone = '', email = '', clinicCount = 0 } = contactInfo;
   return (
     <footer className="w-full bg-white pt-20 pb-8 mt-12 border-t border-slate-100 relative z-10">
       <div className="max-w-7xl mx-auto px-8 md:px-16 grid grid-cols-1 md:grid-cols-3 gap-12 mb-14 md:justify-items-center">
@@ -17,7 +17,7 @@ const Footer = ({ contactInfo = {} }) => {
             <span>medisTech</span>
           </div>
           <p className="text-slate-500 text-sm mb-6 leading-relaxed">
-            Delivering personalized, high-quality healthcare and expert medical advice for you and your family.
+            One platform for clinics across Ludhiana — find a doctor, book a slot, track your queue and keep your prescriptions in one place.
           </p>
           <p className="text-slate-400 text-xs">
             Copyright © 2026 medisTech <br/>All rights reserved.
@@ -29,7 +29,8 @@ const Footer = ({ contactInfo = {} }) => {
           <h4 className="font-bold text-slate-900 mb-6 text-lg">Quick Links</h4>
           <ul className="space-y-4 text-sm text-slate-500 font-medium">
             <li><a href="#home" className="hover:text-blue-600 transition-colors inline-block">Home</a></li>
-            <li><a href="#about" className="hover:text-blue-600 transition-colors inline-block">About Dr. MV Sharma</a></li>
+            <li><a href="#about" className="hover:text-blue-600 transition-colors inline-block">About Us</a></li>
+            <li><a href="#doctors" className="hover:text-blue-600 transition-colors inline-block">Find a Clinic</a></li>
             <li><a href="#services" className="hover:text-blue-600 transition-colors inline-block">Our Services</a></li>
             <li><a href="#blog" className="hover:text-blue-600 transition-colors inline-block">Health Insights (Blog)</a></li>
             <li><a href="#faq" className="hover:text-blue-600 transition-colors inline-block">FAQs</a></li>
@@ -38,11 +39,11 @@ const Footer = ({ contactInfo = {} }) => {
 
         {/* Column 3: Contact Info */}
         <div>
-          <h4 className="font-bold text-slate-900 mb-6 text-lg">Clinic Info</h4>
+          <h4 className="font-bold text-slate-900 mb-6 text-lg">Contact Us</h4>
           <ul className="space-y-4 text-sm text-slate-500">
             <li className="flex items-start gap-3">
               <span className="text-blue-600 text-base mt-0.5">📍</span>
-              <span className="whitespace-pre-wrap">{address}</span>
+              <span className="whitespace-pre-wrap">{address}{clinicCount > 0 && <><br /><a href="#doctors" className="text-blue-600 hover:underline">{clinicCount} partner clinic{clinicCount === 1 ? '' : 's'}</a></>}</span>
             </li>
             <li className="flex items-center gap-3">
               <span className="text-blue-600 flex items-center justify-center">

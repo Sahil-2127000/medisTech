@@ -54,7 +54,7 @@ exports.issuePrescription = async (req, res) => {
                     <p>Your consultation with <strong>Dr. ${dName}</strong> is now complete.</p>
                     <p>Your prescription and clinical notes are available in your patient dashboard under "Medical Documents".</p>
                     <p>Stay healthy!</p>`;
-       await sendEmail(appt.patientId.email, subject, html);
+       sendEmail(appt.patientId.email, subject, html).catch(e => console.error('Email fail:', e));
     }
 
     // Trigger Socket.io natively to notify all participants of the queue shift

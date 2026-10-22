@@ -1,4 +1,5 @@
 import React from 'react';
+import { PLATFORM_CONTACT } from '../config/platform';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/landing/Navbar';
 import HeroSection from '../components/landing/HeroSection';
@@ -13,11 +14,8 @@ import Footer from '../components/landing/Footer';
 const Landing = () => {
   const navigate = useNavigate();
 
-  const [contactInfo, setContactInfo] = React.useState({
-    address: 'Loading...',
-    phone: 'Loading...',
-    email: 'Loading...'
-  });
+  const [clinicCount, setClinicCount] = React.useState(0);
+  const contactInfo = { ...PLATFORM_CONTACT, clinicCount };
 
   React.useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem('user') || 'null');
@@ -27,22 +25,13 @@ const Landing = () => {
   }, [navigate]);
 
   React.useEffect(() => {
+    // Contact details belong to the MedisTech network; only the clinic count comes from the API
     const fetchContactInfo = async () => {
       try {
         const res = await fetch('http://localhost:5001/api/auth/doctors');
-        if (res.ok) {
-          const doctors = await res.json();
-          if (doctors && doctors.length > 0) {
-            const doc = doctors[0];
-            setContactInfo({
-              address: doc.clinicAddress || '',
-              phone: doc.phone || '',
-              email: doc.email || ''
-            });
-          }
-        }
+        if (res.ok) setClinicCount((await res.json()).length);
       } catch (err) {
-        console.error("Failed to fetch doctor info", err);
+        console.error("Failed to fetch clinics", err);
       }
     };
     fetchContactInfo();
@@ -50,8 +39,7 @@ const Landing = () => {
 
   const [stats, setStats] = React.useState({
     totalPatientsTreated: 0,
-    yearsOfExperience: '15',
-    patientSatisfaction: 98
+    yearsOfExperience: '15'
   });
 
   React.useEffect(() => {
