@@ -24,8 +24,8 @@ const UpcomingPatient = ({ appointments, onStatusChange, renderPatientCard }) =>
           </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center opacity-60 py-12">
-             <div className="w-20 h-20 rounded-3xl bg-slate-50 flex items-center justify-center mb-4">
-                <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+             <div className="w-12 h-12 lg:w-20 lg:h-20 rounded-2xl lg:rounded-3xl bg-slate-50 flex items-center justify-center mb-2 lg:mb-4">
+                <svg className="w-6 h-6 lg:w-10 lg:h-10 text-slate-300" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
              </div>
             <p className="text-gray-400 font-bold text-center text-sm px-4">No more upcoming patients in queue.</p>
           </div>

@@ -59,10 +59,10 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
   if (activeTab === 'settings') return <SettingsView patientData={patientData} />
   if (activeTab === 'queue') {
     const doctorId = patientData.upcoming?.[0]?.doctorId?._id;
-    const doctorName = patientData.upcoming?.[0]?.doctor || "Dr. Specialist";
+    const doctorName = patientData.upcoming?.[0]?.doctor || "";
     return (
       <div className="flex-1 h-full overflow-y-auto overflow-x-hidden no-scrollbar px-4 md:px-8 lg:px-10 py-4 lg:py-8 bg-[#F8FAFC] dark:bg-slate-900">
-        <LiveQueueUI doctorId={doctorId} doctorName={doctorName} />
+        <LiveQueueUI doctorId={doctorId} doctorName={doctorName} onBookClick={onBookClick} />
       </div>
     );
   }
@@ -373,15 +373,15 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
 
       {/* Vital Capture Modal */}
       {showVitalModal && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-xl animate-fade-in">
-          <div className="bg-white rounded-[3rem] p-10 w-full max-w-md shadow-2xl relative animate-slide-up border border-slate-100">
-            <button onClick={() => setShowVitalModal(false)} className="absolute top-8 right-8 text-gray-400 hover:text-slate-800 transition-colors">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 lg:p-6 bg-slate-900/60 backdrop-blur-xl animate-fade-in">
+          <div className="app-compact-modal bg-white rounded-3xl lg:rounded-[3rem] p-5 lg:p-10 w-full max-w-md shadow-2xl relative animate-slide-up border border-slate-100">
+            <button onClick={() => setShowVitalModal(false)} className="absolute top-5 right-5 lg:top-8 lg:right-8 text-gray-400 hover:text-slate-800 transition-colors">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
             <h3 className="text-3xl font-black text-slate-800 mb-2">Record Vital</h3>
             <p className="text-gray-400 font-medium mb-8">Enter your latest health reading for tracking.</p>
 
-            <form onSubmit={handleVitalSubmit} className="space-y-6">
+            <form onSubmit={handleVitalSubmit} className="space-y-4 lg:space-y-6">
               <div>
                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Vital Type</label>
                 <select className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3.5 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#5265ec]/20 transition-all appearance-none" value={vitalForm.type} onChange={e => setVitalForm({ ...vitalForm, type: e.target.value })}>
@@ -404,8 +404,8 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
       )}
       {/* Stat Detail Modal */}
       {activeStatModal && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in" onClick={() => setActiveStatModal(null)}>
-          <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] w-full max-w-lg shadow-2xl relative animate-slide-up border border-slate-100 dark:border-slate-700 overflow-hidden flex flex-col max-h-[80vh]" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 lg:p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in" onClick={() => setActiveStatModal(null)}>
+          <div className="app-compact-modal bg-white dark:bg-slate-800 rounded-3xl lg:rounded-[2.5rem] w-full max-w-lg shadow-2xl relative animate-slide-up border border-slate-100 dark:border-slate-700 overflow-hidden flex flex-col max-h-[80vh]" onClick={e => e.stopPropagation()}>
             <div className="p-8 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
               <h3 className="text-2xl font-black text-slate-800 dark:text-white capitalize">
                 {activeStatModal === 'total' ? 'All Appointments' : activeStatModal + ' Appointments'}

@@ -1,3 +1,6 @@
+// Clinic times (slots, "today", queue ETAs) are Indian time. Render runs in UTC, so pin the zone.
+process.env.TZ = 'Asia/Kolkata';
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');

@@ -106,29 +106,29 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-[#021024]/40 z-[999] flex justify-center items-center p-4 animate-fade-in backdrop-blur-sm overflow-y-auto pt-10 pb-10">
-      <div className="bg-white rounded-[2rem] w-full max-w-3xl shadow-2xl p-8 relative my-auto">
+    <div className="fixed inset-0 bg-[#021024]/40 z-[999] flex justify-center items-center p-3 lg:p-4 animate-fade-in backdrop-blur-sm overflow-y-auto pt-6 pb-6 lg:pt-10 lg:pb-10">
+      <div className="app-compact-modal bg-white rounded-2xl lg:rounded-[2rem] w-full max-w-3xl shadow-2xl p-5 lg:p-8 relative my-auto">
         
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-clinic-600 rounded-full opacity-10 blur-3xl pointer-events-none"></div>
 
-        <button onClick={onClose} className="absolute top-6 right-6 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 hover:bg-red-50 rounded-full p-2">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        <button onClick={onClose} className="absolute top-3 right-3 lg:top-6 lg:right-6 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 hover:bg-red-50 rounded-full p-2">
+          <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
 
-        <h2 className="text-3xl font-extrabold text-slate-800 mb-2">Walk-in Patient Registration </h2>
-        <p className="text-sm font-semibold text-gray-400 mb-8">Register walk-in patients</p>
+        <h2 className="text-3xl font-extrabold text-slate-800 mb-1 lg:mb-2 pr-10">Walk-in Patient Registration</h2>
+        <p className="text-sm font-semibold text-gray-400 mb-4 lg:mb-8">Register walk-in patients</p>
 
-        <form onSubmit={handleBook} className="space-y-6 relative z-10">
+        <form onSubmit={handleBook} className="space-y-4 lg:space-y-6 relative z-10">
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
             <div className="flex flex-col space-y-1">
               <label className="block text-[10px] font-black text-clinic-600 tracking-widest uppercase">Patient Full Name</label>
-              <input type="text" name="fullName" required value={formData.fullName} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="Patient name" />
+              <input type="text" name="fullName" required value={formData.fullName} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 lg:py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="Patient name" />
             </div>
 
             <div className="flex flex-col space-y-1">
               <label className="block text-[10px] font-black text-clinic-600 tracking-widest uppercase">Email Address</label>
-              <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="patient@gmail.com" />
+              <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 lg:py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="patient@gmail.com" />
             </div>
 
             <div className="flex flex-col space-y-1">
@@ -144,7 +144,7 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
                     const numericVal = e.target.value.replace(/\D/g, '').slice(0, 10);
                     setFormData({ ...formData, phone: numericVal ? `+91 ${numericVal}` : '' });
                   }} 
-                  className="w-full bg-transparent px-4 py-3 text-sm font-bold focus:outline-none" 
+                  className="w-full bg-transparent px-4 py-2.5 lg:py-3 text-sm font-bold focus:outline-none" 
                   placeholder="1234567890" 
                 />
               </div>
@@ -153,11 +153,11 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
             <div className="flex gap-4">
                 <div className="flex-1 flex flex-col space-y-1">
                   <label className="block text-[10px] font-black text-clinic-600 tracking-widest uppercase">Age</label>
-                  <input type="number" name="age" required value={formData.age} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="25" />
+                  <input type="number" name="age" required value={formData.age} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 lg:py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200" placeholder="25" />
                 </div>
                 <div className="flex-1 flex flex-col space-y-1">
                   <label className="block text-[10px] font-black text-clinic-600 tracking-widest uppercase">Gender</label>
-                  <select name="gender" value={formData.gender} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200">
+                  <select name="gender" value={formData.gender} onChange={handleChange} className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 lg:py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200">
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
@@ -168,7 +168,7 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
 
           <hr className="border-gray-100" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
             <div className="flex flex-col space-y-1">
               <label className="block text-[10px] font-black text-clinic-600 tracking-widest uppercase">Select Date</label>
               <input 
@@ -187,7 +187,7 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
                     setSelectedSlot('');
                   }
                 }}
-                className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200"
+                className="w-full bg-slate-50 border border-gray-100 rounded-xl px-4 py-2.5 lg:py-3 text-sm font-bold focus:outline-none focus:border-clinic-400 focus:ring-2 focus:ring-clinic-200"
               />
             </div>
           </div>
@@ -227,14 +227,14 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
                value={formData.symptoms}
                onChange={handleChange}
                placeholder="Why are they visiting?"
-               className="w-full bg-slate-50 border border-gray-100 focus:bg-white focus:border-clinic-600 rounded-xl px-4 py-3 text-sm font-bold outline-none transition-colors resize-none h-20"
+               className="w-full bg-slate-50 border border-gray-100 focus:bg-white focus:border-clinic-600 rounded-xl px-4 py-2.5 lg:py-3 text-sm font-bold outline-none transition-colors resize-none h-20"
              />
           </div>
 
           <button 
              type="submit" 
              disabled={!selectedSlot || submitting}
-             className={`w-full py-4 rounded-xl font-extrabold text-sm transition-all flex items-center justify-center gap-2 ${selectedSlot && !submitting ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/30 active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+             className={`w-full py-3 lg:py-4 rounded-xl font-extrabold text-sm transition-all flex items-center justify-center gap-2 ${selectedSlot && !submitting ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/30 active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
           >
              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
              {submitting ? 'Processing Network Request...' : 'Finalize Walk-In Booking'}

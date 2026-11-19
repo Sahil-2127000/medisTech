@@ -70,9 +70,9 @@ const ProfileView = ({ patientData }) => {
   };
 
   return (
-    <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar">
+    <div className="flex-1 h-full py-4 lg:py-12 px-4 md:px-8 lg:px-12 flex flex-col overflow-y-auto no-scrollbar">
 
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-gray-200 dark:border-white/10">
+      <div className="hidden lg:flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-gray-200 dark:border-white/10">
         <div>
           <h1 className="hidden lg:block text-3xl font-bold text-slate-800 dark:text-white">Patient Profile</h1>
           <p className="hidden lg:block text-gray-500 dark:text-slate-400 font-medium mt-1">Manage physical records and contact details</p>
@@ -88,20 +88,28 @@ const ProfileView = ({ patientData }) => {
         )}
       </div>
 
-      <div className="flex gap-8 flex-col lg:flex-row">
+      <div className="flex gap-4 lg:gap-8 flex-col lg:flex-row">
 
         {/* Left Column: Avatar & Summary Box */}
-        <div className="w-full lg:w-1/3 flex flex-col gap-6">
-          <div className="bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-white/5 rounded-2xl p-6 shadow-sm flex flex-col items-center">
-            <div className="w-32 h-32 mb-4 relative">
+        <div className="w-full lg:w-1/3 flex flex-col gap-4 lg:gap-6">
+          <div className="bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-white/5 rounded-2xl p-4 lg:p-6 shadow-sm flex flex-row lg:flex-col items-center gap-3 lg:gap-0">
+            <div className="w-14 h-14 lg:w-32 lg:h-32 lg:mb-4 relative shrink-0">
               <img src={patientData.avatar} alt="Avatar" className="w-full h-full rounded-full object-cover border-4 border-slate-50 dark:border-slate-800 shadow-sm" />
             </div>
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white text-center">{formData.fullName || "Unspecified Name"}</h2>
-            <div className="text-sm font-semibold text-gray-500 dark:text-slate-400 mt-1">Patient ID: <span className="text-slate-800 dark:text-blue-400">#{patientData._id ? patientData._id.slice(-5).toUpperCase() : 'N/A'}</span></div>
+            <div className="min-w-0 flex-1 lg:flex-none lg:text-center">
+              <h2 className="text-base lg:text-xl font-bold text-slate-800 dark:text-white truncate">{formData.fullName || "Unspecified Name"}</h2>
+              <div className="text-xs lg:text-sm font-semibold text-gray-500 dark:text-slate-400 mt-0.5 lg:mt-1">Patient ID: <span className="text-slate-800 dark:text-blue-400">#{patientData._id ? patientData._id.slice(-5).toUpperCase() : 'N/A'}</span></div>
+            </div>
+            {!isEditing && (
+              <button onClick={() => setIsEditing(true)} className="lg:hidden shrink-0 bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                Edit
+              </button>
+            )}
           </div>
 
-          <div className="bg-slate-50 dark:bg-slate-900/40 border border-gray-200 dark:border-white/5 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mb-4">Quick Facts</h3>
+          <div className="bg-slate-50 dark:bg-slate-900/40 border border-gray-200 dark:border-white/5 rounded-2xl p-4 lg:p-6 shadow-sm">
+            <h3 className="text-xs lg:text-sm font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mb-3 lg:mb-4">Quick Facts</h3>
             <ul className="space-y-3 text-sm font-medium text-slate-600 dark:text-slate-300">
               <li className="flex justify-between border-b border-gray-200 dark:border-white/5 pb-2"><span>Status</span><span className="text-green-600 dark:text-emerald-400 font-bold">Active Patient</span></li>
               <li className="flex justify-between border-b border-gray-200 dark:border-white/5 pb-2"><span>Registrar</span><span>{patientData.createdAt ? new Date(patientData.createdAt).getFullYear() : 'Unknown'}</span></li>
@@ -127,9 +135,9 @@ const ProfileView = ({ patientData }) => {
              </svg>
           </div>
 
-          <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6 relative z-10">Contact Information</h3>
+          <h3 className="text-base lg:text-lg font-bold text-slate-800 dark:text-white mb-4 lg:mb-6 relative z-10">Contact Information</h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 lg:gap-y-6 relative z-10">
 
             <div>
               <label className="block text-sm font-black text-[#5265ec] dark:text-blue-400 mb-1">Name</label>

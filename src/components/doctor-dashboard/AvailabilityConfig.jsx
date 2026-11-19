@@ -97,22 +97,22 @@ const AvailabilityConfig = () => {
 
   return (
     <div className="flex-1 overflow-y-auto no-scrollbar py-5 lg:py-12 px-4 md:px-8 flex flex-col items-center bg-transparent">
-      <div className="w-full max-w-6xl space-y-10">
+      <div className="w-full max-w-6xl space-y-4 lg:space-y-10">
         
         {/* Header Block: Glassmorphism Gradient */}
-        <div className="relative group overflow-hidden bg-linear-to-r from-clinic-600 to-blue-400 rounded-[2rem] lg:rounded-[3rem] p-6 lg:p-10 shadow-2xl shadow-blue-500/20">
+        <div className="relative group overflow-hidden bg-linear-to-r from-clinic-600 to-blue-400 rounded-2xl lg:rounded-[3rem] p-4 lg:p-10 shadow-md lg:shadow-2xl shadow-blue-500/20">
           <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div>
-              <h2 className="text-2xl md:text-4xl font-black text-white mb-2 tracking-tight">Availability Timings</h2>
-              <p className="text-blue-50 font-bold opacity-80 text-sm max-w-lg leading-relaxed">Customize your clinical shifts, slot timings, and blackout dates.</p>
+          <div className="relative z-10 flex flex-row justify-between items-center gap-3 lg:gap-6">
+            <div className="min-w-0">
+              <h2 className="text-lg md:text-4xl font-black text-white mb-0.5 lg:mb-2 tracking-tight">Availability Timings</h2>
+              <p className="text-blue-50 font-semibold lg:font-bold opacity-80 text-xs lg:text-sm max-w-lg leading-snug lg:leading-relaxed">Customize your clinical shifts, slot timings, and blackout dates.</p>
             </div>
             <button 
               onClick={handleSave}
               disabled={saving}
-              className={`bg-white text-clinic-600 px-10 py-5 rounded-4xl font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95 ${saving ? 'opacity-50' : 'hover:bg-blue-50 hover:shadow-2xl'}`}
+              className={`shrink-0 bg-white text-clinic-600 px-4 lg:px-10 py-2.5 lg:py-5 rounded-xl lg:rounded-4xl font-bold lg:font-black text-xs lg:uppercase lg:tracking-widest shadow-xl transition-all active:scale-95 ${saving ? 'opacity-50' : 'hover:bg-blue-50 hover:shadow-2xl'}`}
             >
-              {saving ? 'Syncing...' : 'Publish Shifts'}
+              {saving ? 'Saving...' : 'Publish'}<span className="hidden lg:inline">{saving ? '' : ' Shifts'}</span>
             </button>
           </div>
         </div>

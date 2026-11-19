@@ -5,7 +5,7 @@ import { calculateWaitTime } from '../../utils/queueUtils';
 import { useSocket } from '../../context/SocketContext';
 import { API_URL } from '../../config/api';
 
-const LiveQueueUI = ({ doctorId, doctorName }) => {
+const LiveQueueUI = ({ doctorId, doctorName, onBookClick }) => {
   const [queueData, setQueueData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -59,7 +59,7 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
   const { currentlyServing, patientToken, estimatedWaitMinutes, estimatedTimeFormatted, isEmergencyActive, appointmentStatus } = queueData || {};
 
   return (
-    <div className="w-full flex flex-col gap-5 lg:gap-8 animate-fade-in pb-6 lg:pb-12">
+    <div className="w-full flex flex-col gap-3 lg:gap-8 animate-fade-in pb-4 lg:pb-12">
       
       {/* 0. Emergency Alert Banner */}
       {isEmergencyActive && (
@@ -75,17 +75,17 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
       )}
 
       {/* 1. Live Tracker Banner */}
-      <div className="w-full shadow-2xl shadow-blue-500/20 bg-linear-to-br from-blue-600 via-[#3963F9] to-indigo-700 rounded-[2rem] lg:rounded-[2.5rem] overflow-hidden p-6 lg:p-8 relative">
+      <div className="w-full shadow-2xl shadow-blue-500/20 bg-linear-to-br from-blue-600 via-[#3963F9] to-indigo-700 rounded-2xl lg:rounded-[2.5rem] overflow-hidden p-4 lg:p-8 relative">
         <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
         
-        <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-5 text-white relative z-10">
-          <div className="flex items-center gap-4 lg:gap-6 min-w-0">
-            <div className="w-14 h-14 lg:w-20 lg:h-20 shrink-0 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center animate-pulse border border-white/20">
-              <SyncOutlined spin className="text-3xl" />
+        <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-3 lg:gap-5 text-white relative z-10">
+          <div className="flex items-center gap-3 lg:gap-6 min-w-0">
+            <div className="w-11 h-11 lg:w-20 lg:h-20 shrink-0 bg-white/20 backdrop-blur-md rounded-xl lg:rounded-3xl flex items-center justify-center animate-pulse border border-white/20">
+              <SyncOutlined spin className="text-xl lg:text-3xl" />
             </div>
             <div>
-              <h3 className="text-white/70 font-black uppercase tracking-[0.2em] text-xs mb-2">Live Queue Status</h3>
-              <div className="text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-black tracking-tight break-words">
+              <h3 className="text-white/70 font-black uppercase tracking-[0.2em] text-[10px] lg:text-xs mb-0.5 lg:mb-2">Live Queue Status</h3>
+              <div className="text-lg sm:text-3xl lg:text-4xl xl:text-5xl font-black leading-tight tracking-tight break-words">
                 {patientToken ? (
                   patientToken - currentlyServing > 0 
                     ? `${patientToken - currentlyServing} Patients Ahead` 
@@ -97,41 +97,43 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
             </div>
           </div>
           
-          <div className="w-full xl:w-auto px-6 py-3 lg:px-8 lg:py-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10">
-            <div className="text-white/60 text-[10px] font-black uppercase tracking-widest mb-1">On-Duty Specialist</div>
-            <div className="text-xl font-black">{doctorName || "Dr. Unknown"}</div>
+          {doctorName && (
+          <div className="w-full xl:w-auto px-4 py-2 lg:px-8 lg:py-4 bg-white/10 backdrop-blur-md rounded-xl lg:rounded-2xl border border-white/10">
+            <div className="text-white/60 text-[10px] font-black uppercase tracking-widest mb-0.5 lg:mb-1">On-Duty Specialist</div>
+            <div className="text-base lg:text-xl font-black">{doctorName}</div>
           </div>
+          )}
         </div>
       </div>
 
       {/* 2. Patient Specific Status */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
+      <div className="grid grid-cols-2 gap-3 lg:gap-8">
         {patientToken ? (
           <>
-            <div className="rounded-[2rem] lg:rounded-[2.5rem] p-5 lg:p-8 shadow-xl bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 transition-all group hover:scale-[1.02]">
-              <div className="flex items-center gap-6">
-                <div className="w-16 h-16 bg-blue-600/10 dark:bg-blue-600/20 text-blue-600 rounded-2xl flex items-center justify-center group-hover:rotate-6 transition-transform">
-                  <UserOutlined className="text-2xl" />
+            <div className="rounded-2xl lg:rounded-[2.5rem] p-3 lg:p-8 shadow-sm lg:shadow-xl bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 transition-all group hover:scale-[1.02]">
+              <div className="flex items-center gap-3 lg:gap-6">
+                <div className="w-10 h-10 lg:w-16 lg:h-16 shrink-0 bg-blue-600/10 dark:bg-blue-600/20 text-blue-600 rounded-2xl flex items-center justify-center group-hover:rotate-6 transition-transform">
+                  <UserOutlined className="text-lg lg:text-2xl" />
                 </div>
                 <div>
                   <div className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest">Your Position</div>
-                  <div className="text-3xl font-black text-slate-800 dark:text-white mt-1">Token {patientToken}</div>
+                  <div className="text-lg lg:text-3xl font-black text-slate-800 dark:text-white mt-0.5 lg:mt-1">Token {patientToken}</div>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-[2rem] lg:rounded-[2.5rem] p-5 lg:p-8 shadow-xl bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 transition-all group hover:scale-[1.02]">
-              <div className="flex items-center gap-6">
-                <div className="w-16 h-16 bg-emerald-600/10 dark:bg-emerald-600/20 text-emerald-600 rounded-2xl flex items-center justify-center group-hover:rotate-6 transition-transform">
-                  <ClockCircleOutlined className="text-2xl" />
+            <div className="rounded-2xl lg:rounded-[2.5rem] p-3 lg:p-8 shadow-sm lg:shadow-xl bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 transition-all group hover:scale-[1.02]">
+              <div className="flex items-center gap-3 lg:gap-6">
+                <div className="w-10 h-10 lg:w-16 lg:h-16 shrink-0 bg-emerald-600/10 dark:bg-emerald-600/20 text-emerald-600 rounded-2xl flex items-center justify-center group-hover:rotate-6 transition-transform">
+                  <ClockCircleOutlined className="text-lg lg:text-2xl" />
                 </div>
                 <div>
                   <div className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest">Estimated Time</div>
-                  <div className="text-3xl font-black text-slate-800 dark:text-white mt-1">
+                  <div className="text-lg lg:text-3xl font-black text-slate-800 dark:text-white mt-0.5 lg:mt-1">
                     {appointmentStatus === 'pending' 
-                      ? <span className="text-xl">Not Accepted Yet</span> 
+                      ? <span className="text-sm lg:text-xl">Not Accepted Yet</span> 
                       : isEmergencyActive 
-                        ? <span className="text-xl">Paused (Emergency)</span> 
+                        ? <span className="text-sm lg:text-xl">Paused (Emergency)</span> 
                         : (estimatedTimeFormatted || (estimatedWaitMinutes === 0 ? "Now" : "Calculating..."))}
                   </div>
                 </div>
@@ -139,18 +141,18 @@ const LiveQueueUI = ({ doctorId, doctorName }) => {
             </div>
           </>
         ) : (
-          <div className="md:col-span-2 rounded-[3rem] p-16 shadow-2xl bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5 text-center flex flex-col items-center justify-center relative overflow-hidden">
+          <div className="col-span-2 rounded-2xl lg:rounded-[3rem] p-6 lg:p-16 shadow-sm lg:shadow-2xl bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5 text-center flex flex-col items-center justify-center relative overflow-hidden">
              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
              
-             <div className="w-24 h-24 bg-blue-50 dark:bg-blue-500/10 rounded-full flex items-center justify-center mb-8 relative">
+             <div className="w-14 h-14 lg:w-24 lg:h-24 bg-blue-50 dark:bg-blue-500/10 rounded-full flex items-center justify-center mb-4 lg:mb-8 relative">
                <div className="absolute inset-0 bg-blue-400/20 rounded-full animate-ping"></div>
-               <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+               <svg className="w-7 h-7 lg:w-10 lg:h-10 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
              </div>
              
-             <h3 className="text-xl lg:text-3xl font-black text-slate-800 dark:text-white mb-2 lg:mb-4 tracking-tight">Ready to Join the Queue?</h3>
-             <p className="text-slate-400 dark:text-slate-500 font-bold mb-10 max-w-sm mx-auto">You don't have an active appointment for today yet. Reserve your spot now to get a live token.</p>
+             <h3 className="text-lg lg:text-3xl font-black text-slate-800 dark:text-white mb-1 lg:mb-4 tracking-tight">Ready to Join the Queue?</h3>
+             <p className="text-sm lg:text-base text-slate-400 dark:text-slate-500 font-semibold lg:font-bold mb-5 lg:mb-10 max-w-sm mx-auto">You don't have an active appointment for today yet. Reserve your spot now to get a live token.</p>
              
-             <button className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all hover:scale-105 active:scale-95">
+             <button onClick={onBookClick} className="bg-blue-600 hover:bg-blue-700 text-white px-6 lg:px-12 py-2.5 lg:py-4 rounded-xl lg:rounded-2xl text-sm lg:text-base font-bold lg:font-black lg:uppercase lg:tracking-widest shadow-xl shadow-blue-500/20 transition-all hover:scale-105 active:scale-95">
                Book Appointment Now
              </button>
           </div>

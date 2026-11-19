@@ -399,7 +399,7 @@ const DoctorDashboard = () => {
                 />
 
                 {/* Dynamic Center Orchestrator */}
-                <div className="flex-1 min-h-0 min-w-0 flex">
+                <div className="app-compact flex-1 min-h-0 min-w-0 flex">
                 {activeTab === 'profile' && <DoctorProfile email={activeUserEmail} />}
                 {activeTab === 'availability' && <AvailabilityConfig />}
                 {activeTab === 'blogs' && <ManageBlogs />}

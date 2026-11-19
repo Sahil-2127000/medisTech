@@ -173,3 +173,29 @@ a,
   animation: none !important;
   transition: none !important;
 }
+
+/* Phone / app view: tighter spacing, shorter buttons and smaller headings inside dashboard pages.
+   Kept in the utilities layer with :where() so explicit max-md:/sm: classes still win when set later. */
+@layer utilities {
+  @media (max-width: 1023px) {
+    :where(.app-compact, .app-compact-modal) :is(.p-8, .p-10, .p-12, .md\:p-8, .md\:p-10, .md\:p-12) { padding: 1rem; }
+    :where(.app-compact, .app-compact-modal) :is(.px-8, .px-10, .md\:px-8, .md\:px-10) { padding-inline: 1rem; }
+    :where(.app-compact, .app-compact-modal) :is(.py-8, .py-10, .py-12, .md\:py-8, .md\:py-10) { padding-block: 1rem; }
+    :where(.app-compact, .app-compact-modal) :is(.py-16, .py-20, .py-24) { padding-block: 1.5rem; }
+    :where(.app-compact, .app-compact-modal) :is(.rounded-4xl, .rounded-\[2rem\], .rounded-\[2\.5rem\], .rounded-\[3rem\]) { border-radius: 1.25rem; }
+    :where(.app-compact, .app-compact-modal) :is(.text-5xl, .text-4xl, .text-3xl, .md\:text-4xl, .md\:text-3xl) { font-size: 1.375rem; line-height: 1.25; }
+    :where(.app-compact, .app-compact-modal) :is(.text-2xl, .md\:text-2xl) { font-size: 1.125rem; line-height: 1.35; }
+    :where(.app-compact, .app-compact-modal) .text-xl { font-size: 1rem; line-height: 1.4; }
+    :where(.app-compact, .app-compact-modal) :is(.mb-8, .mb-10, .mb-12, .md\:mb-8, .md\:mb-10) { margin-bottom: 1rem; }
+    :where(.app-compact, .app-compact-modal) :is(.mt-8, .mt-10, .mt-12) { margin-top: 1rem; }
+    :where(.app-compact, .app-compact-modal) :is(.gap-8, .gap-10, .md\:gap-8) { gap: 1rem; }
+    :where(.app-compact, .app-compact-modal) :is(.min-h-\[400px\], .min-h-\[300px\], .min-h-\[250px\]) { min-height: 0; }
+    :where(.app-compact, .app-compact-modal) :is(.shadow-xl, .shadow-2xl, .shadow-lg) { box-shadow: 0 1px 3px rgb(15 23 42 / 0.06); }
+    /* buttons: normal app height and text */
+    :where(.app-compact, .app-compact-modal) :is(button, a):is(.py-4, .py-5, .py-6, .md\:py-4) { padding-block: 0.7rem; }
+    :where(.app-compact, .app-compact-modal) :is(button, a):is(.text-lg, .text-xl, .text-base) { font-size: 0.875rem; }
+    :where(.app-compact, .app-compact-modal) :is(input, select, textarea):is(.py-4, .py-3\.5) { padding-block: 0.65rem; }
+    :where(.app-compact, .app-compact-modal) :is(.space-y-10, .space-y-8) > :not(:last-child) { margin-bottom: 1rem; }
+    :where(.app-compact, .app-compact-modal) :is(button, a):is(.tracking-widest, .tracking-\[0\.2em\], .tracking-\[0\.3em\]) { letter-spacing: 0.06em; }
+  }
+}

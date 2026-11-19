@@ -136,7 +136,7 @@ const CurrentPatient = ({ appointments, onFinishConsultation, onStatusChange, on
   </div>
  ) : (
  <div className="flex-1 flex flex-col items-center justify-center opacity-60">
- <svg className="w-16 h-16 text-gray-300 mb-4 transition-colors" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+ <svg className="w-10 h-10 lg:w-16 lg:h-16 text-gray-300 mb-2 lg:mb-4 transition-colors" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
  <p className="text-gray-400 font-medium text-center text-sm px-6 transition-colors">You have no active patients right now. Select an upcoming patient to start.</p>
  </div>
  )}
