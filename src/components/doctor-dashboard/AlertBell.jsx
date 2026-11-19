@@ -63,7 +63,7 @@ const AlertBell = ({ appointments, onStatusChange }) => {
  <div className="max-h-[60vh] overflow-y-auto no-scrollbar p-2">
  {count === 0 ? (
  <div className="py-8 text-center text-gray-400 font-semibold text-sm">
- You have no incoming appointment requests naturally pending.
+ No pending appointment requests.
  </div>
  ) : (
  <div className="space-y-2">

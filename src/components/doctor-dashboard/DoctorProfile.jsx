@@ -141,7 +141,7 @@ const DoctorProfile = ({ email }) => {
                                         onChange={handleChange}
                                         className="w-full bg-[#f4f7fb] border border-transparent focus:bg-white focus:border-clinic-600 rounded-xl px-3 md:px-4 py-2.5 md:py-3 text-sm font-semibold text-slate-800 transition-all outline-none" />
                                 ) : (
-                                    <div className={`w-full ${isEditing && field.readOnly ? 'bg-gray-100 text-gray-400 ' : 'bg-transparent text-slate-800 border-b border-gray-100 '} rounded-none md:rounded-xl px-0 md:px-4 py-1.5 md:py-3 text-sm font-bold min-h-[36px] md:min-h-[44px] flex items-center break-all transition-colors`}>
+                                    <div className={`w-full ${isEditing && field.readOnly ? 'bg-gray-100 text-gray-400 ' : 'bg-transparent text-slate-800 border-b border-gray-100 '} rounded-none md:rounded-xl px-0 md:px-4 py-1.5 md:py-3 text-sm font-bold min-h-[36px] md:min-h-[44px] flex items-center break-words [overflow-wrap:anywhere] md:[overflow-wrap:normal] transition-colors`}>
                                         {profile[field.name] || '—'}
                                     </div>
                                 )}

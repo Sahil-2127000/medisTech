@@ -122,7 +122,7 @@ const ProfileView = ({ patientData }) => {
         <div className="flex-1 relative overflow-hidden bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-white/5 rounded-2xl p-8 shadow-sm">
           
           {/* Multi-layered elegant wave background (bottom-right) */}
-          <div className="absolute bottom-0 right-0 w-full sm:w-[120%] md:w-[80%] h-[250px] pointer-events-none z-0">
+          <div className="hidden lg:block absolute bottom-0 right-0 w-full sm:w-[120%] md:w-[80%] h-[250px] pointer-events-none z-0">
              <svg viewBox="0 0 1000 300" className="absolute bottom-0 right-0 w-full h-full text-[#5265ec]" fill="none" preserveAspectRatio="none">
                 {/* Base soft fill */}
                 <path d="M0,300 C200,280 400,200 600,250 C800,300 900,150 1000,50 L1000,300 L0,300 Z" fill="currentColor" fillOpacity="0.2" />

@@ -202,18 +202,18 @@ const SettingsView = ({ patientData }) => {
   };
 
   return (
-    <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar">
-      <div className="mb-8">
+    <div className="flex-1 h-full py-4 lg:py-12 px-4 md:px-8 lg:px-12 flex flex-col overflow-y-auto no-scrollbar">
+      <div className="hidden lg:block mb-8">
         <h1 className="hidden lg:block text-2xl md:text-4xl font-extrabold text-[#021024] dark:text-white transition-colors">Account Settings</h1>
         <p className="hidden lg:block text-gray-400 dark:text-gray-500 font-medium mt-1">Manage your preferences and security natively across environments.</p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-3 lg:space-y-6">
         {/* Security Context */}
-        <div className="bg-white dark:bg-slate-900/40 rounded-4xl border-2 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
-            <svg className="w-6 h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-            Security Core Context
+        <div className="bg-white dark:bg-slate-900/40 rounded-2xl lg:rounded-4xl border lg:border-2 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors">
+          <h2 className="text-base lg:text-xl font-bold mb-3 lg:mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
+            <svg className="w-5 h-5 lg:w-6 lg:h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+            Security
           </h2>
           <div className="flex flex-col gap-4">
 
@@ -221,12 +221,12 @@ const SettingsView = ({ patientData }) => {
             <div className={`${isChangingPassword ? 'pb-4' : 'pb-2'} transition-all`}>
               {!isChangingPassword ? (
                 <div className="flex flex-col">
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center gap-3">
                     <div>
                       <div className="font-bold text-slate-800 dark:text-white">Update Password</div>
-                      <div className="text-sm text-gray-400 dark:text-gray-500 font-medium mt-1">Update your account password regularly</div>
+                      <div className="text-xs lg:text-sm text-gray-400 dark:text-gray-500 font-medium mt-0.5 lg:mt-1">Change your account password</div>
                     </div>
-                    <button onClick={attemptUpdateExpand} className="text-[#5265ec] font-semibold hover:underline bg-[#5265ec]/5 dark:bg-[#5265ec]/10 px-4 py-2 rounded-xl transition-colors hover:bg-[#5265ec]/10 dark:hover:bg-[#5265ec]/20">Update</button>
+                    <button onClick={attemptUpdateExpand} className="text-[#5265ec] font-semibold text-sm hover:underline bg-[#5265ec]/5 dark:bg-[#5265ec]/10 px-4 py-2 rounded-xl shrink-0 transition-colors hover:bg-[#5265ec]/10 dark:hover:bg-[#5265ec]/20">Update</button>
                   </div>
                   {saveMessage && !isChangingPassword && (
                     <div className="mt-4 p-3.5 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 animate-fade-in">
@@ -305,14 +305,14 @@ const SettingsView = ({ patientData }) => {
         <TwoFactorCard initiallyEnabled={patientData?.is2FAEnabled} />
 
         {/* 🌓 Appearance & Theme */}
-        <div className="bg-white dark:bg-slate-900/40 rounded-4xl border-2 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
-            <svg className="w-6 h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+        <div className="bg-white dark:bg-slate-900/40 rounded-2xl lg:rounded-4xl border lg:border-2 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors">
+          <h2 className="text-base lg:text-xl font-bold mb-3 lg:mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
+            <svg className="w-5 h-5 lg:w-6 lg:h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
             Appearance & Theme
           </h2>
-          <div className="flex items-center justify-between p-6 bg-slate-50/50 dark:bg-slate-800/40 rounded-3xl border-2 border-slate-200 dark:border-slate-700 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 transition-all">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-900 shadow-sm flex items-center justify-center text-[#5265ec]">
+          <div className="flex items-center justify-between gap-3 p-3 lg:p-6 bg-slate-50/50 dark:bg-slate-800/40 rounded-xl lg:rounded-3xl border lg:border-2 border-slate-200 dark:border-slate-700 lg:shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 transition-all">
+            <div className="flex items-center gap-3 lg:gap-4 min-w-0">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 shrink-0 rounded-xl lg:rounded-2xl bg-white dark:bg-slate-900 shadow-sm flex items-center justify-center text-[#5265ec]">
                 {!isDark ? (
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                 ) : (
@@ -321,16 +321,16 @@ const SettingsView = ({ patientData }) => {
               </div>
               <div>
                 <div className="font-bold text-slate-800 dark:text-white">Midnight Mode</div>
-                <div className="text-sm text-gray-400 dark:text-gray-500 font-medium mt-0.5">Toggle between light and dark aesthetics</div>
+                <div className="text-xs lg:text-sm text-gray-400 dark:text-gray-500 font-medium mt-0.5">Switch between light and dark theme</div>
               </div>
             </div>
 
             <button 
               onClick={toggleTheme}
-              className={`w-16 h-9 rounded-full relative transition-all duration-500 shadow-inner p-1 ${isDark ? 'bg-[#5265ec]' : 'bg-slate-200'}`}
+              className={`shrink-0 w-12 h-7 lg:w-16 lg:h-9 rounded-full relative transition-all duration-500 shadow-inner p-1 ${isDark ? 'bg-[#5265ec]' : 'bg-slate-200'}`}
             >
-              <div className={`w-7 h-7 bg-white rounded-full shadow-lg transform transition-transform duration-500 flex items-center justify-center ${isDark ? 'translate-x-7' : 'translate-x-0'}`}>
-                <div className={`w-4 h-4 rounded-full ${isDark ? 'bg-[#5265ec]' : 'bg-amber-400'} transition-colors duration-500`}></div>
+              <div className={`w-5 h-5 lg:w-7 lg:h-7 bg-white rounded-full shadow-lg transform transition-transform duration-500 flex items-center justify-center ${isDark ? 'translate-x-5 lg:translate-x-7' : 'translate-x-0'}`}>
+                <div className={`w-3 h-3 lg:w-4 lg:h-4 rounded-full ${isDark ? 'bg-[#5265ec]' : 'bg-amber-400'} transition-colors duration-500`}></div>
               </div>
             </button>
           </div>

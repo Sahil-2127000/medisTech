@@ -55,17 +55,17 @@ const TwoFactorCard = ({ initiallyEnabled }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900/40 rounded-4xl border-2 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors">
-      <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
-        <svg className="w-6 h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+    <div className="bg-white dark:bg-slate-900/40 rounded-2xl lg:rounded-4xl border lg:border-2 border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors">
+      <h2 className="text-base lg:text-xl font-bold mb-3 lg:mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
+        <svg className="w-5 h-5 lg:w-6 lg:h-6 text-[#5265ec]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
         Two-Factor Authentication
       </h2>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-slate-50/50 dark:bg-slate-800/40 rounded-3xl border-2 border-slate-200 dark:border-slate-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 lg:gap-4 p-3 lg:p-6 bg-slate-50/50 dark:bg-slate-800/40 rounded-xl lg:rounded-3xl border lg:border-2 border-slate-200 dark:border-slate-700">
         <div>
           <div className="font-bold text-slate-800 dark:text-white">
             E-mail OTP at login {enabled && <span className="ml-2 text-[10px] uppercase tracking-wider bg-emerald-100 text-emerald-600 px-2 py-1 rounded-md">Active</span>}
           </div>
-          <div className="text-sm text-gray-400 font-medium mt-0.5">A one-time code is e-mailed to you every time you sign in.</div>
+          <div className="text-xs lg:text-sm text-gray-400 font-medium mt-0.5">A one-time code is e-mailed to you every time you sign in.</div>
         </div>
         {step === 'otp' ? (
           <form onSubmit={verify} className="flex gap-2">
@@ -74,9 +74,9 @@ const TwoFactorCard = ({ initiallyEnabled }) => {
             <button disabled={loading} className="bg-[#5265ec] text-white font-bold px-5 rounded-xl disabled:opacity-60">Verify</button>
           </form>
         ) : enabled ? (
-          <button onClick={disable} disabled={loading} className="bg-rose-50 text-rose-600 border border-rose-100 font-bold px-5 py-2.5 rounded-xl disabled:opacity-60">Disable</button>
+          <button onClick={disable} disabled={loading} className="bg-rose-50 text-rose-600 border border-rose-100 font-bold text-sm px-5 py-2 lg:py-2.5 rounded-xl disabled:opacity-60 self-start md:self-auto">Disable</button>
         ) : (
-          <button onClick={startSetup} disabled={loading} className="bg-[#5265ec] text-white font-bold px-5 py-2.5 rounded-xl disabled:opacity-60">Enable 2FA</button>
+          <button onClick={startSetup} disabled={loading} className="bg-[#5265ec] text-white font-bold text-sm px-5 py-2 lg:py-2.5 rounded-xl disabled:opacity-60 self-start md:self-auto">Enable 2FA</button>
         )}
       </div>
       {message && <p className="text-sm font-semibold text-slate-500 mt-3 ml-1">{message}</p>}

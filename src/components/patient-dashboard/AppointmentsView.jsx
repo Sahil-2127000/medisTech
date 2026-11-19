@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+const formatTime12 = (t) => {
+    if (!t || !t.includes(':')) return t || '';
+    const [h, m] = t.split(':').map(Number);
+    return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+};
+const formatDisplayDate = (d) => {
+    const [dd, mm, yyyy] = (d || '').split('-').map(Number);
+    if (!dd || !mm || !yyyy) return d || '';
+    return new Date(yyyy, mm - 1, dd).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+};
+
 const AppointmentsView = ({ appointments = [], onBookClick }) => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -115,7 +126,7 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                     animate={{ opacity: 1, x: 0 }}
                     className="hidden lg:block"
                 >
-                    <h1 className="hidden lg:block text-2xl md:text-4xl lg:text-5xl font-black text-slate-800 dark:text-white tracking-tight mb-2 transition-colors">My Appointments</h1>
+                    <h1 className="hidden lg:block text-3xl xl:text-5xl font-black text-slate-800 dark:text-white tracking-tight mb-2 transition-colors whitespace-nowrap">My Appointments</h1>
                     <p className="hidden lg:block text-gray-400 dark:text-slate-500 font-bold text-lg transition-colors">Manage visits for you and your family</p>
                 </motion.div>
 
@@ -132,7 +143,7 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
 
             {/* Filter Buttons & Family Selector */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-4 mb-4 lg:mb-8">
-                <div className="chip-scroll chip-scroll-left -mx-4 lg:mx-0 lg:p-0 lg:flex-wrap lg:overflow-visible lg:[mask-image:none] items-center gap-2 lg:gap-3">
+                <div className="flex overflow-x-auto no-scrollbar lg:flex-wrap lg:overflow-visible items-center gap-2 lg:gap-3 [&>*]:shrink-0">
                     {[
                         { id: 'all', label: 'All' },
                         { id: 'completed', label: 'Completed' },
@@ -158,7 +169,7 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                         <select
                             value={selectedPatient}
                             onChange={(e) => setSelectedPatient(e.target.value)}
-                            className="bg-transparent text-slate-800 dark:text-white text-[11px] uppercase tracking-wider font-black outline-none cursor-pointer appearance-none pr-8 pl-2 py-1 w-full lg:w-[130px] hover:text-[#5265ec] transition-colors"
+                            className="bg-transparent text-slate-800 dark:text-white text-[11px] lg:uppercase lg:tracking-wider font-bold lg:font-black outline-none cursor-pointer appearance-none pr-8 pl-2 py-1 w-full lg:w-[130px] hover:text-[#5265ec] transition-colors"
                         >
                             {allPatientNames.map((name, idx) => (
                                 <option key={idx} value={name} className="text-sm font-bold text-slate-800">{name === "Primary Account" ? "Me (Primary)" : name}</option>
@@ -197,25 +208,39 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                             className="flex flex-col"
                         >
                             {/* Group Header */}
-                            <div className="flex items-center gap-4 mb-3 lg:mb-6 ml-2">
-                                <div className="w-10 h-1 bg-linear-to-r from-[#5265ec] to-transparent rounded-full"></div>
-                                <h2 className="text-xl font-black text-slate-800 dark:text-white tracking-tight">
+                            <div className="flex items-center gap-2 lg:gap-4 mb-2 lg:mb-6 lg:ml-2">
+                                <div className="hidden lg:block w-10 h-1 bg-linear-to-r from-[#5265ec] to-transparent rounded-full"></div>
+                                <h2 className="text-sm lg:text-xl font-bold lg:font-black text-slate-800 dark:text-white tracking-tight min-w-0 truncate">
                                     Appointments for <span className="text-[#5265ec] dark:text-blue-400">{name === "Primary Account" ? "Me" : name}</span>
                                 </h2>
                                 <span className="bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-widest ml-auto md:ml-0 transition-colors">
-                                    {groupedAppointments[name].length} Records
+                                    {groupedAppointments[name].length} <span className="hidden lg:inline">Records</span>
                                 </span>
                             </div>
 
                             {/* List of Rows */}
-                            <div className="space-y-4">
+                            <div className="space-y-2 lg:space-y-4">
                                 {groupedAppointments[name].map((app, appIdx) => {
                                     const styles = getStatusStyles(app.status);
                                     return (
+                                        <React.Fragment key={app._id || appIdx}>
+                                        {/* Phone: one compact row */}
+                                        <div className="lg:hidden flex items-center gap-3 bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5 rounded-2xl px-3 py-2.5 shadow-sm">
+                                            <div className={`w-1 self-stretch rounded-full ${app.status === 'approved' ? 'bg-emerald-500' : app.status === 'pending' ? 'bg-amber-500' : app.status === 'completed' ? 'bg-blue-500' : 'bg-red-500'}`}></div>
+                                            <div className="w-10 h-10 shrink-0 rounded-xl bg-[#5265ec]/10 text-[#5265ec] flex items-center justify-center font-bold">
+                                                {(app.doctor || 'D').replace(/^Dr\.?\s*/i, '').charAt(0).toUpperCase()}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-bold text-sm text-slate-800 dark:text-white truncate">{app.doctor}</div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{formatDisplayDate(app.date)} · {formatTime12(app.time)}</div>
+                                            </div>
+                                            <span className={`shrink-0 px-2 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wide ${styles.badge}`}>
+                                                {app.status === 'emergency_active' ? 'Delayed' : app.status === 'approved' ? 'Accepted' : app.status}
+                                            </span>
+                                        </div>
                                         <motion.div
-                                            key={app._id || appIdx}
                                             whileHover={{ x: 10, scale: 1.01 }}
-                                            className={`${styles.card} border rounded-3xl p-3 md:p-4 transition-all flex flex-col md:flex-row md:items-center gap-4 group cursor-pointer relative overflow-hidden`}
+                                            className={`${styles.card} border rounded-3xl p-3 md:p-4 transition-all hidden lg:flex flex-row items-center gap-4 group cursor-pointer relative overflow-hidden`}
                                         >
                                             {/* Status Accent Bar */}
                                             <div className={`absolute left-0 top-0 bottom-0 w-2 ${app.status === 'approved' ? 'bg-emerald-500' : app.status === 'pending' ? 'bg-amber-500' : app.status === 'completed' ? 'bg-blue-500' : 'bg-red-500'}`}></div>
@@ -265,6 +290,7 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                                                 </div>
                                             </div>
                                         </motion.div>
+                                        </React.Fragment>
                                     );
                                 })}
                             </div>

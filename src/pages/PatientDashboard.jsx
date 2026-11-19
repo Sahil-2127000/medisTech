@@ -81,7 +81,15 @@ const PatientDashboard = () => {
          setUpcomingAppointments(data);
 
          // Crucial Notification Logic Strategy evaluating math shifts!
-         const delayed = data.find(app => Number(app.emergencyDelayedMinutes) > 0 && app.status !== 'completed' && !localStorage.getItem(`dismissed_alert_${app._id || app.id}`));
+         // Only warn about a delay that still matters: today's booking, still waiting to be seen,
+         // shifted by a doctor's emergency and not yet dismissed. Old / finished visits never show it.
+         const now = new Date();
+         const todayStr = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+         const delayed = data.find(app =>
+           Number(app.emergencyDelayedMinutes) > 0 &&
+           app.date === todayStr &&
+           ['pending', 'approved', 'emergency_active'].includes(app.status) &&
+           !localStorage.getItem(`dismissed_alert_${app._id || app.id}`));
          if (delayed) {
            setEmergencyAlert({
               id: delayed._id || delayed.id,
@@ -171,10 +179,13 @@ const PatientDashboard = () => {
       
       {/* 🚨 THE EMERGENCY NOTIFICATION BROADCAST BANNER 🚨 */}
       {emergencyAlert && (
-         <div className="absolute top-0 left-0 w-full z-50 animate-fade-in">
-            <div className="bg-red-500 text-white font-extrabold text-sm md:text-md py-4 shadow-xl flex items-center justify-center gap-3 w-full text-center px-4">
-              <span className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center animate-pulse"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></span>
-              CLINIC ALERT: A medical code emergency drastically shifted {emergencyAlert.doctor}'s active schedule. Your native booking has been automatically adjusted by explicitly {emergencyAlert.delay} mins to a new block mapping at {emergencyAlert.newTime}.
+         <div className="fixed inset-x-0 top-0 z-[60] flex justify-center px-3 pt-[calc(env(safe-area-inset-top)+8px)] pointer-events-none">
+            <div className="pointer-events-auto w-full max-w-xl bg-red-500 text-white rounded-2xl shadow-lg flex items-start gap-3 p-3 lg:p-4">
+              <span className="w-8 h-8 shrink-0 bg-white/20 rounded-full flex items-center justify-center"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></span>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-sm">Appointment delayed</div>
+                <div className="text-xs text-white/90 leading-snug mt-0.5">Dr. {emergencyAlert.doctor} is handling an emergency. Your visit has moved by {emergencyAlert.delay} min to {emergencyAlert.newTime}.</div>
+              </div>
               <button onClick={() => {
                  upcomingAppointments.forEach(app => {
                      if (Number(app.emergencyDelayedMinutes) > 0) {
@@ -182,7 +193,7 @@ const PatientDashboard = () => {
                      }
                  });
                  setEmergencyAlert(null);
-              }} className="ml-4 hover:bg-black/20 px-3 py-1 rounded-full border border-white/40 shadow-sm transition-colors text-xs uppercase tracking-widest">Acknowledge</button>
+              }} className="shrink-0 self-center bg-white text-red-600 font-bold text-xs px-3 py-1.5 rounded-lg">OK</button>
             </div>
          </div>
       )}

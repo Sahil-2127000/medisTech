@@ -24,9 +24,9 @@ const TodayAppointments = ({ appointments, onStatusChange }) => {
 
     <div className="absolute -top-20 -left-30 w-68  h-50 bg-blue-300 rounded-full opacity-20 blur-2xl pointer-events-none z-0"></div>
 
- <div className="flex justify-between items-center mb-4 shrink-0 z-1">
- <h3 className="text-xl font-bold text-slate-800 transition-colors">Today's Appointments</h3>
- <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-clinic-600 rounded-full transition-colors z-1">{todayList.length} matches</span>
+ <div className="flex justify-between items-center gap-2 mb-4 shrink-0 z-1">
+ <h3 className="text-lg xl:text-xl font-bold text-slate-800 transition-colors truncate"><span className="xl:hidden 2xl:inline">Today's Appointments</span><span className="hidden xl:inline 2xl:hidden">Today</span></h3>
+ <span className="shrink-0 whitespace-nowrap text-xs font-semibold px-2.5 py-1 bg-blue-50 text-clinic-600 rounded-full transition-colors z-1">{todayList.length} {todayList.length === 1 ? 'booking' : 'bookings'}</span>
  </div>
 
  <div className="flex flex-col gap-3 overflow-y-auto no-scrollbar flex-1 pb-4 z-1">
@@ -36,48 +36,41 @@ const TodayAppointments = ({ appointments, onStatusChange }) => {
  todayList.map(app => {
  const displayName = app.name || (app.patient && app.patient.name) || "Walk-In";
  const displayChar = typeof displayName === 'string' && displayName.length > 0 ? displayName.charAt(0).toUpperCase() : "W";
+ const badge = {
+   in_progress: ['In Progress', 'bg-blue-100 text-blue-600'],
+   completed: ['Completed', 'bg-gray-100 text-gray-500'],
+   approved: ['Approved', 'bg-green-100 text-green-600'],
+   pending: ['Pending', 'bg-amber-100 text-amber-600'],
+   rejected: ['Rejected', 'bg-red-100 text-red-600'],
+   cancelled: ['Cancelled', 'bg-red-100 text-red-600'],
+ }[app.status];
  return (
- <div key={app.id} className="flex items-center justify-between p-4 bg-white h-17 border-2 border-gray-100 rounded-2xl hover:shadow-md transition-all group z-1">
- <div className="flex items-center gap-4">
- <div className="w-12 h-12 rounded-full bg-blue-100 text-clinic-600 flex items-center justify-center font-bold text-lg shadow-sm transition-colors">
- {displayChar}
+ <div key={app.id} className="flex items-center gap-2.5 px-2.5 py-2.5 bg-white border-2 border-gray-100 rounded-2xl hover:shadow-md transition-all group z-1 min-w-0">
+   <div className="w-9 h-9 shrink-0 rounded-full bg-blue-100 text-clinic-600 flex items-center justify-center font-bold text-sm shadow-sm">
+     {displayChar}
+   </div>
+   <div className="min-w-0 flex-1">
+     <div className="flex items-center gap-1.5 min-w-0">
+       <span className="font-bold text-sm text-slate-800 truncate">{displayName}</span>
+       {app.hasHistory && app.patientId && <PatientRxHistory patientId={app.patientId} patientName={displayName} />}
+     </div>
+     <div className="flex items-center gap-2 mt-0.5 whitespace-nowrap">
+       <span className="text-xs font-semibold text-clinic-600">{formatTime12Hour(app.time)}</span>
+       {badge && !(app.status === 'pending' && onStatusChange) && <span className={`${badge[1]} text-[10px] uppercase tracking-wide font-bold px-1.5 py-0.5 rounded-md`}>{badge[0]}</span>}
+     </div>
+   </div>
+   {app.status === 'pending' && onStatusChange && (
+     <button
+       onClick={() => onStatusChange(app.id, 'approved')}
+       title="Accept this appointment"
+       aria-label="Accept"
+       className="shrink-0 h-8 min-w-8 flex items-center justify-center gap-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold px-2.5 xl:px-2 2xl:px-3 rounded-lg shadow-sm transition-colors active:scale-95"
+     >
+       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+       <span className="xl:hidden 2xl:inline">Accept</span>
+     </button>
+   )}
  </div>
- <div>
- <div className="font-bold text-slate-800 transition-colors flex items-center gap-2">
- {displayName}
- {app.hasHistory && app.patientId && <PatientRxHistory patientId={app.patientId} patientName={displayName} />}
- </div>
- <div className="text-xs text-clinic-600/80 font-bold uppercase tracking-wider transition-colors">{formatTime12Hour(app.time)}</div>
- </div>
- </div>
-
-                <div className="flex flex-col items-end">
-                  <div className="font-bold text-clinic-600 flex items-center gap-1 transition-colors">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {formatTime12Hour(app.time)}
-                  </div>
-                  <div className="mt-1">
-                    {app.status === 'in_progress' && <span className="bg-blue-100 text-blue-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors shadow-sm animate-pulse">In Progress</span>}
-                    {app.status === 'completed' && <span className="bg-gray-200 text-gray-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Completed</span>}
-                    {app.status === 'approved' && <span className="bg-green-100 text-green-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Approved</span>}
-                    {app.status === 'pending' && (
-                      <div className="flex items-center gap-1.5">
-                        {onStatusChange && (
-                          <button
-                            onClick={() => onStatusChange(app.id, 'approved')}
-                            title="Accept this appointment"
-                            className="bg-green-500 hover:bg-green-600 text-white text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md shadow-sm transition-colors active:scale-95"
-                          >
-                            Accept
-                          </button>
-                        )}
-                        <span className="bg-amber-100 text-amber-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">Pending</span>
-                      </div>
-                    )}
-                    {(app.status === 'rejected' || app.status === 'cancelled') && <span className="bg-red-100 text-red-600 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md transition-colors">{app.status === 'cancelled' ? 'Cancelled' : 'Rejected'}</span>}
-                  </div>
-                </div>
-              </div>
             );
           })
         )}

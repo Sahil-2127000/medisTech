@@ -1,11 +1,32 @@
 import React, { useState } from 'react';
 import * as htmlToImage from 'html-to-image';
 import jsPDF from 'jspdf';
+import { savePdf } from '../../utils/savePdf';
 
 
 const DocumentsView = ({ prescriptions = [], patientData }) => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [activePrescription, setActivePrescription] = useState(null);
+  const [downloading, setDownloading] = useState(false);
+
+  const downloadPdf = async () => {
+    const element = document.getElementById('pdf-template');
+    if (!element || !activePrescription) return;
+    setDownloading(true);
+    try {
+      const imgData = await htmlToImage.toPng(element, { pixelRatio: 2, backgroundColor: '#ffffff' });
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (element.offsetHeight * pdfWidth) / element.offsetWidth;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      await savePdf(pdf, `Prescription_${activePrescription._id || 'Record'}.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert('Could not create the PDF. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   // Mock Family Members for "Condition B"
   // In a real app, this would come from an API endpoint like /api/family/members
@@ -71,10 +92,10 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
   const currentPrescriptions = allRecords[currentMember.id] || [];
 
   return (
-    <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar bg-slate-50/50 dark:bg-transparent relative">
+    <div className="flex-1 h-full py-4 lg:py-12 px-4 md:px-8 lg:px-12 flex flex-col overflow-y-auto no-scrollbar bg-slate-50/50 dark:bg-transparent relative">
 
       {/* Header with Back Button (if Multiple) */}
-      <div className="mb-10 animate-fade-in flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className={`mb-3 lg:mb-10 animate-fade-in flex-col md:flex-row md:items-end justify-between gap-4 ${isFamilyAccount ? "flex" : "hidden lg:flex"}`}>
         <div>
           <div className="flex items-center gap-4 mb-2">
             {isFamilyAccount && (
@@ -98,9 +119,9 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
 
       {/* The Prescription Timeline */}
       <div className="flex-1">
-        <div className="space-y-6">
+        <div className="space-y-2.5 lg:space-y-6">
           {currentPrescriptions.length === 0 ? (
-            <div className="bg-white rounded-4xl p-16 flex flex-col items-center justify-center text-center border border-[#5265ec]/10">
+            <div className="bg-white rounded-2xl lg:rounded-4xl p-8 lg:p-16 flex flex-col items-center justify-center text-center border border-[#5265ec]/10">
               <div className="w-20 h-20 bg-blue-50 text-[#5265ec]/20 rounded-3xl flex items-center justify-center mb-6">
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               </div>
@@ -109,10 +130,27 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
             </div>
           ) : (
             currentPrescriptions.map((px, i) => (
-              <div
-                key={px._id || i}
+              <React.Fragment key={px._id || i}>
+              {/* Phone: compact card */}
+              <button
+                type="button"
                 onClick={() => setActivePrescription(px)}
-                className="group relative bg-white dark:bg-slate-900/40 rounded-3xl p-4 border border-[#5265ec]/40 dark:border-white/5 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] dark:shadow-none hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.15)] dark:hover:bg-slate-900/60 transition-all duration-500 cursor-pointer flex flex-col lg:flex-row lg:items-center justify-between gap-4 overflow-hidden active:scale-[0.98] ring-1 ring-[#5265ec]/20 hover:ring-[#5265ec]/40"
+                className="lg:hidden w-full text-left flex items-center gap-3 bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5 rounded-2xl p-3 shadow-sm active:bg-slate-50"
+              >
+                <div className="w-12 h-12 shrink-0 rounded-xl bg-slate-800 text-white flex flex-col items-center justify-center leading-none">
+                  <span className="text-[9px] font-bold uppercase opacity-70">{new Date(px.createdAt).toLocaleString('en-IN', { month: 'short' })}</span>
+                  <span className="text-lg font-black mt-0.5">{new Date(px.createdAt).getDate()}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-sm text-slate-800 dark:text-white truncate">{px.diagnosis || 'Prescription'}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">Dr. {px.doctorId?.fullName || 'Specialist'}</div>
+                  <div className="text-[11px] font-semibold text-[#5265ec] mt-0.5">{px.medicines?.length || 0} {(px.medicines?.length || 0) === 1 ? 'medicine' : 'medicines'}</div>
+                </div>
+                <svg className="w-4 h-4 text-slate-300 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              </button>
+              <div
+                onClick={() => setActivePrescription(px)}
+                className="hidden lg:flex group relative bg-white dark:bg-slate-900/40 rounded-3xl p-4 border border-[#5265ec]/40 dark:border-white/5 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] dark:shadow-none hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.15)] dark:hover:bg-slate-900/60 transition-all duration-500 cursor-pointer lg:flex-row lg:items-center justify-between gap-4 overflow-hidden active:scale-[0.98] ring-1 ring-[#5265ec]/20 hover:ring-[#5265ec]/40"
               >
                 {/* Decorative Subtle Blue Wave Background */}
                 <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 opacity-[0.15] dark:opacity-[0.2] pointer-events-none group-hover:opacity-[0.25] dark:group-hover:opacity-[0.3] transition-opacity duration-500">
@@ -161,6 +199,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                   </div>
                 </div>
               </div>
+              </React.Fragment>
             ))
           )}
         </div>
@@ -178,59 +217,48 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
 
           {/* Prescription Card (Glassmorphism Content) */}
           <div
-            className="relative w-full max-w-[850px] max-h-[90vh] bg-white/70 dark:bg-slate-900/80 backdrop-blur-3xl rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.3)] overflow-hidden animate-slide-up border border-[#5265ec]/50 dark:border-white/20 flex flex-col"
+            className="relative w-full max-w-[850px] max-h-[90dvh] bg-white/90 lg:bg-white/70 dark:bg-slate-900/80 backdrop-blur-3xl rounded-3xl lg:rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.3)] overflow-hidden animate-slide-up border border-[#5265ec]/50 dark:border-white/20 flex flex-col"
             onClick={e => e.stopPropagation()}
           >
             {/* Elegant Header X Button */}
             <button
               onClick={() => setActivePrescription(null)}
-              className="absolute top-10 right-10 w-14 h-14 rounded-2xl bg-black/5 hover:bg-black/10 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all z-20 group"
+              className="absolute top-4 right-4 w-10 h-10 lg:top-10 lg:right-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl bg-black/5 hover:bg-black/10 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all z-20 group"
             >
-              <svg className="w-7 h-7 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              <svg className="w-5 h-5 lg:w-7 lg:h-7 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
 
-            <div className="p-10 md:p-16 flex-1 flex flex-col overflow-hidden">
+            <div className="p-4 lg:p-16 flex-1 flex flex-col overflow-hidden min-h-0">
 
               {/* Action Buttons */}
-              <div className="absolute top-10 right-28 flex gap-3 z-20">
+              <div className="hidden lg:flex absolute top-10 right-28 gap-3 z-20">
                 <button
-                  onClick={async () => {
-                    const element = document.getElementById('pdf-template');
-                    if (!element) return;
-                    try {
-                      const imgData = await htmlToImage.toPng(element, { pixelRatio: 2, backgroundColor: '#ffffff' });
-                      const pdf = new jsPDF('p', 'mm', 'a4');
-                      const pdfWidth = pdf.internal.pageSize.getWidth();
-                      const pdfHeight = (element.offsetHeight * pdfWidth) / element.offsetWidth;
-                      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                      pdf.save(`Prescription_${activePrescription._id || 'Record'}.pdf`);
-                    } catch (err) { console.error(err); }
-                  }}
-                  className="px-6 py-3 rounded-2xl bg-[#0d9488] text-white font-black flex items-center gap-2 hover:bg-[#0b7a6d] transition-all shadow-lg shadow-[#0d9488]/20"
+                  onClick={downloadPdf}
+                  disabled={downloading}
+                  className="px-4 py-2 lg:px-6 lg:py-3 rounded-xl lg:rounded-2xl bg-[#0d9488] text-white text-sm lg:text-base font-bold lg:font-black flex items-center justify-center hover:bg-[#0b7a6d] transition-all shadow-lg shadow-[#0d9488]/20"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0L8 8m4-4v12" /></svg>
-                  Download PDF
+                  {downloading ? 'Preparing...' : 'Download PDF'}
                 </button>
               </div>
               {/* Header: Dr. Name */}
-              <div className="flex items-center gap-6 mb-10">
-                <div className="w-16 h-16 rounded-2xl bg-linear-to-tr from-[#5265ec] to-blue-400 flex items-center justify-center text-white shadow-xl relative">
+              <div className="flex items-center gap-3 lg:gap-6 mb-4 lg:mb-10 pr-12 lg:pr-0">
+                <div className="w-12 h-12 lg:w-16 lg:h-16 shrink-0 rounded-2xl bg-linear-to-tr from-[#5265ec] to-blue-400 flex items-center justify-center text-white shadow-xl relative">
                   <div className="absolute inset-0 rounded-2xl bg-white opacity-20 animate-pulse"></div>
-                  <svg className="w-8 h-8 relative z-10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                  <svg className="w-6 h-6 lg:w-8 lg:h-8 relative z-10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
                 </div>
-                <div>
-                  <h2 className="text-2xl font-black text-slate-800 dark:text-white/60 leading-none">Prescription from</h2>
-                  <h3 className="text-3xl font-black text-[#5265ec] dark:text-blue-400 tracking-tighter mt-1">
+                <div className="min-w-0">
+                  <h2 className="text-sm lg:text-2xl font-bold lg:font-black text-slate-500 lg:text-slate-800 dark:text-white/60 leading-none">Prescription from</h2>
+                  <h3 className="text-xl lg:text-3xl font-black text-[#5265ec] dark:text-blue-400 tracking-tighter mt-1">
                     Dr. {activePrescription.doctorId?.fullName || activePrescription.doctorName || 'Specialist'}
                   </h3>
-                  <div className="flex items-center gap-3 mt-4 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                  <div className="flex items-center gap-3 mt-1 lg:mt-4 text-[11px] font-bold lg:font-black text-gray-400 uppercase tracking-wider lg:tracking-[0.2em]">
                     <span>{new Date(activePrescription.createdAt).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                   </div>
                 </div>
               </div>
 
               {/* Medicine Table Flow */}
-              <div className="flex-1 overflow-y-auto pr-4 space-y-6 medicine-scroll">
+              <div className="flex-1 min-h-0 overflow-y-auto pr-1 lg:pr-4 space-y-3 lg:space-y-6 medicine-scroll">
                 {activePrescription.medicines.map((med, i) => {
                   const freq = med.frequency || '';
                   const isM = freq.includes('Morning');
@@ -239,10 +267,10 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                   const pattern = `(${isM ? '1' : '0'}-${isA ? '1' : '0'}-${isN ? '1' : '0'})`;
 
                   return (
-                    <div key={i} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md rounded-3xl border border-[#5265ec]/30 dark:border-white/10 p-5 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm hover:shadow-md transition-shadow">
-                      <div className="flex flex-col flex-1 items-center md:items-start text-center md:text-left">
-                        <div className="flex items-center gap-3 mb-1.5 flex-wrap justify-center md:justify-start">
-                          <span className="text-xl font-black text-slate-800 dark:text-white">{med.name} {med.dosage}</span>
+                    <div key={i} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md rounded-2xl lg:rounded-3xl border border-[#5265ec]/30 dark:border-white/10 p-3 lg:p-5 flex flex-row items-center justify-between gap-3 lg:gap-6 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex flex-col flex-1 min-w-0 items-start text-left">
+                        <div className="flex items-center gap-3 mb-1.5 flex-wrap">
+                          <span className="text-sm lg:text-xl font-black text-slate-800 dark:text-white">{med.name} {med.dosage}</span>
                         </div>
                         <div className="flex items-center gap-2 bg-blue-50/50 dark:bg-blue-500/10 w-fit px-3 py-1 rounded-full border border-blue-100/30 dark:border-blue-500/20">
                           <svg className="w-3.5 h-3.5 text-[#5265ec] dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -253,21 +281,21 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                       </div>
 
                       {/* 3-Column Layout Indicators */}
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1.5 lg:gap-4 shrink-0">
                         <div className="flex flex-col items-center gap-1.5">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${isM ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600'}`}>
+                          <div className={`w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl flex items-center justify-center text-xs lg:text-sm font-black ${isM ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600'}`}>
                             {isM ? '1' : '0'}
                           </div>
-                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Morning</span>
+                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest"><span className="lg:hidden">Morn</span><span className="hidden lg:inline">Morning</span></span>
                         </div>
                         <div className="flex flex-col items-center gap-1.5">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${isA ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600'}`}>
+                          <div className={`w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl flex items-center justify-center text-xs lg:text-sm font-black ${isA ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600'}`}>
                             {isA ? '1' : '0'}
                           </div>
-                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Afternoon</span>
+                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest"><span className="lg:hidden">Noon</span><span className="hidden lg:inline">Afternoon</span></span>
                         </div>
                         <div className="flex flex-col items-center gap-1.5">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${isN ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600'}`}>
+                          <div className={`w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl flex items-center justify-center text-xs lg:text-sm font-black ${isN ? 'bg-[#5265ec] text-white shadow-lg shadow-[#5265ec]/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600'}`}>
                             {isN ? '1' : '0'}
                           </div>
                           <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Night</span>
@@ -279,14 +307,21 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
               </div>
 
               {/* Bottom Instructions */}
-              <div className="mt-8 p-6 rounded-4xl bg-[#5265ec] text-white flex items-center justify-between shadow-2xl shadow-[#5265ec]/40 overflow-hidden relative">
+              <div className="mt-3 lg:mt-8 p-3 lg:p-6 rounded-xl lg:rounded-4xl bg-[#5265ec] text-white flex items-center justify-between shadow-2xl shadow-[#5265ec]/40 overflow-hidden relative">
                 <div className="absolute inset-0 bg-linear-to-r from-white/0 to-white/10"></div>
                 <div className="relative z-10">
-                  <h4 className="font-black text-lg mb-1">Medicinal Guidance</h4>
+                  <h4 className="font-black text-sm lg:text-lg mb-1">Medicinal Guidance</h4>
                   <p className="text-white/70 text-xs font-medium">Follow prescriptions strictly. If a dose is missed, contact your doctor.</p>
                 </div>
 
               </div>
+              <button
+                onClick={downloadPdf}
+                disabled={downloading}
+                className="lg:hidden mt-3 w-full py-3 rounded-xl bg-[#0d9488] text-white text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-60"
+              >
+                {downloading ? 'Preparing PDF...' : 'Download PDF'}
+              </button>
             </div>
           </div>
         </div>

@@ -369,7 +369,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
         onAddVital={() => setShowVitalModal(true)}
       />
 
-      <PatientDocuments />
+      <div className="hidden lg:block"><PatientDocuments /></div>
 
       {/* Vital Capture Modal */}
       {showVitalModal && (
