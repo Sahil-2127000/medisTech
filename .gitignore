@@ -26,3 +26,6 @@ dist-ssr
 
 # Android builds
 *.apk
+
+# Packaged copies
+*.zip
