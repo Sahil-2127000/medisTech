@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import useAppView from '../../hooks/useAppView';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { API_URL } from '../../config/api';
 
 const BookAppointment = ({ onClose }) => {
+  const appView = useAppView();
   const [doctors, setDoctors] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [specialty, setSpecialty] = useState('All');
@@ -133,6 +135,8 @@ const BookAppointment = ({ onClose }) => {
             .react-datepicker__day--keyboard-selected { background-color: transparent; }
             .react-datepicker__day--disabled { color: #cbd5e1; pointer-events: none; }
             .react-datepicker__navigation { top: 1.25rem; }
+            .react-datepicker-popper { z-index: 9999 !important; }
+            .react-datepicker__portal { z-index: 9999; background-color: rgba(2, 16, 36, 0.55); }
             
             /* Dark Mode Support */
             .dark .react-datepicker { background-color: #1e293b; border-color: #334155; }
@@ -220,6 +224,13 @@ const BookAppointment = ({ onClose }) => {
                   minDate={new Date()}
                   maxDate={new Date(new Date().setDate(new Date().getDate() + 20))}
                   placeholderText="DD/MM/YYYY"
+                  // Never let the calendar be clipped by the dialog:
+                  // phones/app -> centred pop-up; desktop -> drawn on top of the page, below the field
+                  withPortal={appView}
+                  portalId="datepicker-portal"
+                  popperPlacement="bottom-start"
+                  // no on-screen keyboard on phones, just the calendar
+                  onFocus={(e) => { if (appView) e.target.blur(); }}
                   className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold border border-gray-100 dark:border-white/5 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all shadow-sm cursor-pointer hover:border-blue-200"
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5265ec] dark:text-blue-400">
