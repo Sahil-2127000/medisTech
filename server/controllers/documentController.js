@@ -1,8 +1,7 @@
 const Document = require('../models/Document');
-const fs = require('fs');
-const path = require('path');
+const { saveUpload } = require('../utils/fileStorage');
 
-// Upload base64 PDF
+// Upload a base64 file (PDF or image)
 exports.uploadDocument = async (req, res) => {
   try {
     const { title, type, fileBase64, filename } = req.body;
@@ -15,24 +14,8 @@ exports.uploadDocument = async (req, res) => {
       return res.status(400).json({ message: 'Title and file are required.' });
     }
 
-    // Decode base64 and save to disk
-    const base64Data = fileBase64.replace(/^data:application\/pdf;base64,/, "");
-    
-    // Ensure uploads/documents directory exists
-    const dir = path.join(__dirname, '..', 'uploads', 'documents');
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
-    }
-
-    // Creating unique filename to prevent overwrites
-    const uniqueFilename = `${Date.now()}-${filename.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
-    const filePath = path.join(dir, uniqueFilename);
-    
-    fs.writeFileSync(filePath, base64Data, 'base64');
-
-    // Make route mapping for static retrieval
-    // Use the address the client reached us on, so links also work from the phone app
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/documents/${uniqueFilename}`;
+    // Cloudinary when configured (survives Render restarts), otherwise the local uploads/ folder
+    const fileUrl = await saveUpload({ dataUrl: fileBase64, filename, folder: 'documents' }, req);
 
     const newDoc = new Document({
       title,
