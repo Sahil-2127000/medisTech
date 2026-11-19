@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import io from 'socket.io-client';
-import { API_URL } from '../../config/api';
+import { API_URL, SOCKET_URL } from '../../config/api';
 
-const socket = io(`${API_URL}`);
+const socket = io(SOCKET_URL);
 
 const BlogSection = () => {
   const [dbPosts, setDbPosts] = useState([]);

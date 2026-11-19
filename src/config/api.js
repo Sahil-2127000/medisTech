@@ -1,6 +1,12 @@
-// Backend address. The website uses localhost; the Android app is built with VITE_API_URL
-// pointing at the computer running the backend (see .env.android).
+// Backend address.
+//  - local dev:      http://localhost:5001 (default)
+//  - Android app:    the Render backend (.env.android)
+//  - Vercel website: "/" -> same-origin /api, which vercel.json forwards to Render, so the
+//                    login cookie is first-party (Safari/iOS block third-party cookies)
 export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/$/, '');
+
+// Real-time (socket.io) server. Vercel can't proxy WebSockets, so the website connects straight to Render.
+export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || API_URL || window.location.origin;
 
 // ---- Mobile app login ----
 // Inside the Android app the login cookie isn't sent, so the app keeps the login token
