@@ -3,8 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Doctor = require('../models/Doctor');
 const Availability = require('../models/Availability');
-const { sendEmail, gmailApiConfigured } = require('../utils/emailService');
-const emailConfigured = () => gmailApiConfigured() || !!(process.env.SMTP_USER && process.env.SMTP_PASS);
+const { sendEmail, isEmailConfigured: emailConfigured } = require('../utils/emailService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_for_development';
 const isProduction = process.env.NODE_ENV === 'production';

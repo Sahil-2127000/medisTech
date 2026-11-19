@@ -1,8 +1,7 @@
 const User = require('../models/User');
 const Doctor = require('../models/Doctor');
 const bcrypt = require('bcryptjs');
-const { sendEmail, gmailApiConfigured } = require('../utils/emailService');
-const emailConfigured = () => gmailApiConfigured() || !!(process.env.SMTP_USER && process.env.SMTP_PASS);
+const { sendEmail, isEmailConfigured: emailConfigured } = require('../utils/emailService');
 
 exports.getProfile = async (req, res) => {
   try {
