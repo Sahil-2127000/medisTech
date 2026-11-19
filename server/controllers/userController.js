@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const Doctor = require('../models/Doctor');
 const bcrypt = require('bcryptjs');
-const { sendEmail } = require('../utils/emailService');
+const { sendEmail, gmailApiConfigured } = require('../utils/emailService');
+const emailConfigured = () => gmailApiConfigured() || !!(process.env.SMTP_USER && process.env.SMTP_PASS);
 
 exports.getProfile = async (req, res) => {
   try {
@@ -137,7 +138,7 @@ exports.setup2FA = async (req, res) => {
     const smsOtp = Math.floor(100000 + Math.random() * 900000).toString();
     await sendEmail(targetUser.email, 'Enable Two-Factor Authentication - MedisTech',
       `<h2>Two-factor setup</h2><p>Your verification code is:</p><h1 style="letter-spacing:8px">${smsOtp}</h1><p>It expires in 5 minutes.</p>`);
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    if (!emailConfigured()) {
       console.log(`[TEST MODE] 2FA setup OTP for ${targetUser.email}: ${smsOtp}`);
     }
 

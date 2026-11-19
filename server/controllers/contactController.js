@@ -13,7 +13,7 @@ exports.submitContact = async (req, res) => {
     const newContact = await Contact.create({ name, phone, email, message });
 
     // Platform-level inquiry: delivered to the MedisTech support inbox
-    const doctorEmail = process.env.SMTP_USER;
+    const doctorEmail = process.env.GMAIL_USER || process.env.SMTP_USER;
 
     // Send email to the doctor
     const doctorHtml = `

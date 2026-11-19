@@ -3,7 +3,8 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Doctor = require('../models/Doctor');
 const Availability = require('../models/Availability');
-const { sendEmail } = require('../utils/emailService');
+const { sendEmail, gmailApiConfigured } = require('../utils/emailService');
+const emailConfigured = () => gmailApiConfigured() || !!(process.env.SMTP_USER && process.env.SMTP_PASS);
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_for_development';
 const isProduction = process.env.NODE_ENV === 'production';
@@ -121,7 +122,7 @@ const html = `
     // Attempt to send email using standard utility service
     await sendEmail(email, 'Your Verification Code', html);
     
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    if (!emailConfigured()) {
       console.log(`[TEST MODE] SMTP not configured. OTP for ${email} is: ${otpCode}`);
     }
 
@@ -271,7 +272,7 @@ exports.login = async (req, res) => {
         // Second factor is delivered by e-mail
         await sendEmail(targetUser.email, 'Your MedisTech Login Code',
           `<h2>Login verification</h2><p>Your one-time login code is:</p><h1 style="letter-spacing:8px">${smsOtp}</h1><p>It expires in 5 minutes.</p>`);
-        if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+        if (!emailConfigured()) {
           console.log(`[TEST MODE] 2FA login OTP for ${targetUser.email}: ${smsOtp}`);
         }
 
