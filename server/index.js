@@ -49,6 +49,11 @@ app.use('/api/documents', documentRoutes);
 app.use('/api/vitals', vitalRoutes);
 app.use('/api/contact', contactRoutes);
 
+// Lightweight health check (no database) — pinged to keep the free Render instance awake
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ ok: true, uptime: Math.round(process.uptime()) });
+});
+
 // General health check route
 app.get('/', (req, res) => {
   res.send('MedisTech Backend API is running!');
