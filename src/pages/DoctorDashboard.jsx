@@ -484,7 +484,7 @@ const DoctorDashboard = () => {
                                     )}
                                     {activeTab === 'appointments' && (
                                         <div className="w-full flex flex-col">
-                                            <div className="flex justify-end lg:justify-between items-center mb-3 lg:mb-8 w-full">
+                                            <div className="hidden lg:flex justify-between items-center mb-8 w-full">
                                                 <h1 className="hidden lg:block text-2xl md:text-4xl font-extrabold text-[#021024] transition-colors">All Queue Records</h1>
                                                 <AlertBell appointments={pendingRequests} onStatusChange={handleStatusChange} />
                                             </div>
@@ -498,6 +498,7 @@ const DoctorDashboard = () => {
                                                 setSearchQuery={setHistorySearch}
                                                 statusFilter={historyStatus}
                                                 setStatusFilter={setHistoryStatus}
+                                                trailing={<AlertBell appointments={pendingRequests} onStatusChange={handleStatusChange} />}
                                             />
                                         </div>
                                     )}

@@ -9,7 +9,8 @@ const AppointmentRequests = ({
   searchQuery, 
   setSearchQuery, 
   statusFilter, 
-  setStatusFilter
+  setStatusFilter,
+  trailing // shown beside the search box on phones/tablets (e.g. the alert bell)
 }) => {
   const [activeSubTab, setActiveSubTab] = useState('requests');
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -186,16 +187,17 @@ const AppointmentRequests = ({
     <div className="w-full h-full pb-10 flex flex-col">
       {/* Search and Filters Header */}
         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-6 lg:mb-10 shrink-0">
-            <div className="relative w-full xl:w-[400px] group">
+            <div className="flex items-center gap-3 w-full xl:w-auto">
+            <div className="relative flex-1 min-w-0 xl:w-[400px] xl:flex-none group">
               <input 
                 type="text" 
-                placeholder="Search patients by name or ID..."
+                placeholder="Search by name or ID..."
                 value={debouncedSearch}
                 onChange={(e) => setDebouncedSearch(e.target.value)}
-                className="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-14 pr-6 text-slate-800 font-bold focus:outline-hidden focus:ring-4 focus:ring-blue-50 focus:border-blue-200 transition-all shadow-sm group-hover:shadow-md"
+                className="w-full bg-white border border-gray-100 rounded-2xl py-3 lg:py-4 pl-12 lg:pl-14 pr-10 lg:pr-6 text-slate-800 font-bold focus:outline-hidden focus:ring-4 focus:ring-blue-50 focus:border-blue-200 transition-all shadow-sm group-hover:shadow-md"
               />
-              <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-clinic-600 transition-colors">
-                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <div className="absolute left-4 lg:left-5 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-clinic-600 transition-colors">
+                 <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
               </div>
               {debouncedSearch && (
                 <button 
@@ -205,6 +207,8 @@ const AppointmentRequests = ({
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
               )}
+            </div>
+            {trailing && <div className="lg:hidden shrink-0">{trailing}</div>}
             </div>
 
             <div className="flex items-center gap-1.5 w-full xl:w-auto overflow-x-auto no-scrollbar pb-1 xl:pb-0">
