@@ -117,7 +117,7 @@ const BlogSection = () => {
                     className="bg-white border border-slate-100 rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group cursor-pointer flex flex-col h-full"
                   >
                     <div className="h-48 overflow-hidden relative">
-                      <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                      <img src={post.image} alt={post.title} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/hero_image.png'; }} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                     </div>
                     <div className="p-6 flex flex-col grow">
                       <div className="flex items-center gap-4 text-xs font-medium mb-3">
@@ -165,7 +165,7 @@ const BlogSection = () => {
               </button>
 
               <div className="w-full h-64 md:h-80 relative shrink-0">
-                <img src={selectedPost.image} alt={selectedPost.title} className="w-full h-full object-cover" />
+                <img src={selectedPost.image} alt={selectedPost.title} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/hero_image.png'; }} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-6 md:p-8 text-white w-full">
                   <div className="flex gap-3 mb-3">
