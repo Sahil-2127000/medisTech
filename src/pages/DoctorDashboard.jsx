@@ -466,7 +466,7 @@ const DoctorDashboard = () => {
                                                 }}
                                             />
 
-                                            <div className="flex flex-col 2xl:flex-row gap-5 lg:gap-8 w-full mt-2">
+                                            <div className="flex flex-col lg:flex-row gap-5 lg:gap-6 xl:gap-8 w-full mt-2">
                                                 <div className="flex-1 w-full ">
                                                     <CurrentPatient
                                                         appointments={appointments}
@@ -476,7 +476,7 @@ const DoctorDashboard = () => {
                                                         doctorProfile={profile}
                                                     />
                                                 </div>
-                                                <div className="w-full 2xl:w-[380px] shrink-0">
+                                                <div className="w-full lg:w-[320px] xl:w-[400px] shrink-0">
                                                     <TodayAppointments appointments={appointments} onStatusChange={handleStatusChange} />
                                                 </div>
                                             </div>
