@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../../config/api';
 
 const AvailabilityConfig = () => {
   const [loading, setLoading] = useState(true);
@@ -13,7 +14,7 @@ const AvailabilityConfig = () => {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/availability/config', {
+        const response = await fetch(`${API_URL}/api/availability/config`, {
           credentials: 'include'
         });
         if (response.ok) {
@@ -71,7 +72,7 @@ const AvailabilityConfig = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await fetch('http://localhost:5001/api/availability/config', {
+      const response = await fetch(`${API_URL}/api/availability/config`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -95,15 +96,15 @@ const AvailabilityConfig = () => {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto no-scrollbar py-12 px-8 flex flex-col items-center bg-transparent">
+    <div className="flex-1 overflow-y-auto no-scrollbar py-5 lg:py-12 px-4 md:px-8 flex flex-col items-center bg-transparent">
       <div className="w-full max-w-6xl space-y-10">
         
         {/* Header Block: Glassmorphism Gradient */}
-        <div className="relative group overflow-hidden bg-linear-to-r from-clinic-600 to-blue-400 rounded-[3rem] p-10 shadow-2xl shadow-blue-500/20">
+        <div className="relative group overflow-hidden bg-linear-to-r from-clinic-600 to-blue-400 rounded-[2rem] lg:rounded-[3rem] p-6 lg:p-10 shadow-2xl shadow-blue-500/20">
           <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
-              <h2 className="text-4xl font-black text-white mb-2 tracking-tight">Availability Timings</h2>
+              <h2 className="text-2xl md:text-4xl font-black text-white mb-2 tracking-tight">Availability Timings</h2>
               <p className="text-blue-50 font-bold opacity-80 text-sm max-w-lg leading-relaxed">Customize your clinical shifts, slot timings, and blackout dates.</p>
             </div>
             <button 
@@ -116,11 +117,11 @@ const AvailabilityConfig = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 xl:gap-10 items-start">
           
           {/* Main Recurring Schedule Cards */}
-          <div className="lg:col-span-8 space-y-6">
-            <div className="flex items-center justify-between mb-2 px-6">
+          <div className="xl:col-span-8 space-y-4 lg:space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-2 px-1 lg:px-6">
                <h3 className="text-xl font-black text-slate-800 tracking-tight">Weekly Recurring Schedule</h3>
                <div className="flex gap-4">
                   <div className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-2xl px-4 py-2 flex flex-col items-center shadow-sm">
@@ -141,7 +142,7 @@ const AvailabilityConfig = () => {
             </div>
 
             {weeklyConfig.map((dayConfig, dIndex) => (
-              <div key={dayConfig.day} className={`group bg-blue-20 backdrop-blur-xl border border-gray-100 rounded-[2.5rem] p-4 transition-all duration-300 ${dayConfig.isOff ? 'border-gray-100/50 opacity-60 grayscale' : 'border-gray-300 shadow-md shadow-gray-400 hover:scale-[1.01] hover:bg-blue-50 hover:shadow-blue-500/10'}`}>
+              <div key={dayConfig.day} className={`group bg-blue-20 backdrop-blur-xl border border-gray-100 rounded-[2rem] lg:rounded-[2.5rem] p-4 transition-all duration-300 ${dayConfig.isOff ? 'border-gray-100/50 opacity-60 grayscale' : 'border-gray-300 shadow-md shadow-gray-400 hover:scale-[1.01] hover:bg-blue-50 hover:shadow-blue-500/10'}`}>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   
                   {/* Day Toggle Area */}
@@ -165,23 +166,23 @@ const AvailabilityConfig = () => {
                     ) : (
                       <div className="flex flex-wrap gap-3 items-center">
                         {dayConfig.slots.map((slot, sIndex) => (
-                          <div key={sIndex} className="bg-slate-50 border border-slate-200/50 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all hover:border-clinic-600/30 group/slot relative">
+                          <div key={sIndex} className="w-full sm:w-auto justify-between sm:justify-start bg-slate-50 border border-slate-200/50 rounded-2xl px-3 sm:px-4 py-3 flex items-center gap-2 sm:gap-3 transition-all hover:border-clinic-600/30 group/slot relative">
                             <input 
                               type="time" 
                               value={slot.start} 
                               onChange={e => updateTime(dIndex, sIndex, 'start', e.target.value)} 
-                              className="bg-transparent text-sm font-black text-slate-700 outline-none cursor-pointer" 
+                              className="min-w-[6.75rem] flex-1 sm:flex-none bg-transparent text-sm font-black text-slate-700 outline-none cursor-pointer" 
                             />
                             <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
                             <input 
                               type="time" 
                               value={slot.end} 
                               onChange={e => updateTime(dIndex, sIndex, 'end', e.target.value)} 
-                              className="bg-transparent text-sm font-black text-slate-700 outline-none cursor-pointer" 
+                              className="min-w-[6.75rem] flex-1 sm:flex-none bg-transparent text-sm font-black text-slate-700 outline-none cursor-pointer" 
                             />
                             <button 
                               onClick={() => removeTimeBlock(dIndex, sIndex)}
-                              className="ml-2 w-6 h-6 flex items-center justify-center rounded-lg bg-white/80 text-rose-500 shadow-sm hover:bg-rose-500 hover:text-white transition-all scale-0 group-hover/slot:scale-100"
+                              className="ml-2 w-6 h-6 flex items-center justify-center rounded-lg bg-white/80 text-rose-500 shadow-sm hover:bg-rose-500 hover:text-white transition-all scale-0 group-hover/slot:scale-100 max-lg:scale-100"
                             >
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
@@ -202,8 +203,8 @@ const AvailabilityConfig = () => {
           </div>
 
           {/* Right Sidebar: Exception Management */}
-          <div className="lg:col-span-4 space-y-8 sticky top-8">
-             <div className="bg-white backdrop-blur-xl border border-gray-300 rounded-[2.5rem] p-8 shadow-lg shadow-gray-400 transition-all">
+          <div className="xl:col-span-4 space-y-8 xl:sticky xl:top-8">
+             <div className="bg-white backdrop-blur-xl border border-gray-300 rounded-[2rem] lg:rounded-[2.5rem] p-5 lg:p-8 shadow-lg shadow-gray-400 transition-all">
                 <div className="flex items-center gap-3 mb-8">
                    <div className="w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500">
                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
@@ -211,12 +212,12 @@ const AvailabilityConfig = () => {
                    <h4 className="text-xl font-black text-slate-800 tracking-tight">Custom Off-Days</h4>
                 </div>
 
-                <div className="flex gap-3 mb-8">
+                <div className="flex flex-wrap gap-3 mb-8">
                    <input 
                      type="date" 
                      value={customDateInput ? customDateInput.split('-').reverse().join('-') : ''}
                      onChange={(e) => setCustomDateInput(e.target.value ? e.target.value.split('-').reverse().join('-') : '')}
-                     className="flex-1 bg-slate-50 border-none rounded-2xl px-5 py-4 text-xs font-black text-slate-800 outline-none focus:ring-2 focus:ring-clinic-600/20 transition-all shadow-inner" 
+                     className="flex-1 min-w-0 bg-slate-50 border-none rounded-2xl px-5 py-4 text-xs font-black text-slate-800 outline-none focus:ring-2 focus:ring-clinic-600/20 transition-all shadow-inner" 
                    />
                    <button 
                      onClick={() => { if(customDateInput) addBlackoutDate(customDateInput); setCustomDateInput(''); }}

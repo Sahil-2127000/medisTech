@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { initialsAvatar } from '../../utils/avatar';
+import { API_URL } from '../../config/api';
 
 const DoctorProfile = ({ email }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -17,7 +18,7 @@ const DoctorProfile = ({ email }) => {
 
     const loadProfile = async () => {
         try {
-            const res = await fetch('http://localhost:5001/api/auth/profile', { credentials: 'include' });
+            const res = await fetch(`${API_URL}/api/auth/profile`, { credentials: 'include' });
             if (res.ok) {
                 const data = await res.json();
                 // Dissect native schema into frontend struct dynamically mapping
@@ -61,7 +62,7 @@ const DoctorProfile = ({ email }) => {
                 photo: profile.photo
             };
 
-            const res = await fetch('http://localhost:5001/api/auth/profile', {
+            const res = await fetch(`${API_URL}/api/auth/profile`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../../config/api';
 
 const ProfileView = ({ patientData }) => {
   const [formData, setFormData] = useState({
@@ -29,7 +30,7 @@ const ProfileView = ({ patientData }) => {
     setIsSaving(true);
     setSaveMessage('');
     try {
-      const res = await fetch('http://localhost:5001/api/auth/profile', {
+      const res = await fetch(`${API_URL}/api/auth/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -73,8 +74,8 @@ const ProfileView = ({ patientData }) => {
 
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-gray-200 dark:border-white/10">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 dark:text-white">Patient Profile</h1>
-          <p className="text-gray-500 dark:text-slate-400 font-medium mt-1">Manage physical records and contact details</p>
+          <h1 className="hidden lg:block text-3xl font-bold text-slate-800 dark:text-white">Patient Profile</h1>
+          <p className="hidden lg:block text-gray-500 dark:text-slate-400 font-medium mt-1">Manage physical records and contact details</p>
         </div>
         {!isEditing && (
           <button

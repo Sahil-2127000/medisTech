@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import PatientMobileHome from './PatientMobileHome';
 import PatientDocuments from './PatientDocuments';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import AppointmentsView from './AppointmentsView';
@@ -6,6 +7,7 @@ import DocumentsView from './DocumentsView';
 import ProfileView from './ProfileView';
 import SettingsView from './SettingsView';
 import LiveQueueUI from './LiveQueueUI';
+import { API_URL } from '../../config/api';
 
 const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabChange }) => {
   const [showVitalModal, setShowVitalModal] = useState(false);
@@ -37,7 +39,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
   const handleVitalSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5001/api/vitals/add', {
+      const res = await fetch(`${API_URL}/api/vitals/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(vitalForm),
@@ -58,7 +60,11 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
   if (activeTab === 'queue') {
     const doctorId = patientData.upcoming?.[0]?.doctorId?._id;
     const doctorName = patientData.upcoming?.[0]?.doctor || "Dr. Specialist";
-    return <LiveQueueUI doctorId={doctorId} doctorName={doctorName} />;
+    return (
+      <div className="flex-1 h-full overflow-y-auto overflow-x-hidden no-scrollbar px-4 md:px-8 lg:px-10 py-4 lg:py-8 bg-[#F8FAFC] dark:bg-slate-900">
+        <LiveQueueUI doctorId={doctorId} doctorName={doctorName} />
+      </div>
+    );
   }
 
   const completedCount = [...(patientData.history || []), ...(patientData.upcoming || [])]
@@ -69,13 +75,17 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
   const todayApps = patientData.upcoming?.filter(app => app.date === todayFormatted) || [];
 
   return (
-    <div className="flex-1 h-full py-6 md:py-6 px-6 md:px-10 flex flex-col overflow-y-auto overflow-x-hidden no-scrollbar bg-[#F8FAFC] dark:bg-slate-900 rounded-[2.5rem]">
+    <div className="flex-1 h-full py-4 lg:py-6 px-4 md:px-8 lg:px-10 flex flex-col overflow-y-auto overflow-x-hidden no-scrollbar bg-[#F8FAFC] dark:bg-slate-900 lg:rounded-[2.5rem]">
       {/* Header */}
-      <div className="flex justify-between items-end mb-6 relative z-10 shrink-0">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] dark:text-white tracking-tight">Dashboard</h1>
+      <div className="flex justify-between items-center lg:items-end gap-3 mb-4 lg:mb-6 relative z-10 shrink-0">
+        <h1 className="hidden lg:block text-3xl md:text-4xl font-extrabold text-[#0F172A] dark:text-white tracking-tight">Dashboard</h1>
+        <div className="lg:hidden min-w-0">
+          <div className="text-xs font-semibold text-slate-400">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}</div>
+          <div className="text-xl font-extrabold text-slate-900 dark:text-white truncate">Hello, {(patientData.name || '').split(' ')[0]}</div>
+        </div>
 
-        <div className="flex items-center gap-4 relative">
-          <button onClick={onBookClick} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-3 lg:gap-4 relative">
+          <button onClick={onBookClick} className="hidden lg:flex justify-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 lg:py-2.5 rounded-xl font-semibold shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 text-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
             Book Appointment
           </button>
@@ -97,7 +107,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
             
             {/* Notification Dropdown */}
             {showNotifications && (
-              <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-blue-500/10 border border-[#5265ec]/30 dark:border-blue-400/30 overflow-hidden z-50 animate-fade-in">
+              <div className="absolute right-0 mt-3 w-[min(20rem,calc(100vw-2rem))] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-blue-500/10 border border-[#5265ec]/30 dark:border-blue-400/30 overflow-hidden z-50 animate-fade-in">
                 <div className="px-4 py-3 border-b border-[#5265ec]/10 dark:border-blue-400/20 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
                   <h3 className="font-bold text-slate-800 dark:text-white">Notifications</h3>
                   <span className="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded-full">{notifications.length} New</span>
@@ -131,9 +141,9 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
       </div>
 
       {/* 🔵 DOCTOR-STYLE WELCOME BANNER 🔵 */}
-      <div className="relative w-full shrink-0 min-h-[150px] rounded-3xl overflow-hidden mb-8 bg-linear-to-r from-blue-600 via-[#3963F9] to-blue-400 animate-gradient-xy flex items-center shadow-xl shadow-blue-600/20">
-        <div className="relative z-10 px-8 py-8 md:px-12 flex flex-col justify-center w-full">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight drop-shadow-sm">
+      <div className="hidden lg:flex relative w-full shrink-0 min-h-[120px] lg:min-h-[150px] rounded-3xl overflow-hidden mb-5 lg:mb-8 bg-linear-to-r from-blue-600 via-[#3963F9] to-blue-400 animate-gradient-xy items-center shadow-xl shadow-blue-600/20">
+        <div className="relative z-10 px-6 py-6 md:px-12 md:py-8 flex flex-col justify-center w-full">
+          <h2 className="text-2xl md:text-4xl font-extrabold text-white mb-2 tracking-tight drop-shadow-sm">
             Welcome , {patientData.name}
           </h2>
           <p className="text-blue-100 font-medium text-base md:text-lg drop-shadow-sm opacity-90">
@@ -146,66 +156,66 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
       </div>
 
       {/* 4 Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
+      <div className="hidden lg:grid grid-cols-2 xl:grid-cols-4 gap-3 lg:gap-4 mb-4 shrink-0">
         {/* Card 1: Total Appointments */}
-        <div onClick={() => onTabChange('calendar', '?filter=all')} className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-4 relative overflow-hidden cursor-pointer hover:-translate-y-1 transition-all">
+        <div onClick={() => onTabChange('calendar', '?filter=all')} className="bg-white dark:bg-slate-800 rounded-2xl p-3 lg:p-4 shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-3 lg:gap-4 relative overflow-hidden cursor-pointer hover:-translate-y-1 transition-all">
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-linear-to-l from-blue-500/10 to-transparent pointer-events-none"></div>
-          <div className="w-12 h-12 rounded-xl bg-[#3B82F6] text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
+          <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-[#3B82F6] text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
           </div>
           <div>
             <div className="text-xl font-extrabold text-[#0F172A] dark:text-white leading-none mb-1">
               {(patientData.upcoming?.length || 0) + (patientData.history?.length || 0)}
             </div>
-            <div className="text-xs font-black text-slate-500 uppercase tracking-widest">Total Appointments</div>
+            <div className="text-[10px] lg:text-xs font-black text-slate-500 uppercase tracking-wider lg:tracking-widest leading-tight break-words">Total Appointments</div>
           </div>
         </div>
 
         {/* Card 2: Total Prescriptions */}
-        <div onClick={() => onTabChange('docs')} className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-4 relative overflow-hidden cursor-pointer hover:-translate-y-1 transition-all">
+        <div onClick={() => onTabChange('docs')} className="bg-white dark:bg-slate-800 rounded-2xl p-3 lg:p-4 shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-3 lg:gap-4 relative overflow-hidden cursor-pointer hover:-translate-y-1 transition-all">
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-linear-to-l from-teal-400/10 to-transparent pointer-events-none"></div>
-          <div className="w-12 h-12 rounded-xl bg-[#14B8A6] text-white flex items-center justify-center shrink-0 shadow-lg shadow-teal-400/20">
+          <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-[#14B8A6] text-white flex items-center justify-center shrink-0 shadow-lg shadow-teal-400/20">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
           </div>
           <div>
             <div className="text-xl font-extrabold text-[#0F172A] dark:text-white leading-none mb-1">
               {patientData.prescriptionsCount || 0}
             </div>
-            <div className="text-xs font-black text-slate-500 uppercase tracking-widest">Prescriptions</div>
+            <div className="text-[10px] lg:text-xs font-black text-slate-500 uppercase tracking-wider lg:tracking-widest leading-tight break-words">Prescriptions</div>
           </div>
         </div>
 
         {/* Card 3: Completed Visits */}
-        <div onClick={() => onTabChange('calendar', '?filter=completed')} className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-4 relative overflow-hidden cursor-pointer hover:-translate-y-1 transition-all">
+        <div onClick={() => onTabChange('calendar', '?filter=completed')} className="bg-white dark:bg-slate-800 rounded-2xl p-3 lg:p-4 shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-3 lg:gap-4 relative overflow-hidden cursor-pointer hover:-translate-y-1 transition-all">
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-linear-to-l from-emerald-500/10 to-transparent pointer-events-none"></div>
-          <div className="w-12 h-12 rounded-xl bg-[#22C55E] text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
+          <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-[#22C55E] text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
           <div>
             <div className="text-xl font-extrabold text-[#0F172A] dark:text-white leading-none mb-1">
               {completedCount}
             </div>
-            <div className="text-xs font-black text-slate-500 uppercase tracking-widest">Completed</div>
+            <div className="text-[10px] lg:text-xs font-black text-slate-500 uppercase tracking-wider lg:tracking-widest leading-tight break-words">Completed</div>
           </div>
         </div>
 
         {/* Card 4: Pending Requests */}
-        <div onClick={() => onTabChange('calendar', '?filter=pending')} className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-4 relative overflow-hidden cursor-pointer hover:-translate-y-1 transition-all">
+        <div onClick={() => onTabChange('calendar', '?filter=pending')} className="bg-white dark:bg-slate-800 rounded-2xl p-3 lg:p-4 shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-3 lg:gap-4 relative overflow-hidden cursor-pointer hover:-translate-y-1 transition-all">
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-linear-to-l from-amber-400/10 to-transparent pointer-events-none"></div>
-          <div className="w-12 h-12 rounded-xl bg-[#F59E0B] text-white flex items-center justify-center shrink-0 shadow-lg shadow-amber-400/20">
+          <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-[#F59E0B] text-white flex items-center justify-center shrink-0 shadow-lg shadow-amber-400/20">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
           <div>
             <div className="text-xl font-extrabold text-[#0F172A] dark:text-white leading-none mb-1">
               {patientData.upcoming?.filter(app => app.status === 'pending').length || 0}
             </div>
-            <div className="text-xs font-black text-slate-500 uppercase tracking-widest">Pending Requests</div>
+            <div className="text-[10px] lg:text-xs font-black text-slate-500 uppercase tracking-wider lg:tracking-widest leading-tight break-words">Pending Requests</div>
           </div>
         </div>
       </div>
 
       {/* 3 Large Bottom Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 flex-none min-h-[250px] mb-2">
+      <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-5 flex-none min-h-[250px] mb-2">
 
         {/* Next Upcoming Appointment */}
         {(() => {
@@ -350,6 +360,14 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
         </div>
 
       </div>
+
+      <PatientMobileHome
+        patientData={patientData}
+        completedCount={completedCount}
+        onBook={onBookClick}
+        onTabChange={onTabChange}
+        onAddVital={() => setShowVitalModal(true)}
+      />
 
       <PatientDocuments />
 

@@ -14,6 +14,10 @@ import OfflineBookingModal from '../components/doctor-dashboard/OfflineBookingMo
 import EmergencyResolutionModal from '../components/doctor-dashboard/EmergencyResolutionModal';
 import PrescriptionBuilder from '../components/doctor-dashboard/PrescriptionBuilder';
 import { useSocket } from '../context/SocketContext';
+import { MobileTopBar, MobileTabBar } from '../components/common/MobileNav';
+import { ICONS, signOut } from '../utils/mobileNav';
+import { initialsAvatar } from '../utils/avatar';
+import { API_URL, clearAuthToken } from '../config/api';
 
 // Helper mock seeder if localStorage is uniquely empty
 const ensureMockData = () => {
@@ -120,6 +124,7 @@ const DoctorDashboard = () => {
             const confirmLogout = window.confirm("You are explicitly leaving the secure Doctor Dashboard. You will be get logged out. Do you wish to proceed ?");
             if (confirmLogout) {
                 sessionStorage.removeItem('user');
+                clearAuthToken();
                 sessionStorage.removeItem('token');
                 window.location.href = '/'; // Shift architecture securely to landing page directly
             } else {
@@ -135,7 +140,7 @@ const DoctorDashboard = () => {
     // Generic backend routing natively syncing sidebar identity
     const loadDoctorProfile = async () => {
         try {
-            const res = await fetch('http://localhost:5001/api/auth/profile', { credentials: 'include' });
+            const res = await fetch(`${API_URL}/api/auth/profile`, { credentials: 'include' });
             if (res.ok) {
                 const data = await res.json();
                 setProfile({
@@ -157,7 +162,7 @@ const DoctorDashboard = () => {
     // Generic backend routing network polling
     const loadDoctorAppointments = async () => {
         try {
-            const res = await fetch('http://localhost:5001/api/appointments/doctor', { credentials: 'include' });
+            const res = await fetch(`${API_URL}/api/appointments/doctor`, { credentials: 'include' });
             if (res.ok) {
                 const data = await res.json();
                 // Data formatting mapping DB standard precisely
@@ -196,7 +201,7 @@ const DoctorDashboard = () => {
 
     const loadPendingRequests = async () => {
         try {
-            const res = await fetch('http://localhost:5001/api/appointments/doctor/pending', { credentials: 'include' });
+            const res = await fetch(`${API_URL}/api/appointments/doctor/pending`, { credentials: 'include' });
             if (res.ok) setPendingRequests((await res.json()).map(mapHistoryAppt));
         } catch (err) {
             console.error(err);
@@ -205,7 +210,7 @@ const DoctorDashboard = () => {
 
     const loadDoctorHistory = async (page = 1, search = '', status = '') => {
         try {
-            const res = await fetch(`http://localhost:5001/api/appointments/doctor/history?page=${page}&search=${search}&status=${status}`, { credentials: 'include' });
+            const res = await fetch(`${API_URL}/api/appointments/doctor/history?page=${page}&search=${search}&status=${status}`, { credentials: 'include' });
             if (res.ok) {
                 const result = await res.json();
                 setHistoryAppointments(result.data.map(mapHistoryAppt));
@@ -256,7 +261,7 @@ const DoctorDashboard = () => {
         setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
         setPendingRequests(prev => newStatus === 'pending' ? prev : prev.filter(a => a.id !== id));
         try {
-            await fetch(`http://localhost:5001/api/appointments/${id}/status`, {
+            await fetch(`${API_URL}/api/appointments/${id}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -272,7 +277,7 @@ const DoctorDashboard = () => {
 
     const handleSkipAppointment = async (id) => {
         try {
-            const res = await fetch(`http://localhost:5001/api/appointments/${id}/skip`, {
+            const res = await fetch(`${API_URL}/api/appointments/${id}/skip`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'
@@ -302,7 +307,7 @@ const DoctorDashboard = () => {
                 duration: med.alternativeDays ? `${med.duration || "As Directed"} (Alt. Days)` : (med.duration || "As Directed")
             }));
 
-            const res = await fetch('http://localhost:5001/api/prescriptions/issue', {
+            const res = await fetch(`${API_URL}/api/prescriptions/issue`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -336,7 +341,7 @@ const DoctorDashboard = () => {
             const confirmStart = window.confirm("Are you sure you want to pause the queue and start an emergency case?");
             if (confirmStart) {
                 try {
-                    const res = await fetch('http://localhost:5001/api/appointments/emergency-start', {
+                    const res = await fetch(`${API_URL}/api/appointments/emergency-start`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include'
@@ -362,7 +367,7 @@ const DoctorDashboard = () => {
     };
 
     return (
-        <div className="min-h-screen w-full bg-slate-50/50 p-0 md:p-8 flex items-center justify-center font-sans tracking-tight text-slate-800 transition-colors duration-300 relative overflow-hidden selection:bg-blue-200">
+        <div className="min-h-[100dvh] w-full bg-slate-50/50 p-0 lg:p-8 flex items-center justify-center font-sans tracking-tight text-slate-800 transition-colors duration-300 relative overflow-hidden selection:bg-blue-200">
             {/* Top Gradient Overlay */}
             <div className="absolute top-0 left-0 w-full h-[500px] bg-linear-to-b from-blue-50 via-cyan-50/30 to-transparent pointer-events-none z-0"></div>
             {/* Background radial gradients for reference-like soft colorful glow */}
@@ -371,20 +376,15 @@ const DoctorDashboard = () => {
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-linear-to-tr from-purple-100/20 via-pink-50/20 to-transparent rounded-full blur-[120px] pointer-events-none z-0"></div>
 
             {/* Master Flex Canvas matching exactly the Patient perspective UI bounds */}
-            <div className="w-full max-w-[1500px] h-screen md:h-[90vh] md:min-h-[800px] bg-white/80 backdrop-blur-2xl md:rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.06)] flex flex-col md:flex-row overflow-hidden border-0 md:border border-white/60 transition-colors duration-300 z-10 relative">
+            <div className="w-full max-w-[1500px] h-[100dvh] lg:h-[90vh] lg:min-h-[600px] bg-white/80 backdrop-blur-2xl lg:rounded-[2.5rem] lg:shadow-[0_8px_40px_rgba(0,0,0,0.06)] flex flex-col lg:flex-row overflow-hidden border-0 lg:border border-white/60 transition-colors duration-300 z-10 relative">
 
-                {/* GLOBAL MOBILE HEADER */}
-                <div className="md:hidden flex flex-row items-center justify-between w-full bg-white/95 backdrop-blur-md border-b border-gray-100 px-6 py-4 z-30 shrink-0 shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => setIsMobileMenuOpen(true)}
-                            className="p-2 -ml-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 transition-colors"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-                        </button>
-                        <h1 className="text-xl font-extrabold text-[#021024]">MedisTech</h1>
-                    </div>
-                </div>
+                {/* Phone / tablet app bar */}
+                <MobileTopBar
+                    title={{ dashboard: 'Home', appointments: 'Appointments', availability: 'Availability', blogs: 'Blogs', profile: 'My Profile' }[activeTab] || 'MedisTech'}
+                    subtitle={profile.firstName ? `Dr. ${profile.firstName} ${profile.lastName}` : ''}
+                    avatar={initialsAvatar(`${profile.firstName || ''} ${profile.lastName || ''}`, 72)}
+                    actions={[{ label: 'Sign out', icon: ICONS.logout, danger: true, onClick: () => signOut(navigate) }]}
+                />
                 {/* Left Explicit Profile & Navigation Tab Controller */}
                 <DoctorSidebar
                     activeTab={activeTab}
@@ -399,22 +399,27 @@ const DoctorDashboard = () => {
                 />
 
                 {/* Dynamic Center Orchestrator */}
+                <div className="flex-1 min-h-0 min-w-0 flex">
                 {activeTab === 'profile' && <DoctorProfile email={activeUserEmail} />}
                 {activeTab === 'availability' && <AvailabilityConfig />}
                 {activeTab === 'blogs' && <ManageBlogs />}
 
                 {(activeTab === 'dashboard' || activeTab === 'appointments') && (
                     <>
-                        <div className="flex-1 h-full pt-8 md:pt-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar bg-transparent transition-colors">
+                        <div className="flex-1 h-full pt-4 lg:pt-12 pb-6 px-4 md:px-8 lg:px-12 flex flex-col overflow-y-auto no-scrollbar bg-transparent transition-colors">
                             {showHistoryView ? (
                                 <PatientHistoryView historyData={historyAppointments} onBack={() => setShowHistoryView(false)} />
                             ) : (
                                 <>
                                     {activeTab === 'dashboard' && (
                                         <>
-                                            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-8 w-full">
+                                            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-3 lg:gap-4 mb-4 lg:mb-8 w-full">
                                                 <div className="flex items-center gap-4">
-                                                    <h1 className="hidden md:block text-2xl md:text-4xl font-extrabold text-[#021024] transition-colors whitespace-nowrap">Doctor Dashboard</h1>
+                                                    <h1 className="hidden lg:block text-2xl md:text-4xl font-extrabold text-[#021024] transition-colors whitespace-nowrap">Doctor Dashboard</h1>
+                                                    <div className="lg:hidden">
+                                                        <div className="text-xs font-semibold text-slate-400">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}</div>
+                                                        <div className="text-xl font-extrabold text-slate-900">Hello, Dr. {profile?.firstName}</div>
+                                                    </div>
                                                 </div>
                                                 <div className="flex items-center gap-2 md:gap-4 flex-wrap w-full lg:w-auto">
                                                     <button
@@ -430,7 +435,7 @@ const DoctorDashboard = () => {
                                                     >
                                                         <svg className="w-4 h-4 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                                                         <span className="hidden sm:inline">Make Appointment</span>
-                                                        <span className="sm:hidden">Book</span>
+                                                        <span className="sm:hidden">Walk-in</span>
                                                     </button>
                                                     <div className="shrink-0">
                                                         <AlertBell appointments={pendingRequests} onStatusChange={handleStatusChange} />
@@ -439,7 +444,7 @@ const DoctorDashboard = () => {
                                             </div>
 
                                             {/* Smooth Infinite Animated Welcome Banner */}
-                                            <div className="relative w-full shrink-0 min-h-[150px] rounded-3xl overflow-hidden mb-8 bg-linear-to-r from-blue-600 via-[#3963F9] to-blue-400 animate-gradient-xy flex items-center shadow-xl shadow-clinic-600/20">
+                                            <div className="hidden lg:flex relative w-full shrink-0 min-h-[150px] rounded-3xl overflow-hidden mb-8 bg-linear-to-r from-blue-600 via-[#3963F9] to-blue-400 animate-gradient-xy items-center shadow-xl shadow-clinic-600/20">
 
                                                 <div className="relative z-10 px-8 py-8 md:px-12 flex flex-col justify-center w-full ">
                                                     <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight drop-shadow-sm">Welcome , Dr. {profile?.firstName + ' ' + profile?.lastName || 'Doctor'}</h2>
@@ -461,7 +466,7 @@ const DoctorDashboard = () => {
                                                 }}
                                             />
 
-                                            <div className="flex flex-col lg:flex-row gap-8 w-full mt-2">
+                                            <div className="flex flex-col 2xl:flex-row gap-5 lg:gap-8 w-full mt-2">
                                                 <div className="flex-1 w-full ">
                                                     <CurrentPatient
                                                         appointments={appointments}
@@ -471,7 +476,7 @@ const DoctorDashboard = () => {
                                                         doctorProfile={profile}
                                                     />
                                                 </div>
-                                                <div className="w-full lg:w-[400px] shrink-0">
+                                                <div className="w-full 2xl:w-[380px] shrink-0">
                                                     <TodayAppointments appointments={appointments} onStatusChange={handleStatusChange} />
                                                 </div>
                                             </div>
@@ -479,8 +484,8 @@ const DoctorDashboard = () => {
                                     )}
                                     {activeTab === 'appointments' && (
                                         <div className="w-full flex flex-col">
-                                            <div className="flex justify-between items-center mb-8 w-full">
-                                                <h1 className="text-4xl font-extrabold text-[#021024] transition-colors">All Queue Records</h1>
+                                            <div className="flex justify-end lg:justify-between items-center mb-3 lg:mb-8 w-full">
+                                                <h1 className="hidden lg:block text-2xl md:text-4xl font-extrabold text-[#021024] transition-colors">All Queue Records</h1>
                                                 <AlertBell appointments={pendingRequests} onStatusChange={handleStatusChange} />
                                             </div>
                                             <AppointmentRequests
@@ -501,6 +506,19 @@ const DoctorDashboard = () => {
                         </div>
                     </>
                 )}
+                </div>
+
+                <MobileTabBar
+                    active={activeTab}
+                    onSelect={(t) => { setActiveTab(t); setShowHistoryView(false); }}
+                    items={[
+                        { id: 'dashboard', label: 'Home', icon: ICONS.home },
+                        { id: 'appointments', label: 'Requests', icon: ICONS.calendar },
+                        { id: 'availability', label: 'Timings', icon: ICONS.clock },
+                        { id: 'blogs', label: 'Blogs', icon: ICONS.edit },
+                        { id: 'profile', label: 'Profile', icon: ICONS.user },
+                    ]}
+                />
             </div>
 
             {showOfflineBooking && (
@@ -549,7 +567,7 @@ const DoctorDashboard = () => {
                                 duration: med.alternativeDays ? `${med.duration || "As Directed"} (Alt. Days)` : (med.duration || "As Directed")
                             }));
 
-                            await fetch('http://localhost:5001/api/prescriptions/issue', {
+                            await fetch(`${API_URL}/api/prescriptions/issue`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',

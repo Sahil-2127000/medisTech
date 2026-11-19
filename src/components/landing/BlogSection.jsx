@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import io from 'socket.io-client';
+import { API_URL } from '../../config/api';
 
-const socket = io('http://localhost:5001');
+const socket = io(`${API_URL}`);
 
 const BlogSection = () => {
   const [dbPosts, setDbPosts] = useState([]);
@@ -13,7 +14,7 @@ const BlogSection = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/blogs');
+        const response = await fetch(`${API_URL}/api/blogs`);
         const data = await response.json();
         if (response.ok && data.success) {
           setDbPosts(data.blogs);

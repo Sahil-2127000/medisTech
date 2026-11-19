@@ -15,11 +15,21 @@ const path = require('path');
 
 // Initialize app & connect to Database
 const app = express();
+// Behind Render's proxy: needed for secure cookies and https links
+app.set('trust proxy', 1);
+
+// Allowed browser origins: local dev, the Capacitor app, plus any hosted website from CLIENT_ORIGINS (comma-separated)
+const allowedOrigins = [
+  'http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174',
+  'http://localhost', 'https://localhost', 'capacitor://localhost',
+  ...(process.env.CLIENT_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean),
+];
 connectDB();
 
 // Global Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'], // Handle both resolution standards dynamically
+  // Website dev servers + the Capacitor Android/iOS app WebView origins
+  origin: allowedOrigins,
   credentials: true // Explicitly instruct Google Chrome/Safari to shuttle explicit cookies 
 }));
 app.use(cookieParser());
@@ -54,7 +64,7 @@ const server = app.listen(PORT, () => {
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: allowedOrigins,
     credentials: true
   }
 });

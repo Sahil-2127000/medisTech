@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../../config/api';
 
 const OfflineBookingModal = ({ onClose, onSuccess }) => {
   const formatTime12Hour = (time) => {
@@ -44,7 +45,7 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
     if (doctorId && formData.date) {
       setLoadingSlots(true);
       setErrorMsg('');
-      fetch(`http://localhost:5001/api/appointments/slots?doctorId=${doctorId}&date=${formData.date}`, { credentials: 'include' })
+      fetch(`${API_URL}/api/appointments/slots?doctorId=${doctorId}&date=${formData.date}`, { credentials: 'include' })
         .then(res => res.json().then(data => ({ status: res.status, data })))
         .then(({ status, data }) => {
            if (status !== 200) {
@@ -74,7 +75,7 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
     
     setSubmitting(true);
     try {
-      const res = await fetch('http://localhost:5001/api/appointments/offline-book', {
+      const res = await fetch(`${API_URL}/api/appointments/offline-book`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -92,7 +93,7 @@ const OfflineBookingModal = ({ onClose, onSuccess }) => {
       } else {
         alert(data.message || "Failed to book offline appointment.");
         // Reload slots
-        fetch(`http://localhost:5001/api/appointments/slots?doctorId=${doctorId}&date=${formData.date}`, { credentials: 'include' })
+        fetch(`${API_URL}/api/appointments/slots?doctorId=${doctorId}&date=${formData.date}`, { credentials: 'include' })
           .then(r => r.json())
           .then(d => { setSlots(d.slots || []); setIsDayOff(!!d.isOff); setSelectedSlot(''); });
       }

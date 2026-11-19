@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_URL } from '../../config/api';
 
 const ContactSection = ({ contactInfo = {} }) => {
   const { address = '', phone = '', email = '', hours = [], clinicCount = 0 } = contactInfo;
@@ -27,7 +28,7 @@ const ContactSection = ({ contactInfo = {} }) => {
     setStatus({ type: '', text: '' });
 
     try {
-      const response = await fetch('http://localhost:5001/api/contact', {
+      const response = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

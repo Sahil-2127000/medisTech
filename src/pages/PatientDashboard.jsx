@@ -5,6 +5,10 @@ import Sidebar from '../components/patient-dashboard/Sidebar';
 import MainPanel from '../components/patient-dashboard/MainPanel';
 import RightPanel from '../components/patient-dashboard/RightPanel';
 import BookAppointment from '../components/patient-dashboard/BookAppointment';
+import { MobileTopBar, MobileTabBar } from '../components/common/MobileNav';
+import { ICONS, signOut } from '../utils/mobileNav';
+import { initialsAvatar } from '../utils/avatar';
+import { API_URL, clearAuthToken } from '../config/api';
 
 const PatientDashboard = () => {
   const location = useLocation();
@@ -43,6 +47,7 @@ const PatientDashboard = () => {
       const confirmLogout = window.confirm("You are leaving the secure Patient Dashboard. You will instantly be logged out. Proceed?");
       if (confirmLogout) {
          sessionStorage.removeItem('user');
+         clearAuthToken();
          sessionStorage.removeItem('token');
          window.location.href = '/'; // Map entirely to Landing natively
       } else {
@@ -60,7 +65,7 @@ const PatientDashboard = () => {
   // Poll exactly specifically against live backend mappings targeting array mutations!
   const pollVitals = async () => {
      try {
-       const res = await fetch('http://localhost:5001/api/vitals/my', { credentials: 'include' });
+       const res = await fetch(`${API_URL}/api/vitals/my`, { credentials: 'include' });
        if (res.ok) {
          const data = await res.json();
          setVitals(data);
@@ -70,7 +75,7 @@ const PatientDashboard = () => {
 
   const pollAppointments = async () => {
      try {
-       const res = await fetch('http://localhost:5001/api/appointments/my', { credentials: 'include' });
+       const res = await fetch(`${API_URL}/api/appointments/my`, { credentials: 'include' });
        if (res.ok) {
          const data = await res.json();
          setUpcomingAppointments(data);
@@ -92,7 +97,7 @@ const PatientDashboard = () => {
 
      try {
        console.log("[PatientDashboard] Fetching prescriptions...");
-       const resRx = await fetch('http://localhost:5001/api/prescriptions/my', { credentials: 'include' });
+       const resRx = await fetch(`${API_URL}/api/prescriptions/my`, { credentials: 'include' });
        if (resRx.ok) {
          const rxData = await resRx.json();
          console.log("[PatientDashboard] Prescriptions received:", rxData);
@@ -101,7 +106,7 @@ const PatientDashboard = () => {
      } catch(e) { }
 
       try {
-        const resProf = await fetch('http://localhost:5001/api/auth/profile', { credentials: 'include' });
+        const resProf = await fetch(`${API_URL}/api/auth/profile`, { credentials: 'include' });
         if (resProf.ok) {
           const pData = await resProf.json();
           setUserProfile(prev => ({ ...prev, ...pData }));
@@ -162,7 +167,7 @@ const PatientDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#EEF2FA] dark:bg-[#020617] p-4 md:p-8 flex items-center justify-center font-sans tracking-tight text-slate-800 dark:text-gray-100 transition-colors duration-300 relative">
+    <div className="min-h-[100dvh] bg-[#EEF2FA] dark:bg-[#020617] p-0 lg:p-8 flex items-center justify-center font-sans tracking-tight text-slate-800 dark:text-gray-100 transition-colors duration-300 relative">
       
       {/* 🚨 THE EMERGENCY NOTIFICATION BROADCAST BANNER 🚨 */}
       {emergencyAlert && (
@@ -185,10 +190,10 @@ const PatientDashboard = () => {
       {showBooking && <BookAppointment onClose={() => { setShowBooking(false); pollAppointments(); }} />}
 
       {/* Main Orchestration Card */}
-      <div className="w-full max-w-[1400px] h-screen md:h-[90vh] bg-white dark:bg-slate-900 md:rounded-[2.5rem] shadow-2xl flex overflow-hidden relative border border-white/50 dark:border-white/5 transition-colors duration-300">
+      <div className="w-full max-w-[1400px] h-[100dvh] lg:h-[90vh] bg-white dark:bg-slate-900 lg:rounded-[2.5rem] lg:shadow-2xl flex flex-col lg:flex-row overflow-hidden relative lg:border border-white/50 dark:border-white/5 transition-colors duration-300">
         
         {/* Left Combined Panel (Profile + Nav) */}
-        <div className="hidden lg:flex flex-col w-[320px] xl:w-[350px] h-full bg-[#fafcff] dark:bg-slate-900/40 shrink-0 relative">
+        <div className="hidden lg:flex flex-col w-[270px] xl:w-[340px] h-full bg-[#fafcff] dark:bg-slate-900/40 shrink-0 relative">
           <RightPanel patientData={patientData} />
           <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
           
@@ -199,7 +204,19 @@ const PatientDashboard = () => {
           <div className="absolute right-0 top-[45%] bottom-[45%] w-[2px] bg-[#5265ec] rounded-full shadow-[0_0_15px_rgba(82,101,236,0.6)]"></div>
         </div>
         
+        {/* Phone / tablet app bar */}
+        <MobileTopBar
+          title={{ home: 'Home', queue: 'Live Queue', calendar: 'My Visits', docs: 'Prescriptions', profile: 'My Profile', settings: 'Settings' }[activeTab] || 'MedisTech'}
+          subtitle={resolvedName}
+          avatar={initialsAvatar(resolvedName || 'P', 72)}
+          actions={[
+            { label: 'Settings', icon: ICONS.settings, onClick: () => setActiveTab('settings') },
+            { label: 'Sign out', icon: ICONS.logout, danger: true, onClick: () => signOut(navigate) },
+          ]}
+        />
+
         {/* Render Center UI Data View, filling rest of space */}
+        <div className="flex-1 min-h-0 min-w-0 flex">
         <MainPanel 
           patientData={patientData} 
           activeTab={activeTab} 
@@ -209,6 +226,19 @@ const PatientDashboard = () => {
             setActiveTab('calendar');
             setShowBooking(true);
           }} 
+        />
+        </div>
+
+        <MobileTabBar
+          active={activeTab}
+          onSelect={(t) => setActiveTab(t)}
+          items={[
+            { id: 'home', label: 'Home', icon: ICONS.home },
+            { id: 'queue', label: 'Queue', icon: ICONS.queue },
+            { id: 'calendar', label: 'Visits', icon: ICONS.calendar },
+            { id: 'docs', label: 'Records', icon: ICONS.rx },
+            { id: 'profile', label: 'Profile', icon: ICONS.user },
+          ]}
         />
         
       </div>

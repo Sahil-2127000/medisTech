@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { initialsAvatar } from '../../utils/avatar';
+import { API_URL } from '../../config/api';
 
 // Each clinic on the platform is run by exactly one doctor
 const DoctorsSection = () => {
@@ -10,9 +11,18 @@ const DoctorsSection = () => {
   const [clinics, setClinics] = useState([]);
   const [search, setSearch] = useState('');
   const [specialty, setSpecialty] = useState('All');
+  const [showAll, setShowAll] = useState(false);
+
+  // Collapsed view shows exactly 2 rows: 2 cards on phones, 4 on tablets, 6 on desktop
+  const rowLimitClass = (i) => {
+    if (showAll || i < 2) return 'flex';
+    if (i < 4) return 'hidden sm:flex';
+    if (i < 6) return 'hidden lg:flex';
+    return 'hidden';
+  };
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/auth/doctors')
+    fetch(`${API_URL}/api/auth/doctors`)
       .then(res => (res.ok ? res.json() : []))
       .then(setClinics)
       .catch(err => console.error('Failed to fetch clinics', err));
@@ -62,7 +72,7 @@ const DoctorsSection = () => {
             className="w-full bg-white border border-slate-200 rounded-full pl-13 pr-6 py-4 text-slate-700 font-medium shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-100"
           />
         </div>
-        <div className="flex flex-wrap justify-center gap-2">
+        <div className="chip-scroll w-full max-w-4xl">
           {specialties.map(s => (
             <button
               key={s}
@@ -82,8 +92,8 @@ const DoctorsSection = () => {
         <p className="text-center text-slate-400 font-medium">No clinics match your search.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map(doc => (
-            <div key={doc._id} className="flex flex-col p-6 bg-white border border-slate-100 rounded-3xl hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          {filtered.map((doc, i) => (
+            <div key={doc._id} className={`${rowLimitClass(i)} flex-col p-6 bg-white border border-slate-100 rounded-3xl hover:shadow-xl hover:-translate-y-2 transition-all duration-300`}>
               <div className="flex items-center gap-4 mb-4">
                 <img src={initialsAvatar(doc.fullName, 128)} alt={doc.fullName} className="w-16 h-16 rounded-full ring-4 ring-blue-50 shrink-0" />
                 <div className="min-w-0">
@@ -111,6 +121,18 @@ const DoctorsSection = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Show the rest only on request (only when there are more than 2 rows to show) */}
+      {filtered.length > 2 && (
+        <div className={`justify-center mt-10 ${filtered.length > 6 ? 'flex' : filtered.length > 4 ? 'flex lg:hidden' : 'flex sm:hidden'}`}>
+          <button
+            onClick={() => setShowAll(v => !v)}
+            className="px-6 py-2.5 rounded-full text-sm font-semibold border border-blue-200 text-blue-600 bg-white hover:bg-blue-50 transition-colors shadow-sm"
+          >
+            {showAll ? 'Show fewer clinics' : `View all clinics (${filtered.length})`}
+          </button>
         </div>
       )}
     </section>

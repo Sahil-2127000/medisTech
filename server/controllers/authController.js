@@ -6,6 +6,7 @@ const Availability = require('../models/Availability');
 const { sendEmail } = require('../utils/emailService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_for_development';
+const isProduction = process.env.NODE_ENV === 'production';
 
 // In-memory OTP store (email -> { otp, expiresAt })
 const otps = {};
@@ -215,13 +216,14 @@ exports.register = async (req, res) => {
     // Set Secure HttpOnly Cookie
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax', // 'none' lets a website on another domain send the cookie
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
     res.status(201).json({
       message: 'Registered successfully',
+      token, // for the mobile app, which can't rely on the cookie
       user: { id: newlyCreatedEntity._id, fullName: newlyCreatedEntity.fullName, email: newlyCreatedEntity.email, role: actualRole }
     });
   } catch (error) {
@@ -284,13 +286,14 @@ exports.login = async (req, res) => {
     // Set Secure HttpOnly Cookie
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax', // 'none' lets a website on another domain send the cookie
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
     res.status(200).json({
       message: 'Login successful',
+      token, // for the mobile app, which can't rely on the cookie
       user: { id: targetUser._id, fullName: targetUser.fullName, email: targetUser.email, role: targetUser.role }
     });
   } catch (error) {
@@ -326,13 +329,14 @@ exports.verifyLogin2FA = async (req, res) => {
 
      res.cookie('token', token, {
        httpOnly: true,
-       secure: process.env.NODE_ENV === 'production',
-       sameSite: 'lax',
+       secure: isProduction,
+       sameSite: isProduction ? 'none' : 'lax', // 'none' lets a website on another domain send the cookie
        maxAge: 7 * 24 * 60 * 60 * 1000
      });
 
      res.status(200).json({
        message: '2FA Login dynamically authenticated',
+       token, // for the mobile app, which can't rely on the cookie
        user: { id: targetUser._id, fullName: targetUser.fullName, email: targetUser.email, role: targetUser.role }
      });
    } catch (err) {
@@ -351,7 +355,7 @@ exports.getDoctors = async (req, res) => {
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token', { httpOnly: true, secure: isProduction, sameSite: isProduction ? 'none' : 'lax' });
   res.status(200).json({ message: 'Logged out successfully' });
 };
 

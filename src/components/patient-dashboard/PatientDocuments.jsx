@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../../config/api';
 
 // Patient-side medical documents: upload a PDF and list lab results / reports
 const PatientDocuments = () => {
@@ -11,7 +12,7 @@ const PatientDocuments = () => {
 
   const loadDocs = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/documents/my', { credentials: 'include' });
+      const res = await fetch(`${API_URL}/api/documents/my`, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
         setDocs([...(data.labResults || []), ...(data.reports || [])]
@@ -36,7 +37,7 @@ const PatientDocuments = () => {
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
-      const res = await fetch('http://localhost:5001/api/documents/upload', {
+      const res = await fetch(`${API_URL}/api/documents/upload`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -63,7 +64,7 @@ const PatientDocuments = () => {
         <span className="bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1.5 rounded-full">{docs.length} files</span>
       </div>
 
-      <form onSubmit={handleUpload} className="grid grid-cols-1 md:grid-cols-[1fr_160px_1fr_auto] gap-3 mb-5">
+      <form onSubmit={handleUpload} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[1fr_160px_1fr_auto] gap-3 mb-5">
         <input value={title} onChange={e => setTitle(e.target.value)} required placeholder="Document title (e.g. Blood Test)"
           className="bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-xl px-4 py-2.5 font-semibold text-sm text-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-[#5265ec]/20" />
         <select value={type} onChange={e => setType(e.target.value)}
@@ -72,7 +73,7 @@ const PatientDocuments = () => {
           <option value="report">Medical Report</option>
         </select>
         <input type="file" accept="application/pdf" required onChange={e => setFile(e.target.files[0])}
-          className="text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-600 file:font-bold" />
+          className="min-w-0 w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-600 file:font-bold" />
         <button disabled={uploading} className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl disabled:opacity-60">
           {uploading ? 'Uploading...' : 'Upload'}
         </button>

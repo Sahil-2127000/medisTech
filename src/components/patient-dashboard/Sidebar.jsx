@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { clearAuthToken } from '../../config/api';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   const handleLogout = () => {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
+    clearAuthToken();
     navigate('/');
   };
 

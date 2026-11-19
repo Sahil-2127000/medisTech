@@ -18,10 +18,10 @@ const StatCards = ({ appointments, historicalTotal, onCardClick }) => {
     ];
 
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4 w-full">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-2.5 lg:gap-4 mb-4 w-full">
             {stats.map((stat, i) => (
                 <div key={i} onClick={() => stat.id && onCardClick && onCardClick(stat.id)}
-                    className={`bg-white/60 backdrop-blur-md rounded-2xl border border-white/60 p-4 flex items-center gap-4 transition-all relative overflow-hidden shadow-xl shadow-clinic-600/20 hover:-translate-y-1 hover:shadow-lg hover:shadow-clinic-600/20 ${stat.id ? 'cursor-pointer' : ''}`}
+                    className={`bg-white/60 backdrop-blur-md rounded-2xl border border-white/60 p-3 lg:p-4 flex items-center gap-3 lg:gap-4 transition-all relative overflow-hidden shadow-md lg:shadow-xl shadow-clinic-600/20 hover:-translate-y-1 hover:shadow-lg hover:shadow-clinic-600/20 ${stat.id ? 'cursor-pointer' : ''}`}
                 >
                     {/* Subtle background glow mimicking patient cards */}
                     <div className={`absolute -right-4 -top-4 w-16 h-16 ${stat.color} rounded-full opacity-30 blur-xl pointer-events-none`}></div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { API_URL } from '../../config/api';
 
 // Small icon shown next to a patient's name when they have past prescriptions.
 // Clicking it opens a modal with all previous prescriptions and visits.
@@ -15,7 +16,7 @@ const PatientRxHistory = ({ patientId, patientName }) => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`http://localhost:5001/api/prescriptions/patient/${patientId}`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/api/prescriptions/patient/${patientId}`, { credentials: 'include' });
       const json = await res.json();
       if (!res.ok) throw new Error(json.message || 'Failed to load history');
       setData(json);

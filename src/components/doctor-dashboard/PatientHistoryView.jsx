@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { API_URL } from '../../config/api';
 
 const PatientHistoryView = ({ historyData, onBack }) => {
   // Helper to parse dates uniformly
@@ -75,7 +76,7 @@ const PatientHistoryView = ({ historyData, onBack }) => {
     if (!docFileBase64 || !docTitle || !uploadModal) return;
     setIsUploading(true);
     try {
-      await fetch('http://localhost:5001/api/documents/upload', {
+      await fetch(`${API_URL}/api/documents/upload`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

@@ -1,4 +1,6 @@
 import React from 'react';
+import useAppView from '../hooks/useAppView';
+import MobileWelcome from './MobileWelcome';
 import { PLATFORM_CONTACT } from '../config/platform';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/landing/Navbar';
@@ -10,9 +12,11 @@ import BlogSection from '../components/landing/BlogSection';
 import FaqSection from '../components/landing/FaqSection';
 import ContactSection from '../components/landing/ContactSection';
 import Footer from '../components/landing/Footer';
+import { API_URL } from '../config/api';
 
 const Landing = () => {
   const navigate = useNavigate();
+  const appView = useAppView();
 
   const [clinicCount, setClinicCount] = React.useState(0);
   const contactInfo = { ...PLATFORM_CONTACT, clinicCount };
@@ -28,7 +32,7 @@ const Landing = () => {
     // Contact details belong to the MedisTech network; only the clinic count comes from the API
     const fetchContactInfo = async () => {
       try {
-        const res = await fetch('http://localhost:5001/api/auth/doctors');
+        const res = await fetch(`${API_URL}/api/auth/doctors`);
         if (res.ok) setClinicCount((await res.json()).length);
       } catch (err) {
         console.error("Failed to fetch clinics", err);
@@ -45,7 +49,7 @@ const Landing = () => {
   React.useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch('http://localhost:5001/api/appointments/public/stats');
+        const res = await fetch(`${API_URL}/api/appointments/public/stats`);
         if (res.ok) {
           const data = await res.json();
           setStats(data);
@@ -56,6 +60,8 @@ const Landing = () => {
     };
     fetchStats();
   }, []);
+
+  if (appView) return <MobileWelcome />;
 
   return (
     <div id="home" className="min-h-screen bg-slate-50/50 font-sans text-slate-900 flex flex-col items-center overflow-x-hidden relative selection:bg-blue-200">

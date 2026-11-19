@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { API_URL } from '../../config/api';
 
 const BookAppointment = ({ onClose }) => {
   const [doctors, setDoctors] = useState([]);
@@ -21,7 +22,7 @@ const BookAppointment = ({ onClose }) => {
 
   // 1. Load all doctors; pre-select the one chosen on the landing page (if any)
   useEffect(() => {
-    fetch('http://localhost:5001/api/auth/doctors', { credentials: 'include' })
+    fetch(`${API_URL}/api/auth/doctors`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) return;
@@ -46,7 +47,7 @@ const BookAppointment = ({ onClose }) => {
     if (selectedDoctor && date) {
       setLoading(true);
       setErrorMessage('');
-      fetch(`http://localhost:5001/api/appointments/slots?doctorId=${selectedDoctor}&date=${date}`, { credentials: 'include' })
+      fetch(`${API_URL}/api/appointments/slots?doctorId=${selectedDoctor}&date=${date}`, { credentials: 'include' })
         .then(res => res.json().then(data => ({ status: res.status, data })))
         .then(({ status, data }) => {
           if (status !== 200) {
@@ -73,7 +74,7 @@ const BookAppointment = ({ onClose }) => {
     setIsBooking(true);
 
     try {
-      const res = await fetch('http://localhost:5001/api/appointments/book', {
+      const res = await fetch(`${API_URL}/api/appointments/book`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -93,7 +94,7 @@ const BookAppointment = ({ onClose }) => {
         alert(data.message || "Failed to book slot");
         setLoading(true);
         // Brutally force reload to clear taken slots
-        fetch(`http://localhost:5001/api/appointments/slots?doctorId=${selectedDoctor}&date=${date}`, { credentials: 'include' })
+        fetch(`${API_URL}/api/appointments/slots?doctorId=${selectedDoctor}&date=${date}`, { credentials: 'include' })
           .then(r => r.json())
           .then(d => { setSlots(d.slots || []); setIsDayOff(!!d.isOff); setSelectedSlot(''); })
           .finally(() => setLoading(false));
@@ -106,18 +107,18 @@ const BookAppointment = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-[#021024]/40 dark:bg-black/80 z-50 flex justify-center items-center p-4 animate-fade-in backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-900/95 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2rem] w-full max-w-2xl lg:max-w-5xl max-h-full overflow-y-auto no-scrollbar shadow-2xl p-6 relative">
+    <div className="fixed inset-0 bg-[#021024]/40 dark:bg-black/80 z-50 flex justify-center items-center p-0 sm:p-4 animate-fade-in backdrop-blur-sm">
+      <div className="bg-white dark:bg-slate-900/95 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-none sm:rounded-[2rem] w-full max-w-2xl lg:max-w-5xl h-full sm:h-auto max-h-full overflow-y-auto no-scrollbar shadow-2xl px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1.25rem+env(safe-area-inset-top))] sm:p-6 relative">
 
         {/* Decorative Top Blur */}
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#5265ec] rounded-full opacity-10 blur-3xl pointer-events-none"></div>
 
-        <button onClick={onClose} className="absolute top-5 right-5 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full p-2">
+        <button onClick={onClose} className="absolute top-[calc(1rem+env(safe-area-inset-top))] sm:top-5 right-4 sm:right-5 text-gray-400 hover:text-red-500 transition-colors bg-gray-50 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full p-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
 
-        <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white mb-1">Book Native Slot</h2>
-        <p className="text-sm font-semibold text-gray-400 dark:text-slate-500 mb-5">Book Appointment according to your preference.</p>
+        <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white mb-1">Book an Appointment</h2>
+        <p className="text-sm font-semibold text-gray-400 dark:text-slate-500 mb-5">Choose a clinic, a date and a free slot.</p>
 
         <form onSubmit={handleBook} className="relative z-10">
           <style>{`
@@ -147,7 +148,7 @@ const BookAppointment = ({ onClose }) => {
           <div className="flex flex-col gap-4">
           <div className="flex flex-col">
             <label className="block text-[11px] font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-1.5">Specialization</label>
-            <div className="flex flex-wrap gap-2">
+            <div className="chip-scroll chip-scroll-left -mx-4 px-4">
               {['All', ...new Set(doctors.map(d => d.specialization).filter(Boolean))].map(s => (
                 <button
                   type="button"
@@ -283,7 +284,7 @@ const BookAppointment = ({ onClose }) => {
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
-                Complete Booking Validation
+                Confirm Booking
               </>
             )}
           </button>

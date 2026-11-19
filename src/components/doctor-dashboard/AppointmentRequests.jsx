@@ -102,8 +102,8 @@ const AppointmentRequests = ({
   const renderTable = (list, title, emptyMsg) => (
     <div className="animate-fade-in w-full">
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-separate border-spacing-y-3">
-          <thead>
+        <table className="w-full text-left border-separate border-spacing-y-3 max-md:block">
+          <thead className="max-md:hidden">
             <tr className="text-[10px] text-gray-400 font-extrabold uppercase tracking-[0.2em] px-2">
               <th className="pb-2 pl-4">Patient Profile</th>
               <th className="pb-2">Schedule</th>
@@ -111,10 +111,10 @@ const AppointmentRequests = ({
               {activeSubTab === 'requests' && <th className="pb-2 text-right pr-4">Action Control</th>}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="max-md:block max-md:space-y-3">
             {list.length === 0 ? (
-              <tr>
-                <td colSpan={activeSubTab === 'requests' ? "4" : "3"} className="bg-slate-50/50 rounded-2xl py-20 text-center text-gray-400 font-bold border-2 border-dashed border-gray-100 italic transition-colors">
+              <tr className="max-md:block">
+                <td colSpan={activeSubTab === 'requests' ? "4" : "3"} className="max-md:block bg-slate-50/50 rounded-2xl py-14 md:py-20 px-4 text-center text-gray-400 font-bold border-2 border-dashed border-gray-100 italic transition-colors">
                   {emptyMsg}
                 </td>
               </tr>
@@ -124,8 +124,8 @@ const AppointmentRequests = ({
                 const displayChar = typeof displayName === 'string' && displayName.length > 0 ? displayName.charAt(0).toUpperCase() : "P";
                 
                 return (
-                  <tr key={app.id} className="bg-white group hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
-                    <td className="py-4 pl-4 rounded-l-2xl border-y border-l border-gray-100">
+                  <tr key={app.id} className="bg-white group hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 max-md:flex max-md:flex-wrap max-md:items-center max-md:gap-x-3 max-md:gap-y-3 max-md:p-4 max-md:rounded-2xl max-md:border max-md:border-gray-100 max-md:shadow-sm">
+                    <td className="py-4 pl-4 rounded-l-2xl border-y border-l border-gray-100 max-md:w-full max-md:p-0 max-md:border-0 max-md:rounded-none">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-clinic-600 text-white flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/20">
                           {displayChar}
@@ -136,11 +136,11 @@ const AppointmentRequests = ({
                         </div>
                       </div>
                     </td>
-                    <td className="py-4 border-y border-gray-100">
+                    <td className="py-4 border-y border-gray-100 max-md:flex-1 max-md:p-0 max-md:border-0">
                       <div className="font-black text-slate-700">{app.date}</div>
                       <div className="text-[10px] text-clinic-600 font-black uppercase tracking-widest">At {formatTime12Hour(app.time)}</div>
                     </td>
-                    <td className={`py-4 border-y border-gray-100 ${activeSubTab !== 'requests' ? 'text-right pr-4 rounded-r-2xl border-r' : ''}`}>
+                    <td className={`py-4 border-y border-gray-100 max-md:p-0 max-md:border-0 ${activeSubTab !== 'requests' ? 'text-right pr-4 rounded-r-2xl border-r' : ''}`}>
                       {app.status === 'in_progress' && <span className="bg-blue-50 text-blue-600 text-[9px] uppercase tracking-widest font-black px-3 py-1.5 rounded-xl border border-blue-100 animate-pulse">In Consultation</span>}
                       {app.status === 'completed' && <span className="bg-slate-50 text-slate-500 text-[9px] uppercase tracking-widest font-black px-3 py-1.5 rounded-xl border border-slate-100">Completed</span>}
                       {app.status === 'approved' && <span className="bg-green-50 text-green-600 text-[9px] uppercase tracking-widest font-black px-3 py-1.5 rounded-xl border border-green-100">Confirmed</span>}
@@ -148,7 +148,7 @@ const AppointmentRequests = ({
                       {app.status === 'rejected' && <span className="bg-rose-50 text-rose-500 text-[9px] uppercase tracking-widest font-black px-3 py-1.5 rounded-xl border border-rose-100">Declined</span>}
                     </td>
                     {activeSubTab === 'requests' && (
-                    <td className="py-4 text-right pr-4 rounded-r-2xl border-y border-r border-gray-100">
+                    <td className="py-4 text-right pr-4 rounded-r-2xl border-y border-r border-gray-100 max-md:p-0 max-md:border-0 max-md:rounded-none">
                       {app.status === 'pending' ? (
                         <div className="flex justify-end gap-2">
                           <button 
@@ -185,8 +185,8 @@ const AppointmentRequests = ({
   return (
     <div className="w-full h-full pb-10 flex flex-col">
       {/* Search and Filters Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 shrink-0">
-            <div className="relative w-full md:w-[400px] group">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-6 lg:mb-10 shrink-0">
+            <div className="relative w-full xl:w-[400px] group">
               <input 
                 type="text" 
                 placeholder="Search patients by name or ID..."
@@ -207,8 +207,8 @@ const AppointmentRequests = ({
               )}
             </div>
 
-            <div className="flex items-center gap-1 self-end md:self-auto overflow-x-auto no-scrollbar pb-2 md:pb-0">
-               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">Filter:</span>
+            <div className="flex items-center gap-1.5 w-full xl:w-auto overflow-x-auto no-scrollbar pb-1 xl:pb-0">
+               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2 shrink-0">Filter:</span>
                {['', 'approved', 'completed', 'rejected', 'pending'].map(st => (
                  <button 
                    key={st}
@@ -222,7 +222,7 @@ const AppointmentRequests = ({
         </div>
 
       {/* Sub-Tab Switcher */}
-      <div className="flex gap-8 mb-8 border-b border-gray-100 shrink-0">
+      <div className="flex gap-6 lg:gap-8 mb-5 lg:mb-8 border-b border-gray-100 shrink-0">
         <button 
           onClick={() => setActiveSubTab('requests')}
           className={`pb-4 px-2 text-sm font-black uppercase tracking-widest transition-all relative ${activeSubTab === 'requests' ? 'text-clinic-600' : 'text-gray-400 hover:text-slate-600'}`}

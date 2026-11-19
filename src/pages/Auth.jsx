@@ -1,9 +1,48 @@
 import React, { useState } from 'react';
+import useAppView from '../hooks/useAppView';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LoginForm from '../components/auth/LoginForm';
 import SignUpForm from '../components/auth/SignUpForm';
 
 const Auth = () => {
-  const [authMode, setAuthMode] = useState('signup'); // 'signup' or 'login'
+  const location = useLocation();
+  const navigate = useNavigate();
+  const appView = useAppView();
+  const [authMode, setAuthMode] = useState(location.state?.mode || 'signup'); // 'signup' or 'login'
+
+  if (appView) {
+    // App screen: plain full-screen form, no decorative card / illustration / animation
+    return (
+      <div className="min-h-[100dvh] bg-white flex flex-col font-sans">
+        <header className="shrink-0 pt-[env(safe-area-inset-top)] border-b border-slate-100">
+          <div className="h-14 flex items-center gap-1 px-2">
+            <button onClick={() => navigate('/')} aria-label="Back" className="w-10 h-10 rounded-full flex items-center justify-center text-slate-700 active:bg-slate-100">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <span className="text-[17px] font-extrabold text-slate-900">{authMode === 'login' ? 'Sign In' : 'Create Account'}</span>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto px-6 pt-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+          <h1 className="text-2xl font-extrabold text-slate-900">{authMode === 'login' ? 'Welcome back' : 'Join MedisTech'}</h1>
+          <p className="text-sm text-slate-500 mt-1 mb-5">{authMode === 'login' ? 'Sign in to continue to your account.' : 'Book clinics, track your queue and keep your records.'}</p>
+
+          <div className="grid grid-cols-2 bg-slate-100 p-1 rounded-xl mb-6">
+            {[['signup', 'Sign Up'], ['login', 'Sign In']].map(([mode, label]) => (
+              <button key={mode} onClick={() => setAuthMode(mode)}
+                className={`py-2.5 rounded-lg text-sm font-bold ${authMode === mode ? 'bg-white text-[#3963F9] shadow-sm' : 'text-slate-500'}`}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {authMode === 'login'
+            ? <LoginForm onSwitch={() => setAuthMode('signup')} />
+            : <SignUpForm onSwitch={() => setAuthMode('login')} />}
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-linear-to-tr from-clinic-900 via-clinic-800 to-[#0a183d] animate-gradient-xy flex items-center justify-center p-4 font-sans relative overflow-hidden">

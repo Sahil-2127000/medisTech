@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL, saveAuthToken } from '../../config/api';
 
 const SignUpForm = ({ onSwitch }) => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const SignUpForm = ({ onSwitch }) => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('http://localhost:5001/api/auth/send-otp', {
+      const res = await fetch(`${API_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -75,7 +76,7 @@ const SignUpForm = ({ onSwitch }) => {
     try {
       if (!otpSent) {
         // Step 1: Send OTP
-        const res = await fetch('http://localhost:5001/api/auth/send-otp', {
+        const res = await fetch(`${API_URL}/api/auth/send-otp`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -89,7 +90,7 @@ const SignUpForm = ({ onSwitch }) => {
         setCanResend(false);
       } else {
         // Step 2: Register with OTP
-        const res = await fetch('http://localhost:5001/api/auth/register', {
+        const res = await fetch(`${API_URL}/api/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -101,6 +102,8 @@ const SignUpForm = ({ onSwitch }) => {
         if (!res.ok) throw new Error(data.message || 'Registration failed');
 
         sessionStorage.setItem('user', JSON.stringify(data.user)); // Store active user details
+
+        saveAuthToken(data.token);
 
         if (data.user.role === 'doctor') {
           navigate('/doctor/dashboard');

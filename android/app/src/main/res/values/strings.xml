@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MedisTech</string>
+    <string name="title_activity_main">MedisTech</string>
+    <string name="package_name">com.medistech.app</string>
+    <string name="custom_url_scheme">com.medistech.app</string>
+</resources>

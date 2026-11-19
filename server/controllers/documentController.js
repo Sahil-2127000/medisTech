@@ -31,7 +31,8 @@ exports.uploadDocument = async (req, res) => {
     fs.writeFileSync(filePath, base64Data, 'base64');
 
     // Make route mapping for static retrieval
-    const fileUrl = `http://localhost:5001/uploads/documents/${uniqueFilename}`;
+    // Use the address the client reached us on, so links also work from the phone app
+    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/documents/${uniqueFilename}`;
 
     const newDoc = new Document({
       title,

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_URL } from '../../config/api';
 
 // Enable / disable e-mail OTP based two-factor authentication
 const TwoFactorCard = ({ initiallyEnabled }) => {
@@ -12,7 +13,7 @@ const TwoFactorCard = ({ initiallyEnabled }) => {
     setLoading(true);
     setMessage('');
     try {
-      const res = await fetch(`http://localhost:5001/api/auth/2fa/${url}`, {
+      const res = await fetch(`${API_URL}/api/auth/2fa/${url}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

@@ -115,3 +115,61 @@ html {
 .animate-fade-in-down {
   animation: fade-in-down 0.4s ease-out forwards;
 }
+/* ---------- App feel (phones / Capacitor) ---------- */
+html,
+body {
+  overscroll-behavior: none;            /* no whole-page rubber-band bounce */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;           /* no double-tap zoom delay */
+}
+
+@media (max-width: 1023px) {
+  /* iOS zooms into fields smaller than 16px; keep phones at 16px */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Single-line, swipeable chip row with soft fading edges */
+.chip-scroll {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+  padding: 4px 16px 6px;
+}
+.chip-scroll::-webkit-scrollbar { display: none; }
+.chip-scroll > * { flex-shrink: 0; white-space: nowrap; scroll-snap-align: start; }
+/* center the chips when they all fit */
+.chip-scroll > :first-child { margin-left: auto; }
+.chip-scroll > :last-child { margin-right: auto; }
+.chip-scroll-left > :first-child { margin-left: 0; }
+
+/* Apps don't animate: no fades, pulses, slides or hover effects on phones / in the native app.
+   Loading spinners keep spinning so progress is still visible. */
+@media (max-width: 1023px) {
+  *:not(.animate-spin):not(.anticon-spin),
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.native-app *:not(.animate-spin):not(.anticon-spin),
+.native-app *::before,
+.native-app *::after {
+  animation: none !important;
+  transition: none !important;
+}

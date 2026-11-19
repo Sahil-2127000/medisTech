@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_URL } from '../../config/api';
 
 const ManageBlogs = () => {
     const [title, setTitle] = useState('');
@@ -30,7 +31,7 @@ const ManageBlogs = () => {
         setStatusText('Publishing blog...');
 
         try {
-            const response = await fetch('http://localhost:5001/api/blogs', {
+            const response = await fetch(`${API_URL}/api/blogs`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -65,7 +66,7 @@ const ManageBlogs = () => {
 
     return (
         <div className="flex-1 w-full bg-white h-full flex flex-col items-center justify-start p-8 overflow-y-auto z-10 transition-colors">
-            <h1 className="text-4xl font-extrabold text-[#021024] mb-8 w-full text-left">Manage Blogs</h1>
+            <h1 className="hidden lg:block text-2xl md:text-4xl font-extrabold text-[#021024] mb-5 md:mb-8 w-full text-left">Manage Blogs</h1>
 
             <div className="w-full max-w-3xl bg-slate-50/70 backdrop-blur-xl rounded-3xl p-8 border border-white/60 shadow-[0_8px_40px_rgba(0,0,0,0.04)] text-left">
                 <h2 className="text-2xl font-bold text-slate-800 mb-6">Create New Blog Post</h2>

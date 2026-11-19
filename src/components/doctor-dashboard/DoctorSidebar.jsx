@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { initialsAvatar } from '../../utils/avatar';
 import { useNavigate } from 'react-router-dom';
+import { clearAuthToken } from '../../config/api';
 
 const DoctorSidebar = ({ activeTab, setActiveTab, profile, isOpen, onClose }) => {
     const navigate = useNavigate();
@@ -9,6 +10,7 @@ const DoctorSidebar = ({ activeTab, setActiveTab, profile, isOpen, onClose }) =>
     const handleLogout = () => {
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
+        clearAuthToken();
         navigate('/');
     };
 

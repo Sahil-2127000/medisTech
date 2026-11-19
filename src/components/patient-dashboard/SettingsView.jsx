@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TwoFactorCard from './TwoFactorCard';
 import { useTheme } from '../../context/ThemeContext';
+import { API_URL } from '../../config/api';
 
 const SettingsView = ({ patientData }) => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -38,7 +39,7 @@ const SettingsView = ({ patientData }) => {
     setIsVerifying(true);
     setSaveMessage('');
     try {
-      const res = await fetch('http://localhost:5001/api/auth/verify-password', {
+      const res = await fetch(`${API_URL}/api/auth/verify-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -78,7 +79,7 @@ const SettingsView = ({ patientData }) => {
 
     setIsSaving(true);
     try {
-      const res = await fetch('http://localhost:5001/api/auth/change-password', {
+      const res = await fetch(`${API_URL}/api/auth/change-password`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -116,7 +117,7 @@ const SettingsView = ({ patientData }) => {
     setForgotIsLoading(true);
     setForgotMessage('');
     try {
-      const res = await fetch('http://localhost:5001/api/auth/forgot-password-otp', {
+      const res = await fetch(`${API_URL}/api/auth/forgot-password-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
@@ -158,7 +159,7 @@ const SettingsView = ({ patientData }) => {
     setForgotIsLoading(true);
     setForgotMessage('');
     try {
-      const res = await fetch('http://localhost:5001/api/auth/forgot-password-reset', {
+      const res = await fetch(`${API_URL}/api/auth/forgot-password-reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -189,7 +190,7 @@ const SettingsView = ({ patientData }) => {
     setEmailEnabled(newVal);
 
     try {
-      await fetch('http://localhost:5001/api/auth/preferences', {
+      await fetch(`${API_URL}/api/auth/preferences`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -203,8 +204,8 @@ const SettingsView = ({ patientData }) => {
   return (
     <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar">
       <div className="mb-8">
-        <h1 className="text-4xl font-extrabold text-[#021024] dark:text-white transition-colors">Account Settings</h1>
-        <p className="text-gray-400 dark:text-gray-500 font-medium mt-1">Manage your preferences and security natively across environments.</p>
+        <h1 className="hidden lg:block text-2xl md:text-4xl font-extrabold text-[#021024] dark:text-white transition-colors">Account Settings</h1>
+        <p className="hidden lg:block text-gray-400 dark:text-gray-500 font-medium mt-1">Manage your preferences and security natively across environments.</p>
       </div>
 
       <div className="space-y-6">

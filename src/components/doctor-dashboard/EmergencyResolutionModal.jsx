@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_URL } from '../../config/api';
 
 const EmergencyResolutionModal = ({ onClose, onSuccess, elapsedMinutes }) => {
   const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ const EmergencyResolutionModal = ({ onClose, onSuccess, elapsedMinutes }) => {
     const dateStr = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
 
     try {
-      const res = await fetch('http://localhost:5001/api/appointments/emergency-resolve-and-book', {
+      const res = await fetch(`${API_URL}/api/appointments/emergency-resolve-and-book`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

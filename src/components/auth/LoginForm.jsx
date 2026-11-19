@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL, saveAuthToken } from '../../config/api';
 
 const LoginForm = ({ onSwitch }) => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const LoginForm = ({ onSwitch }) => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5001/api/auth/login', {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -45,6 +46,8 @@ const LoginForm = ({ onSwitch }) => {
       }
       
       sessionStorage.setItem('user', JSON.stringify(data.user)); // Store active user details
+      
+      saveAuthToken(data.token);
       
       if (data.user.role === 'doctor') {
          navigate('/doctor/dashboard');
@@ -64,7 +67,7 @@ const LoginForm = ({ onSwitch }) => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5001/api/auth/login-2fa-verify', {
+      const res = await fetch(`${API_URL}/api/auth/login-2fa-verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -74,6 +77,8 @@ const LoginForm = ({ onSwitch }) => {
       if (!res.ok) throw new Error(data.message || 'OTP Verification failed');
       
       sessionStorage.setItem('user', JSON.stringify(data.user));
+      
+      saveAuthToken(data.token);
       if (data.user.role === 'doctor') {
          navigate('/doctor/dashboard');
       } else {
@@ -104,7 +109,7 @@ const LoginForm = ({ onSwitch }) => {
     setLoading(true);
     setForgotMessage({ text: '', isError: false });
     try {
-      const res = await fetch('http://localhost:5001/api/auth/public/forgot-password-otp', {
+      const res = await fetch(`${API_URL}/api/auth/public/forgot-password-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: forgotEmail })
@@ -152,7 +157,7 @@ const LoginForm = ({ onSwitch }) => {
 
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5001/api/auth/public/forgot-password-reset', {
+      const res = await fetch(`${API_URL}/api/auth/public/forgot-password-reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: forgotEmail, otp: forgotOtp, newPassword: forgotPasswords.new })

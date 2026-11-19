@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+import { API_URL } from '../config/api';
 
 const SocketContext = createContext(null);
 
@@ -12,7 +13,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     // Initialize standard socket connection securely to the backend
-    const newSocket = io('http://localhost:5001', {
+    const newSocket = io(`${API_URL}`, {
       withCredentials: true
     });
     setSocket(newSocket);

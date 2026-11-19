@@ -1,0 +1,11 @@
+{
+  "appId": "com.medistech.app",
+  "appName": "MedisTech",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

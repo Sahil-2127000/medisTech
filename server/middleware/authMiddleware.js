@@ -4,7 +4,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_for_development';
 
 module.exports = (req, res, next) => {
   // Grab token strictly locally shuttled via HttpOnly secure mechanism from the parser
-  const token = req.cookies.token;
+  // Website: HttpOnly cookie. Mobile app: "Authorization: Bearer <token>" header.
+  const header = req.headers.authorization || '';
+  const token = req.cookies.token || (header.startsWith('Bearer ') ? header.slice(7) : null);
   
   console.log('[AUTH MIDDLEWARE] Debug - Cookies:', req.cookies);
   console.log('[AUTH MIDDLEWARE] Debug - Token found:', !!token);

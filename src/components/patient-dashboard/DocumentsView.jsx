@@ -29,8 +29,8 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
     return (
       <div className="flex-1 h-full py-8 md:py-12 px-6 md:px-12 flex flex-col overflow-y-auto no-scrollbar bg-transparent animate-fade-in">
         <div className="mb-10 text-center lg:text-left">
-          <h1 className="text-4xl font-extrabold text-[#021024] dark:text-white tracking-tight">Family Selection</h1>
-          <p className="text-gray-400 font-medium mt-1">Select a family member to view their medical prescriptions.</p>
+          <h1 className="hidden lg:block text-2xl md:text-4xl font-extrabold text-[#021024] dark:text-white tracking-tight">Family Selection</h1>
+          <p className="hidden lg:block text-gray-400 font-medium mt-1">Select a family member to view their medical prescriptions.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -85,7 +85,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
               </button>
             )}
-            <h1 className="text-4xl font-extrabold text-[#021024] dark:text-white tracking-tight">Prescription Records</h1>
+            <h1 className="hidden lg:block text-2xl md:text-4xl font-extrabold text-[#021024] dark:text-white tracking-tight">Prescription Records</h1>
           </div>
 
         </div>
