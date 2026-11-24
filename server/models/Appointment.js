@@ -22,7 +22,9 @@ const AppointmentSchema = new mongoose.Schema({
   emergencyDelayedMinutes: { type: Number, default: 0 },
   originalTime: { type: String }, // Snapshot to compare against 'time' shifts
   tokenNumber: { type: Number }, // Sequential Daily Token for the Queue System
-  patientName: { type: String } // Explicit name if booking for a family member
+  patientName: { type: String }, // Explicit name if booking for a family member
+  cancelReason: { type: String }, // 'patient' or 'doctor_unavailable' when status is cancelled
+  reminderSent: { type: Boolean, default: false } // one-hour reminder e-mail already sent
   
 }, { timestamps: true });
 

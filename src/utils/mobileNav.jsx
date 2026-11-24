@@ -16,7 +16,7 @@ export const ICONS = {
 
 // Sign out (also clears the server cookie)
 export const signOut = async (navigate) => {
-  if (!window.confirm('Sign out of MedisTech?')) return;
+  if (!window.confirm('Sign out of MedicsTech?')) return;
   try { await fetch(`${API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' }); } catch { /* offline: still sign out locally */ }
   sessionStorage.removeItem('user');
   clearAuthToken();

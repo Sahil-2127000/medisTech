@@ -12,7 +12,7 @@ export const savePdf = async (pdf, filename) => {
   const { Filesystem, Directory } = await import('@capacitor/filesystem');
   const { Share } = await import('@capacitor/share');
   const data = pdf.output('datauristring').split(',')[1];
-  const path = `MedisTech/${filename}`;
+  const path = `MedicsTech/${filename}`;
 
   let uri;
   try {

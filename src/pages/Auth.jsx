@@ -24,7 +24,7 @@ const Auth = () => {
         </header>
 
         <main className="flex-1 overflow-y-auto px-6 pt-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
-          <h1 className="text-2xl font-extrabold text-slate-900">{authMode === 'login' ? 'Welcome back' : 'Join MedisTech'}</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900">{authMode === 'login' ? 'Welcome back' : 'Join MedicsTech'}</h1>
           <p className="text-sm text-slate-500 mt-1 mb-5">{authMode === 'login' ? 'Sign in to continue to your account.' : 'Book clinics, track your queue and keep your records.'}</p>
 
           <div className="grid grid-cols-2 bg-slate-100 p-1 rounded-xl mb-6">
@@ -61,7 +61,7 @@ const Auth = () => {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
-            medisTech
+            medicsTech
           </div>
 
           {/* Center Graphic Container */}

@@ -14,13 +14,13 @@ const Footer = ({ contactInfo = {} }) => {
                  <path d="M12 2L12 22M2 12L22 12" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
                </svg>
             </div>
-            <span>medisTech</span>
+            <span>medicsTech</span>
           </div>
           <p className="text-slate-500 text-sm mb-6 leading-relaxed">
             One platform for clinics across Ludhiana — find a doctor, book a slot, track your queue and keep your prescriptions in one place.
           </p>
           <p className="text-slate-400 text-xs">
-            Copyright © 2026 medisTech <br/>All rights reserved.
+            Copyright © 2026 medicsTech <br/>All rights reserved.
           </p>
         </div>
 

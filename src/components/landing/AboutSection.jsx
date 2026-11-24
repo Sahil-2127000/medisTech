@@ -41,7 +41,7 @@ const AboutSection = () => {
         <div className="relative z-10 w-[90%] sm:w-[80%] lg:w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group">
           <img 
             src="/doctor_image.png" 
-            alt="Doctor at a MedisTech partner clinic" 
+            alt="Doctor at a MedicsTech partner clinic" 
             className="w-full h-auto object-cover object-center aspect-4/5 group-hover:scale-110 transition-transform duration-1000 ease-in-out"
           />
         </div>
@@ -56,7 +56,7 @@ const AboutSection = () => {
              🏥
           </div>
           <div>
-            <div className="font-bold text-slate-900 text-lg">MedisTech Network</div>
+            <div className="font-bold text-slate-900 text-lg">MedicsTech Network</div>
             <div className="text-sm text-slate-500 font-medium">Trusted clinics across Ludhiana</div>
           </div>
         </motion.div>
@@ -71,7 +71,7 @@ const AboutSection = () => {
         viewport={{ once: false, amount: 0.3 }}
       >
         <motion.div variants={itemVariants} className="inline-block bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-sm font-bold tracking-wide uppercase mb-2">
-          About MedisTech
+          About MedicsTech
         </motion.div>
         
         <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
@@ -79,7 +79,7 @@ const AboutSection = () => {
         </motion.h2>
         
         <motion.p variants={itemVariants} className="text-slate-600 leading-relaxed text-md font-medium border-l-4 border-blue-500 pl-4 py-1">
-          MedisTech brings independent clinics across Ludhiana onto one platform, so finding the right doctor, booking a visit and keeping your health records takes minutes, not phone calls.
+          MedicsTech brings independent clinics across Ludhiana onto one platform, so finding the right doctor, booking a visit and keeping your health records takes minutes, not phone calls.
         </motion.p>
 
         <div className="space-y-4 text-slate-600 pt-4">
@@ -99,7 +99,7 @@ const AboutSection = () => {
             </div>
             <div>
               <h4 className="text-slate-900 font-bold mb-1 text-base">Independent Local Clinics</h4>
-              <p className="text-sm leading-relaxed">Every clinic on MedisTech is run by its own doctor, with its own timings and queue, so you get the personal care of a neighbourhood clinic with the convenience of online booking.</p>
+              <p className="text-sm leading-relaxed">Every clinic on MedicsTech is run by its own doctor, with its own timings and queue, so you get the personal care of a neighbourhood clinic with the convenience of online booking.</p>
             </div>
           </motion.div>
 

@@ -169,7 +169,7 @@ const DocumentsView = ({ prescriptions = [], patientData }) => {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-black text-[#021024] dark:text-white tracking-tight group-hover:text-[#5265ec] dark:group-hover:text-blue-400 transition-colors leading-tight mb-2 uppercase">{currentMember.name}</h3>
+                    <h3 className="text-lg font-black text-[#021024] dark:text-white tracking-tight group-hover:text-[#5265ec] dark:group-hover:text-blue-400 transition-colors leading-tight mb-2">{px.diagnosis || "Prescription"}</h3>
                     <div className="flex flex-wrap items-center gap-2">
                       <div className="flex items-center gap-1.5 bg-[#5265ec]/10 dark:bg-blue-500/20 px-2.5 py-1 rounded-full border border-[#5265ec]/10 dark:border-blue-500/20">
                         <svg className="w-3.5 h-3.5 text-[#5265ec] dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>

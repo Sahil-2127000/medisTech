@@ -76,7 +76,7 @@ const html = `
                                 Secure Verification
                             </div>
                             <h1 style="margin: 0; color: #1e293b; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">
-                                Medistech
+                                MedicsTech
                             </h1>
                         </td>
                     </tr>
@@ -84,7 +84,7 @@ const html = `
                     <tr>
                         <td align="center" style="padding: 0 40px 40px 40px;">
                             <p style="color: #64748b; font-size: 15px; line-height: 24px; margin: 0 0 32px 0;">
-                                Welcome to Medistech. To ensure your healthcare records remain secure, please enter the following code to verify your identity.
+                                Welcome to MedicsTech. To ensure your healthcare records remain secure, please enter the following code to verify your identity.
                             </p>
                             
                             <div style="background-color: #f1f5f9; border-radius: 12px; padding: 24px; border: 1px dashed #cbd5e1;">
@@ -102,7 +102,7 @@ const html = `
                     <tr>
                         <td align="center" style="background-color: #0f172a; padding: 32px 40px;">
                             <p style="color: #94a3b8; font-size: 12px; margin: 0; line-height: 20px;">
-                                <strong>Medistech Healthcare</strong><br>
+                                <strong>MedicsTech Healthcare</strong><br>
                                 Compassionate Care, Exceptional Medicine.
                             </p>
                             <p style="color: #475569; font-size: 11px; margin-top: 12px;">
@@ -269,7 +269,7 @@ exports.login = async (req, res) => {
         await targetUser.save();
 
         // Second factor is delivered by e-mail
-        await sendEmail(targetUser.email, 'Your MedisTech Login Code',
+        await sendEmail(targetUser.email, 'Your MedicsTech Login Code',
           `<h2>Login verification</h2><p>Your one-time login code is:</p><h1 style="letter-spacing:8px">${smsOtp}</h1><p>It expires in 5 minutes.</p>`);
         if (!emailConfigured()) {
           console.log(`[TEST MODE] 2FA login OTP for ${targetUser.email}: ${smsOtp}`);
@@ -467,7 +467,7 @@ exports.publicForgotPasswordRequestOtp = async (req, res) => {
     const html = `
       <div style="font-family: sans-serif; padding: 30px; border: 1px solid #f0f0f0; border-radius: 20px; max-width: 500px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
         <div style="text-align: center; margin-bottom: 20px;">
-          <h1 style="color: #3963F9; font-size: 24px; font-weight: 900;">Medistech</h1>
+          <h1 style="color: #3963F9; font-size: 24px; font-weight: 900;">MedicsTech</h1>
         </div>
         <h2 style="color: #1e293b; text-align: center;">Identity Recovery</h2>
         <p style="color: #64748b; line-height: 1.6; text-align: center;">Someone (hopefully you) requested a password reset for your account. Please use this secure verification code:</p>
@@ -478,7 +478,7 @@ exports.publicForgotPasswordRequestOtp = async (req, res) => {
       </div>
     `;
 
-    await sendEmail(email, 'Medistech Recovery Code', html);
+    await sendEmail(email, 'MedicsTech Recovery Code', html);
     res.status(200).json({ message: 'Recovery code sent to inbox.' });
   } catch (err) {
     console.error(err);

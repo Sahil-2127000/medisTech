@@ -29,7 +29,7 @@ const Landing = () => {
   }, [navigate]);
 
   React.useEffect(() => {
-    // Contact details belong to the MedisTech network; only the clinic count comes from the API
+    // Contact details belong to the MedicsTech network; only the clinic count comes from the API
     const fetchContactInfo = async () => {
       try {
         const res = await fetch(`${API_URL}/api/auth/doctors`);

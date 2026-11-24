@@ -49,7 +49,7 @@ exports.issuePrescription = async (req, res) => {
        const pName = capitalizeNames(appt.patientId.fullName);
        const dName = capitalizeNames(appt.doctorId.fullName);
        
-       const subject = "Consultation Completed - MedisTech";
+       const subject = "Consultation Completed - MedicsTech";
        const html = `<h2>Hello ${pName},</h2>
                     <p>Your consultation with <strong>Dr. ${dName}</strong> is now complete.</p>
                     <p>Your prescription and clinical notes are available in your patient dashboard under "Medical Documents".</p>

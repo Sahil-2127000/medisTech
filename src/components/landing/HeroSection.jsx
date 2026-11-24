@@ -38,7 +38,7 @@ const HeroSection = ({ stats }) => {
           </h1>
 
           <p className="text-blue-50 text-lg leading-relaxed font-medium opacity-90">
-            MedisTech connects you with trusted clinics across Ludhiana — easy appointment booking, live queue updates and digital prescriptions, all in one place.
+            MedicsTech connects you with trusted clinics across Ludhiana — easy appointment booking, live queue updates and digital prescriptions, all in one place.
           </p>
 
           <div className="pt-2">

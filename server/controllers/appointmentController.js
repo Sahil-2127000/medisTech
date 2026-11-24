@@ -56,6 +56,11 @@ const getSlotsList = async (doctorId, date) => {
     }
   });
 
+  // Doctor marked the rest of this day unavailable: drop every slot from that time on
+  const closure = (config.closures || []).find(c => c.date === date);
+  if (closure) allSlots = allSlots.filter(s => s < closure.from);
+  if (closure && allSlots.length === 0) return { slots: [], isOff: true, config };
+
   return { slots: allSlots, config };
 };
 
@@ -120,6 +125,10 @@ exports.bookAppointment = async (req, res) => {
 
     // Calculate token number mapped to the physical slot index (1-indexed)
     const slotResult = await getSlotsList(ultimateDoctorId, date);
+    // Patients may only book a real slot of the doctor's day (not a closed or made-up time)
+    if (req.user.role !== 'doctor' && (slotResult.error || slotResult.isOff || !slotResult.slots.includes(time))) {
+      return res.status(400).json({ message: 'The doctor is not available at this time. Please pick another slot.' });
+    }
     let tokenNumber = 0;
     if (slotResult.slots) {
        const index = slotResult.slots.indexOf(time);
@@ -148,7 +157,7 @@ exports.bookAppointment = async (req, res) => {
        const pName = capitalizeNames(populatedAppt.patientId.fullName);
        const dName = capitalizeNames(populatedAppt.doctorId.fullName);
        
-       const subject = "Appointment Request Received - MedisTech";
+       const subject = "Appointment Request Received - MedicsTech";
        const targetName = populatedAppt.patientName || pName;
        
        const html = `<h2>Hello ${pName},</h2>
@@ -302,17 +311,17 @@ exports.updateStatus = async (req, res) => {
        let html = "";
        
        if (status === 'approved') {
-          subject = "Appointment Accepted - MedisTech";
+          subject = "Appointment Accepted - MedicsTech";
           html = `<h2>Hello ${pName},</h2>
                   <p>The appointment for <strong>${targetName}</strong> with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Accepted</strong>.</p>
                   <p>We look forward to seeing you!</p>`;
        } else if (status === 'rejected') {
-          subject = "Appointment Update - MedisTech";
+          subject = "Appointment Update - MedicsTech";
           html = `<h2>Hello ${pName},</h2>
                   <p>We regret to inform you that the appointment for <strong>${targetName}</strong> with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Cancelled/Rejected</strong>.</p>
                   <p>Please log in to the dashboard to schedule a different time.</p>`;
        } else if (status === 'completed') {
-          subject = "Consultation Completed - MedisTech";
+          subject = "Consultation Completed - MedicsTech";
           html = `<h2>Hello ${pName},</h2>
                   <p>The consultation for <strong>${targetName}</strong> with <strong>Dr. ${dName}</strong> has been marked as <strong>Completed</strong>.</p>
                   <p>You can view the medical records in the patient dashboard.</p>
@@ -445,7 +454,7 @@ exports.resolveAndBookEmergency = async (req, res) => {
                     <p>Dr. ${capitalizeNames(emergencyDoctor?.fullName || '')} had to attend an emergency case, so your appointment on <strong>${date}</strong> has been delayed by <strong>${elapsedMinutes} minutes</strong>.</p>
                     <p><strong>Previous Time:</strong> ${appt.time}<br><strong>New Time:</strong> ${newTime}</p>
                     <p>You can follow the live queue from your dashboard. We apologise for the inconvenience.</p>`;
-      sendEmail(p.email, 'Appointment Delayed (Emergency) - MedisTech', html).catch(e => console.error('Email fail:', e));
+      sendEmail(p.email, 'Appointment Delayed (Emergency) - MedicsTech', html).catch(e => console.error('Email fail:', e));
     });
 
     // Reset Doctor emergency status
@@ -713,7 +722,7 @@ exports.skipAppointment = async (req, res) => {
         const pName = capitalizeNames(appt.patientId.fullName);
         const dName = capitalizeNames(appt.doctorId.fullName);
         
-        const subject = "Appointment Cancelled - MedisTech";
+        const subject = "Appointment Cancelled - MedicsTech";
         const html = `<h2>Hello ${pName},</h2>
                       <p>Your appointment with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${appt.time}</strong> has been <strong>Cancelled</strong> as it was skipped and no further slots are available today.</p>
                       <p>Please log in to your dashboard to schedule a new appointment.</p>`;
@@ -745,7 +754,7 @@ exports.skipAppointment = async (req, res) => {
       const pName = capitalizeNames(appt.patientId.fullName);
       const dName = capitalizeNames(appt.doctorId.fullName);
       
-      const subject = "Appointment Update - MedisTech";
+      const subject = "Appointment Update - MedicsTech";
       const html = `<h2>Hello ${pName},</h2>
                     <p>Your appointment with <strong>Dr. ${dName}</strong> has been <strong>Rescheduled</strong> to the next available slot in the queue.</p>
                     <p><strong>New Time:</strong> ${appt.time}<br>
@@ -910,3 +919,217 @@ exports.getPublicStats = async (req, res) => {
 };
 
 
+
+// ---------- Patient: cancel or reschedule own appointment; Doctor: not available for the rest of a day ----------
+
+const ACTIVE_STATUSES = ['pending', 'approved', 'emergency_active'];
+const todayStr = () => {
+  const n = new Date();
+  return `${String(n.getDate()).padStart(2, '0')}-${String(n.getMonth() + 1).padStart(2, '0')}-${n.getFullYear()}`;
+};
+const nowHHMM = () => {
+  const n = new Date();
+  return `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`;
+};
+const toKey = (d) => d.split('-').reverse().join(''); // DD-MM-YYYY -> YYYYMMDD for comparing dates
+const time12 = (t) => {
+  const [h, m] = t.split(':').map(Number);
+  return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+};
+const notifyQueue = (req, doctorId) => {
+  const io = req.app.get('socketio');
+  if (io) io.emit('queueUpdated', { doctorId: doctorId.toString() });
+};
+const mailPatient = (appt, subject, html) => {
+  const p = appt.patientId;
+  if (p && p.email && p.emailNotifications !== false) {
+    sendEmail(p.email, subject, html).catch(e => console.error('Email fail:', e));
+  }
+};
+
+// Patient cancels one of their own upcoming appointments
+exports.cancelAppointment = async (req, res) => {
+  try {
+    const appt = await Appointment.findById(req.params.id)
+      .populate('patientId', 'fullName email emailNotifications')
+      .populate('doctorId', 'fullName');
+    if (!appt) return res.status(404).json({ message: 'Appointment not found.' });
+    if (appt.patientId?._id?.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You can only cancel your own appointments.' });
+    }
+    if (!ACTIVE_STATUSES.includes(appt.status)) {
+      return res.status(400).json({ message: 'Only upcoming appointments can be cancelled.' });
+    }
+
+    appt.status = 'cancelled';
+    appt.cancelReason = 'patient';
+    await appt.save();
+
+    const pName = capitalizeNames(appt.patientId.fullName);
+    const dName = capitalizeNames(appt.doctorId?.fullName || '');
+    mailPatient(appt, 'Appointment Cancelled - MedicsTech',
+      `<h2>Hello ${pName},</h2>
+       <p>Your appointment for <strong>${appt.patientName || pName}</strong> with <strong>Dr. ${dName}</strong> on <strong>${appt.date}</strong> at <strong>${time12(appt.time)}</strong> has been cancelled as you requested.</p>
+       <p>You can book a new appointment from your dashboard whenever you need.</p>`);
+
+    notifyQueue(req, appt.doctorId._id);
+    res.status(200).json({ message: 'Appointment cancelled.', appointment: appt });
+  } catch (error) {
+    console.error('Cancel error:', error);
+    res.status(500).json({ message: 'Could not cancel the appointment.' });
+  }
+};
+
+// Patient moves one of their own upcoming appointments to another free slot of the same doctor
+exports.rescheduleAppointment = async (req, res) => {
+  try {
+    const { date, time } = req.body;
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(date || '') || !/^\d{2}:\d{2}$/.test(time || '')) {
+      return res.status(400).json({ message: 'Please choose a date and a time slot.' });
+    }
+
+    const appt = await Appointment.findById(req.params.id)
+      .populate('patientId', 'fullName email emailNotifications')
+      .populate('doctorId', 'fullName');
+    if (!appt) return res.status(404).json({ message: 'Appointment not found.' });
+    if (appt.patientId?._id?.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You can only reschedule your own appointments.' });
+    }
+    if (!ACTIVE_STATUSES.includes(appt.status)) {
+      return res.status(400).json({ message: 'Only upcoming appointments can be rescheduled.' });
+    }
+    if (appt.date === date && appt.time === time) {
+      return res.status(400).json({ message: 'This is already the time of your appointment.' });
+    }
+
+    const doctorId = appt.doctorId._id;
+    if (toKey(date) < toKey(todayStr()) || (date === todayStr() && time <= nowHHMM())) {
+      return res.status(400).json({ message: 'This slot is already in the past.' });
+    }
+
+    const result = await getSlotsList(doctorId, date);
+    if (result.error) return res.status(400).json({ message: result.error });
+    if (result.isOff || !result.slots.includes(time)) {
+      return res.status(400).json({ message: 'The doctor is not available at this time.' });
+    }
+
+    const clash = await Appointment.findOne({
+      doctorId, date, _id: { $ne: appt._id },
+      $or: [{ time }, { originalTime: time }],
+      status: { $in: ['pending', 'approved', 'in_progress', 'emergency_active'] }
+    });
+    if (clash) return res.status(400).json({ message: 'This slot was just taken. Please pick another one.' });
+
+    const oldDate = appt.date;
+    const oldTime = appt.time;
+    appt.date = date;
+    appt.time = time;
+    appt.originalTime = time;
+    appt.tokenNumber = result.slots.indexOf(time) + 1;
+    appt.emergencyDelayedMinutes = 0;
+    appt.status = 'pending'; // the doctor confirms the new time again
+    appt.reminderSent = false; // remind again before the new time
+    await appt.save();
+
+    const pName = capitalizeNames(appt.patientId.fullName);
+    const dName = capitalizeNames(appt.doctorId.fullName);
+    mailPatient(appt, 'Appointment Rescheduled - MedicsTech',
+      `<h2>Hello ${pName},</h2>
+       <p>Your appointment for <strong>${appt.patientName || pName}</strong> with <strong>Dr. ${dName}</strong> has been moved.</p>
+       <p><strong>Old:</strong> ${oldDate} at ${time12(oldTime)}<br>
+       <strong>New:</strong> ${date} at ${time12(time)}</p>
+       <p>Status: <strong>Pending Approval</strong>. You will receive another email once the doctor accepts the new time.</p>`);
+
+    notifyQueue(req, doctorId);
+    res.status(200).json({ message: 'Appointment rescheduled.', appointment: appt });
+  } catch (error) {
+    console.error('Reschedule error:', error);
+    res.status(500).json({ message: 'Could not reschedule the appointment.' });
+  }
+};
+
+// Doctor has to leave: cancel every booking of that day from the given time and tell the patients
+exports.markUnavailable = async (req, res) => {
+  try {
+    const doctorId = req.user.id;
+    const { date, from } = req.body;
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(date || '') || !/^\d{2}:\d{2}$/.test(from || '')) {
+      return res.status(400).json({ message: 'Please choose a date and a start time.' });
+    }
+    if (toKey(date) < toKey(todayStr())) {
+      return res.status(400).json({ message: 'This date is already over.' });
+    }
+
+    const config = await Availability.findOne({ doctorId });
+    if (!config) return res.status(400).json({ message: 'Set your availability timings first.' });
+
+    // Block new bookings from this time on (keep the earliest time if the day was already closed)
+    const existing = (config.closures || []).find(c => c.date === date);
+    if (existing) {
+      if (from < existing.from) existing.from = from;
+    } else {
+      config.closures.push({ date, from });
+    }
+    // Old closures are no longer needed
+    config.closures = config.closures.filter(c => toKey(c.date) >= toKey(todayStr()));
+    await config.save();
+
+    const affected = await Appointment.find({
+      doctorId, date, time: { $gte: from }, status: { $in: ACTIVE_STATUSES }
+    }).populate('patientId', 'fullName email emailNotifications');
+
+    const doctor = await Doctor.findById(doctorId).select('fullName');
+    const dName = capitalizeNames(doctor?.fullName || '');
+
+    for (const appt of affected) {
+      appt.status = 'cancelled';
+      appt.cancelReason = 'doctor_unavailable';
+      await appt.save();
+
+      const pName = capitalizeNames(appt.patientId?.fullName || '');
+      mailPatient(appt, 'Appointment Cancelled: Doctor Not Available - MedicsTech',
+        `<h2>Hello ${pName},</h2>
+         <p>We are sorry to inform you that <strong>Dr. ${dName}</strong> will not be available on <strong>${date}</strong> from <strong>${time12(from)}</strong> onwards.</p>
+         <p>Because of this, the appointment for <strong>${appt.patientName || pName}</strong> on <strong>${date}</strong> at <strong>${time12(appt.time)}</strong> has been <strong>cancelled</strong>.</p>
+         <p><strong>You can reschedule your appointment.</strong> Please log in to MedicsTech and book a new slot on the next day, or any other day, at a time that suits you from the doctor's available timings.</p>
+         <p>We apologise for the inconvenience.</p>`);
+    }
+
+    notifyQueue(req, doctorId);
+    res.status(200).json({
+      message: `Marked unavailable from ${time12(from)} on ${date}.`,
+      cancelledCount: affected.length
+    });
+  } catch (error) {
+    console.error('Mark unavailable error:', error);
+    res.status(500).json({ message: 'Could not update your availability.' });
+  }
+};
+
+// Doctor's closures (used by the dashboard to show and undo them)
+exports.getClosures = async (req, res) => {
+  try {
+    const config = await Availability.findOne({ doctorId: req.user.id }).select('closures');
+    const closures = (config?.closures || []).filter(c => toKey(c.date) >= toKey(todayStr()));
+    res.status(200).json(closures);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Could not load closures.' });
+  }
+};
+
+// Doctor is available again: reopen the slots (cancelled appointments stay cancelled)
+exports.removeClosure = async (req, res) => {
+  try {
+    const { date } = req.params;
+    const config = await Availability.findOne({ doctorId: req.user.id });
+    if (!config) return res.status(404).json({ message: 'Availability not found.' });
+    config.closures = (config.closures || []).filter(c => c.date !== date);
+    await config.save();
+    notifyQueue(req, req.user.id);
+    res.status(200).json({ message: `Slots on ${date} are open for booking again.` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Could not reopen the slots.' });
+  }
+};

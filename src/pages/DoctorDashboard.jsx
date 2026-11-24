@@ -11,6 +11,7 @@ import PatientHistoryView from '../components/doctor-dashboard/PatientHistoryVie
 import AlertBell from '../components/doctor-dashboard/AlertBell';
 import ManageBlogs from '../components/doctor-dashboard/ManageBlogs';
 import OfflineBookingModal from '../components/doctor-dashboard/OfflineBookingModal';
+import UnavailableModal from '../components/doctor-dashboard/UnavailableModal';
 import EmergencyResolutionModal from '../components/doctor-dashboard/EmergencyResolutionModal';
 import PrescriptionBuilder from '../components/doctor-dashboard/PrescriptionBuilder';
 import { useSocket } from '../context/SocketContext';
@@ -73,6 +74,7 @@ const DoctorDashboard = () => {
     const [activeStatModal, setActiveStatModal] = useState(null); // 'todays-consults', 'completed', 'pending'
     const [showHistoryView, setShowHistoryView] = useState(false); // New Interactive Gateway
     const [showOfflineBooking, setShowOfflineBooking] = useState(false);
+    const [showUnavailable, setShowUnavailable] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showEmergencyPrescription, setShowEmergencyPrescription] = useState(false);
     const [emergencyApptForPrescription, setEmergencyApptForPrescription] = useState(null);
@@ -380,7 +382,7 @@ const DoctorDashboard = () => {
 
                 {/* Phone / tablet app bar */}
                 <MobileTopBar
-                    title={{ dashboard: 'Home', appointments: 'Appointments', availability: 'Availability', blogs: 'Blogs', profile: 'My Profile' }[activeTab] || 'MedisTech'}
+                    title={{ dashboard: 'Home', appointments: 'Appointments', availability: 'Availability', blogs: 'Blogs', profile: 'My Profile' }[activeTab] || 'MedicsTech'}
                     subtitle={profile.firstName ? `Dr. ${profile.firstName} ${profile.lastName}` : ''}
                     avatar={initialsAvatar(`${profile.firstName || ''} ${profile.lastName || ''}`, 72)}
                     actions={[{ label: 'Sign out', icon: ICONS.logout, danger: true, onClick: () => signOut(navigate) }]}
@@ -421,23 +423,31 @@ const DoctorDashboard = () => {
                                                         <div className="text-xl font-extrabold text-slate-900">Hello, Dr. {profile?.firstName}</div>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 md:gap-3 xl:gap-4 flex-wrap lg:flex-nowrap w-full lg:w-auto">
+                                                <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 xl:gap-4 flex-nowrap w-full lg:w-auto">
                                                     <button
                                                         onClick={handleToggleEmergency}
-                                                        className={`shrink-0 px-3 md:px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-md transition-all flex items-center gap-1.5 md:gap-2 ${isEmergencyActive ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/30 animate-pulse' : 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30'}`}
+                                                        className={`shrink-0 px-2.5 sm:px-3 md:px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-md transition-all flex items-center gap-1.5 md:gap-2 ${isEmergencyActive ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/30 animate-pulse' : 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/30'}`}
                                                     >
                                                         <svg className="w-4 h-4 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                                                        {isEmergencyActive ? `Stop (${formatEmergencyTime(emergencyElapsed)})` : <><span className="lg:hidden xl:inline">Emergency Case</span><span className="hidden lg:inline xl:hidden">Emergency</span></>}
+                                                        {isEmergencyActive ? `Stop (${formatEmergencyTime(emergencyElapsed)})` : <><span className="hidden sm:inline lg:hidden xl:inline">Emergency Case</span><span className="sm:hidden lg:inline xl:hidden">Emergency</span></>}
                                                     </button>
                                                     <button
                                                         onClick={() => setShowOfflineBooking(true)}
-                                                        className="shrink-0 bg-clinic-600 hover:bg-clinic-800 text-white px-3 md:px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-md shadow-clinic-600/30 transition-all flex items-center gap-1.5 md:gap-2"
+                                                        className="shrink-0 bg-clinic-600 hover:bg-clinic-800 text-white px-2.5 sm:px-3 md:px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-md shadow-clinic-600/30 transition-all flex items-center gap-1.5 md:gap-2"
                                                     >
                                                         <svg className="w-4 h-4 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                                                         <span className="hidden sm:inline lg:hidden xl:inline">Make Appointment</span>
                                                         <span className="sm:hidden lg:inline xl:hidden">Walk-in</span>
                                                     </button>
-                                                    <div className="shrink-0">
+                                                    <button
+                                                        onClick={() => setShowUnavailable(true)}
+                                                        className="shrink-0 bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 px-2.5 sm:px-3 md:px-4 py-2 rounded-xl font-bold text-xs md:text-sm shadow-sm transition-all flex items-center gap-1.5 md:gap-2"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                                                        <span className="hidden sm:inline lg:hidden xl:inline">Not Available</span>
+                                                        <span className="sm:hidden lg:inline xl:hidden">Away</span>
+                                                    </button>
+                                                    <div className="shrink-0 ml-auto lg:ml-0">
                                                         <AlertBell appointments={pendingRequests} onStatusChange={handleStatusChange} />
                                                     </div>
                                                 </div>
@@ -525,6 +535,13 @@ const DoctorDashboard = () => {
             {showOfflineBooking && (
                 <OfflineBookingModal
                     onClose={() => setShowOfflineBooking(false)}
+                    onSuccess={loadDoctorAppointments}
+                />
+            )}
+
+            {showUnavailable && (
+                <UnavailableModal
+                    onClose={() => setShowUnavailable(false)}
                     onSuccess={loadDoctorAppointments}
                 />
             )}

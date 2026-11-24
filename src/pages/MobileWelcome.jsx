@@ -17,7 +17,7 @@ const MobileWelcome = () => {
       <div className="relative flex-1 min-h-0 bg-linear-to-b from-[#3963F9] to-[#1444D8] rounded-b-[2.5rem] flex flex-col items-center justify-end overflow-hidden pt-[env(safe-area-inset-top)]">
         <div className="absolute top-[calc(1.25rem+env(safe-area-inset-top))] left-6 flex items-center gap-2 text-white font-bold text-xl">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L12 22M2 12L22 12" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></svg>
-          medisTech
+          medicsTech
         </div>
         <div className="absolute w-64 h-64 rounded-full border-[14px] border-white/15 bottom-10" />
         <img src="/doctor_auth.png" alt="" className="relative h-[85%] max-h-[340px] object-contain object-bottom" />

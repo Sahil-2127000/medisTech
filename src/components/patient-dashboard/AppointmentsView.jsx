@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
+import BookAppointment from './BookAppointment';
+import { API_URL } from '../../config/api';
 
 const formatTime12 = (t) => {
     if (!t || !t.includes(':')) return t || '';
@@ -13,9 +15,60 @@ const formatDisplayDate = (d) => {
     return new Date(yyyy, mm - 1, dd).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
-const AppointmentsView = ({ appointments = [], onBookClick }) => {
+const ACTIVE = ['pending', 'approved', 'emergency_active'];
+
+const AppointmentsView = ({ appointments = [], onBookClick, onChanged }) => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [rescheduleAppt, setRescheduleAppt] = useState(null);
+    const [cancellingId, setCancellingId] = useState(null);
+
+    const handleCancel = async (app) => {
+        if (!app._id || cancellingId) return;
+        const who = app.patientName ? ` for ${app.patientName}` : '';
+        if (!window.confirm(`Cancel the appointment${who} with ${app.doctor} on ${formatDisplayDate(app.date)} at ${formatTime12(app.time)}?`)) return;
+        setCancellingId(app._id);
+        try {
+            const res = await fetch(`${API_URL}/api/appointments/${app._id}/cancel`, { method: 'PUT', credentials: 'include' });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) alert(data.message || 'Could not cancel the appointment.');
+            onChanged && onChanged();
+        } catch (e) {
+            alert('Could not cancel the appointment. Please check your connection.');
+        } finally {
+            setCancellingId(null);
+        }
+    };
+
+    const statusLabel = (app, short) => {
+        if (app.status === 'emergency_active') return short ? 'Delayed' : 'Emergency Shift';
+        if (app.status === 'approved') return 'Accepted';
+        return app.status;
+    };
+
+    const ActionButtons = ({ app, compact }) => ACTIVE.includes(app.status) && app._id ? (
+        <div className={`flex items-center gap-2 ${compact ? 'w-full' : ''}`}>
+            <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setRescheduleAppt(app); }}
+                className={`${compact ? 'flex-1 py-1.5 text-xs' : 'px-3 py-1.5 text-[10px] uppercase tracking-widest'} rounded-lg font-bold border border-[#5265ec]/30 text-[#5265ec] bg-white hover:bg-[#5265ec] hover:text-white dark:bg-slate-800 dark:text-blue-400 dark:border-blue-400/30 transition-colors`}
+            >
+                Reschedule
+            </button>
+            <button
+                type="button"
+                disabled={cancellingId === app._id}
+                onClick={(e) => { e.stopPropagation(); handleCancel(app); }}
+                className={`${compact ? 'flex-1 py-1.5 text-xs' : 'px-3 py-1.5 text-[10px] uppercase tracking-widest'} rounded-lg font-bold border border-rose-300 text-rose-600 bg-white hover:bg-rose-600 hover:text-white dark:bg-slate-800 dark:text-rose-400 dark:border-rose-400/30 transition-colors disabled:opacity-50`}
+            >
+                {cancellingId === app._id ? 'Cancelling…' : 'Cancel'}
+            </button>
+        </div>
+    ) : null;
+
+    const cancelNote = (app) => app.status === 'cancelled'
+        ? (app.cancelReason === 'doctor_unavailable' ? 'Doctor not available. Please book a new slot.' : 'Cancelled by you')
+        : null;
 
     // Parse initial filter from URL
     const searchParams = new URLSearchParams(location.search);
@@ -118,6 +171,13 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
     };
 
     return (
+        <>
+        {rescheduleAppt && (
+            <BookAppointment
+                reschedule={rescheduleAppt}
+                onClose={() => { setRescheduleAppt(null); onChanged && onChanged(); }}
+            />
+        )}
         <div className="flex-1 h-full py-4 lg:py-12 px-4 md:px-8 lg:px-12 flex flex-col overflow-y-auto no-scrollbar bg-transparent">
             {/* Header */}
             <div className="mb-3 lg:mb-10 flex flex-col lg:flex-row justify-between items-stretch lg:items-end gap-3 lg:gap-6">
@@ -149,7 +209,8 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                         { id: 'completed', label: 'Completed' },
                         { id: 'pending', label: 'Pending' },
                         { id: 'accepted', label: 'Accepted' },
-                        { id: 'rejected', label: 'Rejected' }
+                        { id: 'rejected', label: 'Rejected' },
+                        { id: 'cancelled', label: 'Cancelled' }
                     ].map(f => (
                         <button
                             key={f.id}
@@ -225,7 +286,8 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                                     return (
                                         <React.Fragment key={app._id || appIdx}>
                                         {/* Phone: one compact row */}
-                                        <div className="lg:hidden flex items-center gap-3 bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5 rounded-2xl px-3 py-2.5 shadow-sm">
+                                        <div className="lg:hidden bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-white/5 rounded-2xl px-3 py-2.5 shadow-sm">
+                                        <div className="flex items-center gap-3">
                                             <div className={`w-1 self-stretch rounded-full ${app.status === 'approved' ? 'bg-emerald-500' : app.status === 'pending' ? 'bg-amber-500' : app.status === 'completed' ? 'bg-blue-500' : 'bg-red-500'}`}></div>
                                             <div className="w-10 h-10 shrink-0 rounded-xl bg-[#5265ec]/10 text-[#5265ec] flex items-center justify-center font-bold">
                                                 {(app.doctor || 'D').replace(/^Dr\.?\s*/i, '').charAt(0).toUpperCase()}
@@ -235,11 +297,14 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                                                 <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{formatDisplayDate(app.date)} · {formatTime12(app.time)}</div>
                                             </div>
                                             <span className={`shrink-0 px-2 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wide ${styles.badge}`}>
-                                                {app.status === 'emergency_active' ? 'Delayed' : app.status === 'approved' ? 'Accepted' : app.status}
+                                                {statusLabel(app, true)}
                                             </span>
                                         </div>
+                                        {cancelNote(app) && <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 pl-4">{cancelNote(app)}</div>}
+                                        {ACTIVE.includes(app.status) && app._id && <div className="mt-2 pl-4"><ActionButtons app={app} compact /></div>}
+                                        </div>
                                         <motion.div
-                                            whileHover={{ x: 10, scale: 1.01 }}
+                                            whileHover={{ scale: 1.005 }}
                                             className={`${styles.card} border rounded-3xl p-3 md:p-4 transition-all hidden lg:flex flex-row items-center gap-4 group cursor-pointer relative overflow-hidden`}
                                         >
                                             {/* Status Accent Bar */}
@@ -284,10 +349,12 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                                             </div>
 
                                             {/* Status Badge */}
-                                            <div className="flex items-center justify-between md:justify-end md:w-1/4 gap-4 relative z-10">
+                                            <div className="flex flex-col items-end justify-center md:w-1/3 gap-2 relative z-10">
                                                 <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest shadow-xs ${styles.badge}`}>
-                                                    {app.status === 'emergency_active' ? 'Emergency Shift' : app.status === 'approved' ? 'Accepted' : app.status}
+                                                    {statusLabel(app, false)}
                                                 </div>
+                                                {cancelNote(app) && <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">{cancelNote(app)}</div>}
+                                                <ActionButtons app={app} />
                                             </div>
                                         </motion.div>
                                         </React.Fragment>
@@ -299,6 +366,7 @@ const AppointmentsView = ({ appointments = [], onBookClick }) => {
                 </div>
             )}
         </div>
+        </>
     );
 };
 

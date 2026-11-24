@@ -19,7 +19,7 @@ const Navbar = () => {
               <path d="M12 2L12 22M2 12L22 12" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
             </svg>
           </span>
-          <span>medisTech</span>
+          <span>medicsTech</span>
         </a>
 
         {/* Links (desktop / projector) */}

@@ -135,7 +135,7 @@ exports.setup2FA = async (req, res) => {
     if (!targetUser) return res.status(404).json({ message: 'User mapping failed natively' });
 
     const smsOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    await sendEmail(targetUser.email, 'Enable Two-Factor Authentication - MedisTech',
+    await sendEmail(targetUser.email, 'Enable Two-Factor Authentication - MedicsTech',
       `<h2>Two-factor setup</h2><p>Your verification code is:</p><h1 style="letter-spacing:8px">${smsOtp}</h1><p>It expires in 5 minutes.</p>`);
     if (!emailConfigured()) {
       console.log(`[TEST MODE] 2FA setup OTP for ${targetUser.email}: ${smsOtp}`);

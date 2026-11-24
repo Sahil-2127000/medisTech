@@ -32,7 +32,9 @@ const AvailabilitySchema = new mongoose.Schema({
   },
   slotDuration: { type: Number, default: 20 }, // Average patient minutes
   bufferTime: { type: Number, default: 2 }, // Block hours preventing 'last-minute' scheduling
-  blackoutDates: { type: [String], default: [] } // Explicit custom off days e.g., "2024-12-25"
+  blackoutDates: { type: [String], default: [] }, // Explicit custom off days e.g., "2024-12-25"
+  // Days on which the doctor stops seeing patients early, e.g. { date: '24-11-2026', from: '15:00' }
+  closures: { type: [{ date: String, from: String, _id: false }], default: [] }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Availability', AvailabilitySchema);

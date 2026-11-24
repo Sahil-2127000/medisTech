@@ -1,6 +1,6 @@
 {
   "appId": "com.medistech.app",
-  "appName": "MedisTech",
+  "appName": "MedicsTech",
   "webDir": "dist",
   "server": {
     "androidScheme": "http"

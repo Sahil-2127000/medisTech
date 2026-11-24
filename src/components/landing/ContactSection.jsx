@@ -66,7 +66,7 @@ const ContactSection = ({ contactInfo = {} }) => {
         >
           <h2 className="text-3xl font-bold text-slate-900 mb-2">Get in Touch</h2>
           <p className="text-slate-500 mb-8 text-sm">
-            Questions about booking, a clinic or your account? Send us a message and the MedisTech team will get back to you.
+            Questions about booking, a clinic or your account? Send us a message and the MedicsTech team will get back to you.
           </p>
           
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -213,9 +213,9 @@ const ContactSection = ({ contactInfo = {} }) => {
                 </svg>
               </div>
 
-              <h3 className="text-3xl font-bold text-slate-800 mb-2">Call MedisTech</h3>
+              <h3 className="text-3xl font-bold text-slate-800 mb-2">Call MedicsTech</h3>
               <p className="text-blue-900/60 font-medium mb-8">
-                Would you like to call the MedisTech helpline?
+                Would you like to call the MedicsTech helpline?
               </p>
 
               <div className="w-full flex flex-col justify-center items-center space-y-4">

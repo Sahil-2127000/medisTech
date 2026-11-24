@@ -9,7 +9,7 @@ import SettingsView from './SettingsView';
 import LiveQueueUI from './LiveQueueUI';
 import { API_URL } from '../../config/api';
 
-const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabChange }) => {
+const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabChange, onAppointmentsChanged }) => {
   const [showVitalModal, setShowVitalModal] = useState(false);
   const [activeStatModal, setActiveStatModal] = useState(null); // 'total', 'prescriptions', 'completed', 'pending'
   const [vitalForm, setVitalForm] = useState({ type: 'Blood Pressure', value: '' });
@@ -53,7 +53,7 @@ const MainPanel = ({ patientData, activeTab, onBookClick, onVitalsUpdate, onTabC
     } catch (err) { console.error(err); }
   };
 
-  if (activeTab === 'calendar') return <AppointmentsView appointments={[...(patientData.upcoming || []), ...(patientData.history || [])]} onBookClick={onBookClick} />;
+  if (activeTab === 'calendar') return <AppointmentsView appointments={[...(patientData.upcoming || []), ...(patientData.history || [])]} onBookClick={onBookClick} onChanged={onAppointmentsChanged} />;
   if (activeTab === 'docs') return <DocumentsView prescriptions={patientData.prescriptions || []} patientData={patientData} />;
   if (activeTab === 'profile') return <ProfileView patientData={patientData} />;
   if (activeTab === 'settings') return <SettingsView patientData={patientData} />

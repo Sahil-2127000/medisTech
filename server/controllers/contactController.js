@@ -12,7 +12,7 @@ exports.submitContact = async (req, res) => {
     // Save to database
     const newContact = await Contact.create({ name, phone, email, message });
 
-    // Platform-level inquiry: delivered to the MedisTech support inbox
+    // Platform-level inquiry: delivered to the MedicsTech support inbox
     const doctorEmail = supportInbox();
 
     // Send email to the doctor
@@ -24,7 +24,7 @@ exports.submitContact = async (req, res) => {
       <p><strong>Message:</strong></p>
       <p>${message}</p>
     `;
-    await sendEmail(doctorEmail, 'New Patient Inquiry via MedisTech', doctorHtml);
+    await sendEmail(doctorEmail, 'New Patient Inquiry via MedicsTech', doctorHtml);
 
     // Send confirmation email to the patient
     const patientHtml = `
@@ -36,7 +36,7 @@ exports.submitContact = async (req, res) => {
       </blockquote>
       <br />
       <p>Best Regards,</p>
-      <p><strong>MedisTech</strong></p>
+      <p><strong>MedicsTech</strong></p>
     `;
     await sendEmail(email, 'We have received your inquiry', patientHtml);
 

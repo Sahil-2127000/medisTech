@@ -59,7 +59,7 @@ app.get('/api/health', (req, res) => {
 
 // General health check route
 app.get('/', (req, res) => {
-  res.send('MedisTech Backend API is running!');
+  res.send('MedicsTech Backend API is running!');
 });
 
 // Start listening
@@ -67,6 +67,9 @@ const PORT = process.env.PORT || 5001;
 const server = app.listen(PORT, () => {
   console.log(`Backend Server running on http://localhost:${PORT}`);
 });
+
+// E-mail patients a reminder about one hour before their accepted appointment
+require('./utils/reminderJob').startReminderJob();
 
 // Initialize Socket.io
 const { Server } = require("socket.io");

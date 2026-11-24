@@ -13,7 +13,7 @@ const sendWithBrevo = async (to, subject, html) => {
     method: 'POST',
     headers: { 'api-key': process.env.BREVO_API_KEY, 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({
-      sender: { name: 'MedisTech', email: process.env.BREVO_SENDER },
+      sender: { name: 'MedicsTech', email: process.env.BREVO_SENDER },
       to: [{ email: to }],
       subject,
       htmlContent: html,
@@ -50,7 +50,7 @@ const getGmailAccessToken = async () => {
 const sendWithGmailApi = async (to, subject, html) => {
   const encodedSubject = `=?utf-8?B?${Buffer.from(subject).toString('base64')}?=`;
   const message = [
-    `From: MedisTech <${process.env.GMAIL_USER}>`,
+    `From: MedicsTech <${process.env.GMAIL_USER}>`,
     `To: ${to}`,
     'Content-Type: text/html; charset=utf-8',
     'MIME-Version: 1.0',
@@ -75,7 +75,7 @@ const sendWithSmtp = async (to, subject, html) => {
     service: 'gmail',
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   });
-  await transporter.sendMail({ from: `"MedisTech" <${process.env.SMTP_USER}>`, to, subject, html });
+  await transporter.sendMail({ from: `"MedicsTech" <${process.env.SMTP_USER}>`, to, subject, html });
 };
 
 // True when real emails can be sent (otherwise OTPs are only logged, for local testing)

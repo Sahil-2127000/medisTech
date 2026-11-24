@@ -143,7 +143,7 @@ const PatientDashboard = () => {
 
   // Structural mock data blending with actual fetched lengths natively dynamically
   const upcomingFiltered = upcomingAppointments.filter(app => ['pending', 'approved', 'emergency_active'].includes(app.status));
-  const historyFiltered = upcomingAppointments.filter(app => ['completed', 'rejected'].includes(app.status));
+  const historyFiltered = upcomingAppointments.filter(app => ['completed', 'rejected', 'cancelled'].includes(app.status));
 
   const resolvedName = userProfile.fullName || activeName;
 
@@ -156,7 +156,9 @@ const PatientDashboard = () => {
     prescriptions: prescriptions,
     vitals: vitals,
     upcoming: upcomingFiltered.map(app => ({
+      _id: app._id,
       doctorId: app.doctorId,
+      symptoms: app.symptoms,
       doctor: `Dr. ${app.doctorId?.fullName || 'Unknown'}`,
       date: app.date,
       time: app.time,
@@ -165,6 +167,9 @@ const PatientDashboard = () => {
       img: `https://placehold.co/100x100/fca5a5/ffffff.png?text=D`
     })),
     history: historyFiltered.map(app => ({
+      _id: app._id,
+      doctorId: app.doctorId,
+      cancelReason: app.cancelReason,
       doctor: `Dr. ${app.doctorId?.fullName || 'Unknown'}`,
       date: app.date,
       time: app.time,
@@ -217,7 +222,7 @@ const PatientDashboard = () => {
         
         {/* Phone / tablet app bar */}
         <MobileTopBar
-          title={{ home: 'Home', queue: 'Live Queue', calendar: 'My Visits', docs: 'Prescriptions', profile: 'My Profile', settings: 'Settings' }[activeTab] || 'MedisTech'}
+          title={{ home: 'Home', queue: 'Live Queue', calendar: 'My Visits', docs: 'Prescriptions', profile: 'My Profile', settings: 'Settings' }[activeTab] || 'MedicsTech'}
           subtitle={resolvedName}
           avatar={initialsAvatar(resolvedName || 'P', 72)}
           actions={[
@@ -233,6 +238,7 @@ const PatientDashboard = () => {
           activeTab={activeTab} 
           onVitalsUpdate={pollVitals}
           onTabChange={setActiveTab}
+          onAppointmentsChanged={pollAppointments}
           onBookClick={() => {
             setActiveTab('calendar');
             setShowBooking(true);

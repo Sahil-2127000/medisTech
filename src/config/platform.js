@@ -1,6 +1,6 @@
-// MedisTech platform contact details (the network, not any single clinic)
+// MedicsTech platform contact details (the network, not any single clinic)
 export const PLATFORM_CONTACT = {
-  name: 'MedisTech Healthcare Network',
+  name: 'MedicsTech Healthcare Network',
   address: 'Ludhiana, Punjab, India',
   phone: '+91 7707821270',
   email: 'mauryasahil013@gmail.com',

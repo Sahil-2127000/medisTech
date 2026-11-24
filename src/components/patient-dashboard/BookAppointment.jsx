@@ -4,10 +4,12 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { API_URL } from '../../config/api';
 
-const BookAppointment = ({ onClose }) => {
+// `reschedule`: an existing appointment to move to a new date/slot (same doctor)
+const BookAppointment = ({ onClose, reschedule = null }) => {
+  const isReschedule = !!reschedule;
   const appView = useAppView();
   const [doctors, setDoctors] = useState([]);
-  const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [selectedDoctor, setSelectedDoctor] = useState(reschedule?.doctorId?._id || reschedule?.doctorId || '');
   const [specialty, setSpecialty] = useState('All');
   const [date, setDate] = useState('');
   const [slots, setSlots] = useState([]);
@@ -15,10 +17,11 @@ const BookAppointment = ({ onClose }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
   const [patientName, setPatientName] = useState(() => {
+    if (reschedule) return reschedule.patientName || '';
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     return user.firstName || (user.fullName ? user.fullName.split(' ')[0] : '');
   });
-  const [symptoms, setSymptoms] = useState('');
+  const [symptoms, setSymptoms] = useState(reschedule?.symptoms || '');
   const [loading, setLoading] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
 
@@ -30,7 +33,7 @@ const BookAppointment = ({ onClose }) => {
         if (!Array.isArray(data)) return;
         setDoctors(data);
         const preferred = sessionStorage.getItem('preferredDoctorId');
-        if (preferred && data.some(d => d._id === preferred)) {
+        if (!reschedule && preferred && data.some(d => d._id === preferred)) {
           setSelectedDoctor(preferred);
           sessionStorage.removeItem('preferredDoctorId');
         }
@@ -76,20 +79,27 @@ const BookAppointment = ({ onClose }) => {
     setIsBooking(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/appointments/book`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          doctorId: selectedDoctor,
-          date,
-          time: selectedSlot,
-          patientName,
-          symptoms
-        })
-      });
+      const res = isReschedule
+        ? await fetch(`${API_URL}/api/appointments/${reschedule._id}/reschedule`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ date, time: selectedSlot })
+          })
+        : await fetch(`${API_URL}/api/appointments/book`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              doctorId: selectedDoctor,
+              date,
+              time: selectedSlot,
+              patientName,
+              symptoms
+            })
+          });
       if (res.ok) {
-        alert("Appointment successfully locked!");
+        alert(isReschedule ? "Appointment rescheduled. The doctor will confirm the new time." : "Appointment successfully locked!");
         onClose();
       } else {
         const data = await res.json();
@@ -119,8 +129,12 @@ const BookAppointment = ({ onClose }) => {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
 
-        <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white mb-1">Book an Appointment</h2>
-        <p className="text-sm font-semibold text-gray-400 dark:text-slate-500 mb-5">Choose a clinic, a date and a free slot.</p>
+        <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white mb-1">{isReschedule ? 'Reschedule Appointment' : 'Book an Appointment'}</h2>
+        <p className="text-sm font-semibold text-gray-400 dark:text-slate-500 mb-5">
+          {isReschedule
+            ? <>Current: <span className="text-slate-700 dark:text-slate-200">{reschedule.date} at {reschedule.time}</span>. Pick a new date and a free slot.</>
+            : 'Choose a clinic, a date and a free slot.'}
+        </p>
 
         <form onSubmit={handleBook} className="relative z-10">
           <style>{`
@@ -150,6 +164,7 @@ const BookAppointment = ({ onClose }) => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4">
           <div className="flex flex-col gap-4">
+          {!isReschedule && (
           <div className="flex flex-col">
             <label className="block text-[11px] font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-1.5">Specialization</label>
             <div className="chip-scroll chip-scroll-left -mx-4 px-4">
@@ -169,12 +184,14 @@ const BookAppointment = ({ onClose }) => {
               ))}
             </div>
           </div>
+          )}
 
           <div className="flex flex-col">
-            <label className="block text-[11px] font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-1.5">Select Clinic / Doctor</label>
+            <label className="block text-[11px] font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-1.5">{isReschedule ? 'Clinic / Doctor' : 'Select Clinic / Doctor'}</label>
             <div className="relative">
             <select
               required
+              disabled={isReschedule}
               value={selectedDoctor}
               onChange={e => { setSelectedDoctor(e.target.value); setSelectedSlot(''); }}
               className="w-full appearance-none bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-bold border border-gray-100 dark:border-white/5 rounded-xl pl-4 pr-12 py-2.5 focus:outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all shadow-sm cursor-pointer"
@@ -197,6 +214,7 @@ const BookAppointment = ({ onClose }) => {
               <input
                 type="text"
                 required
+                readOnly={isReschedule}
                 value={patientName}
                 onChange={e => setPatientName(e.target.value)}
                 placeholder="Who is this visit for?"
@@ -240,15 +258,18 @@ const BookAppointment = ({ onClose }) => {
             </div>
           </div>
 
+          {!isReschedule && (
           <div className="flex flex-col">
             <label className="block text-[11px] font-black text-[#5265ec] dark:text-blue-400 tracking-widest uppercase mb-1.5">Symptoms & Notes</label>
             <textarea
               value={symptoms}
+              readOnly={isReschedule}
               onChange={e => setSymptoms(e.target.value)}
               placeholder="Describe your reasoning..."
               className="w-full bg-gray-50 dark:bg-slate-800 border border-transparent dark:border-white/5 focus:bg-white dark:focus:bg-slate-700 focus:border-[#5265ec] dark:focus:border-blue-400 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 dark:text-white outline-none transition-colors resize-none h-[72px]"
             />
           </div>
+          )}
           </div>
 
           <div className="flex flex-col gap-4">
@@ -295,7 +316,7 @@ const BookAppointment = ({ onClose }) => {
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
-                Confirm Booking
+                {isReschedule ? 'Confirm New Time' : 'Confirm Booking'}
               </>
             )}
           </button>
